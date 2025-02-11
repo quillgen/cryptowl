@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
+import 'screens/login_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
@@ -16,12 +18,14 @@ String helloWorld(Ref ref) {
   return 'Hello world';
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({
+class CryptowlApp extends ConsumerWidget {
+  const CryptowlApp({
     super.key,
+    required this.initialized,
     required this.settingsController,
   });
 
+  final bool initialized;
   final SettingsController settingsController;
 
   @override
@@ -68,15 +72,17 @@ class MyApp extends ConsumerWidget {
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
-
-          // Define a function to handle named routes in order to support
-          // Flutter web url navigation and deep linking.
+          initialRoute: initialized ? "/login" : "/onboarding",
+          routes: {
+            "/login": (context) => LoginScreen(),
+            "/onboarding": (context) => OnboardingScreen(),
+          },
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case SettingsView.routeName:
+                  case "/settings":
                     return SettingsView(controller: settingsController);
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();

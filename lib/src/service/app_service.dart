@@ -22,8 +22,9 @@ class AppService {
     return File(await PathUtil.getLocalPath(configFileName));
   }
 
-  Future<bool> hasOnboarded() async {
+  Future<bool> isInitialized() async {
     final File config = await getAppConfigFile();
+    logger.d("Checking if config file exists: $config");
     return config.existsSync();
   }
 

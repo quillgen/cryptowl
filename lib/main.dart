@@ -1,6 +1,7 @@
 import 'package:cryptowl/src/providers/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -8,15 +9,15 @@ import 'package:sqlite3/sqlite3.dart';
 import 'src/app.dart';
 import 'src/common/path_util.dart';
 import 'src/service/app_service.dart';
-import 'src/service/kdbx_service.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
+
+final logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
   final dataPath = await PathUtil.getLocalPath("data.enc");
-  print(dataPath);
 
   final db = sqlite3.open(dataPath);
   if (db.select('PRAGMA cipher_version;').isEmpty) {
@@ -31,11 +32,9 @@ void main() async {
 
   final container = ProviderContainer();
   final AppService appService = container.read(appServiceProvider);
-  final hasOnboarded = await appService.hasOnboarded();
+  final initialized = await appService.isInitialized();
 
-  print(hasOnboarded);
-  // Load the user's preferred theme while the splash screen is displayed.
-  // This prevents a sudden theme change when the app is first displayed.
+  logger.i("Application has initialized? =$initialized");
   await settingsController.loadSettings();
 
   // Run the app and pass in the SettingsController. The app listens to the
@@ -43,7 +42,10 @@ void main() async {
   // SettingsView.
   runApp(
     ProviderScope(
-      child: MyApp(settingsController: settingsController),
+      child: CryptowlApp(
+        initialized: initialized,
+        settingsController: settingsController,
+      ),
     ),
   );
 }
