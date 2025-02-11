@@ -28,6 +28,9 @@ dependencies:
   logger: ^2.5.0
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
+  introduction_screen: ^3.1.14
+  flutter_svg: ^2.0.17
+  vector_graphics: ^1.1.18
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -8,7 +8,7 @@
 PRODUCT_NAME = cryptowl
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.cryptowl
+PRODUCT_BUNDLE_IDENTIFIER = com.quillgen.cryptowl
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.quillgen. All rights reserved.
