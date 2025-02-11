@@ -217,6 +217,23 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  CategoryEntity copyWithCompanion(CategoriesCompanion data) {
+    return CategoryEntity(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      encryptType:
+          data.encryptType.present ? data.encryptType.value : this.encryptType,
+      encryptArguments: data.encryptArguments.present
+          ? data.encryptArguments.value
+          : this.encryptArguments,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('CategoryEntity(')
@@ -789,6 +806,33 @@ class NoteEntity extends DataClass implements Insertable<NoteEntity> {
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
         categoryId: categoryId.present ? categoryId.value : this.categoryId,
       );
+  NoteEntity copyWithCompanion(NotesCompanion data) {
+    return NoteEntity(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      format: data.format.present ? data.format.value : this.format,
+      title: data.title.present ? data.title.value : this.title,
+      content: data.content.present ? data.content.value : this.content,
+      abstract: data.abstract.present ? data.abstract.value : this.abstract,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      location: data.location.present ? data.location.value : this.location,
+      weather: data.weather.present ? data.weather.value : this.weather,
+      mood: data.mood.present ? data.mood.value : this.mood,
+      encryptType:
+          data.encryptType.present ? data.encryptType.value : this.encryptType,
+      encryptArguments: data.encryptArguments.present
+          ? data.encryptArguments.value
+          : this.encryptArguments,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NoteEntity(')
@@ -1449,6 +1493,33 @@ class FileEntity extends DataClass implements Insertable<FileEntity> {
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  FileEntity copyWithCompanion(FilesCompanion data) {
+    return FileEntity(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      name: data.name.present ? data.name.value : this.name,
+      path: data.path.present ? data.path.value : this.path,
+      thumbnailPath: data.thumbnailPath.present
+          ? data.thumbnailPath.value
+          : this.thumbnailPath,
+      format: data.format.present ? data.format.value : this.format,
+      checksum: data.checksum.present ? data.checksum.value : this.checksum,
+      encryptType:
+          data.encryptType.present ? data.encryptType.value : this.encryptType,
+      encryptArguments: data.encryptArguments.present
+          ? data.encryptArguments.value
+          : this.encryptArguments,
+      remark: data.remark.present ? data.remark.value : this.remark,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('FileEntity(')
@@ -1869,6 +1940,19 @@ class NoteFileEntity extends DataClass implements Insertable<NoteFileEntity> {
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  NoteFileEntity copyWithCompanion(NoteFilesCompanion data) {
+    return NoteFileEntity(
+      id: data.id.present ? data.id.value : this.id,
+      noteId: data.noteId.present ? data.noteId.value : this.noteId,
+      fileId: data.fileId.present ? data.fileId.value : this.fileId,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NoteFileEntity(')
@@ -2190,6 +2274,20 @@ class ChecklistEntity extends DataClass implements Insertable<ChecklistEntity> {
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  ChecklistEntity copyWithCompanion(ChecklistsCompanion data) {
+    return ChecklistEntity(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      status: data.status.present ? data.status.value : this.status,
+      deadline: data.deadline.present ? data.deadline.value : this.deadline,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('ChecklistEntity(')
@@ -2510,6 +2608,20 @@ class NoteChecklistEntity extends DataClass
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  NoteChecklistEntity copyWithCompanion(NoteChecklistsCompanion data) {
+    return NoteChecklistEntity(
+      id: data.id.present ? data.id.value : this.id,
+      noteId: data.noteId.present ? data.noteId.value : this.noteId,
+      checklistId:
+          data.checklistId.present ? data.checklistId.value : this.checklistId,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('NoteChecklistEntity(')
@@ -3046,6 +3158,33 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       );
+  PasswordEntity copyWithCompanion(PasswordsCompanion data) {
+    return PasswordEntity(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      url: data.url.present ? data.url.value : this.url,
+      username: data.username.present ? data.username.value : this.username,
+      tip: data.tip.present ? data.tip.value : this.tip,
+      email: data.email.present ? data.email.value : this.email,
+      expireTime:
+          data.expireTime.present ? data.expireTime.value : this.expireTime,
+      value: data.value.present ? data.value.value : this.value,
+      encryptType:
+          data.encryptType.present ? data.encryptType.value : this.encryptType,
+      encryptArguments: data.encryptArguments.present
+          ? data.encryptArguments.value
+          : this.encryptArguments,
+      remark: data.remark.present ? data.remark.value : this.remark,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PasswordEntity(')
@@ -3293,6 +3432,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
 
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(e);
+  $AppDbManager get managers => $AppDbManager(this);
   late final Categories categories = Categories(this);
   late final Notes notes = Notes(this);
   late final Files files = Files(this);
@@ -3377,6 +3517,1584 @@ abstract class _$AppDb extends GeneratedDatabase {
         noteChecklists,
         passwords
       ];
+}
+
+typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({
+  Value<int> id,
+  required String name,
+  required int encryptType,
+  Value<String?> encryptArguments,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $CategoriesUpdateCompanionBuilder = CategoriesCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<int> encryptType,
+  Value<String?> encryptArguments,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $CategoriesFilterComposer extends Composer<_$AppDb, Categories> {
+  $CategoriesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $CategoriesOrderingComposer extends Composer<_$AppDb, Categories> {
+  $CategoriesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $CategoriesAnnotationComposer extends Composer<_$AppDb, Categories> {
+  $CategoriesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $CategoriesTableManager extends RootTableManager<
+    _$AppDb,
+    Categories,
+    CategoryEntity,
+    $CategoriesFilterComposer,
+    $CategoriesOrderingComposer,
+    $CategoriesAnnotationComposer,
+    $CategoriesCreateCompanionBuilder,
+    $CategoriesUpdateCompanionBuilder,
+    (CategoryEntity, BaseReferences<_$AppDb, Categories, CategoryEntity>),
+    CategoryEntity,
+    PrefetchHooks Function()> {
+  $CategoriesTableManager(_$AppDb db, Categories table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $CategoriesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $CategoriesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $CategoriesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> encryptType = const Value.absent(),
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              CategoriesCompanion(
+            id: id,
+            name: name,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required int encryptType,
+            Value<String?> encryptArguments = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              CategoriesCompanion.insert(
+            id: id,
+            name: name,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $CategoriesProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    Categories,
+    CategoryEntity,
+    $CategoriesFilterComposer,
+    $CategoriesOrderingComposer,
+    $CategoriesAnnotationComposer,
+    $CategoriesCreateCompanionBuilder,
+    $CategoriesUpdateCompanionBuilder,
+    (CategoryEntity, BaseReferences<_$AppDb, Categories, CategoryEntity>),
+    CategoryEntity,
+    PrefetchHooks Function()>;
+typedef $NotesCreateCompanionBuilder = NotesCompanion Function({
+  Value<int> id,
+  required int type,
+  required int format,
+  required String title,
+  required String content,
+  Value<String?> abstract,
+  Value<String?> tags,
+  Value<String?> location,
+  Value<String?> weather,
+  Value<String?> mood,
+  required int encryptType,
+  Value<String?> encryptArguments,
+  required String createTime,
+  required String lastUpdateTime,
+  Value<int?> categoryId,
+});
+typedef $NotesUpdateCompanionBuilder = NotesCompanion Function({
+  Value<int> id,
+  Value<int> type,
+  Value<int> format,
+  Value<String> title,
+  Value<String> content,
+  Value<String?> abstract,
+  Value<String?> tags,
+  Value<String?> location,
+  Value<String?> weather,
+  Value<String?> mood,
+  Value<int> encryptType,
+  Value<String?> encryptArguments,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+  Value<int?> categoryId,
+});
+
+class $NotesFilterComposer extends Composer<_$AppDb, Notes> {
+  $NotesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get format => $composableBuilder(
+      column: $table.format, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get abstract => $composableBuilder(
+      column: $table.abstract, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get weather => $composableBuilder(
+      column: $table.weather, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get mood => $composableBuilder(
+      column: $table.mood, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+}
+
+class $NotesOrderingComposer extends Composer<_$AppDb, Notes> {
+  $NotesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get format => $composableBuilder(
+      column: $table.format, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get abstract => $composableBuilder(
+      column: $table.abstract, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get weather => $composableBuilder(
+      column: $table.weather, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get mood => $composableBuilder(
+      column: $table.mood, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+}
+
+class $NotesAnnotationComposer extends Composer<_$AppDb, Notes> {
+  $NotesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<int> get format =>
+      $composableBuilder(column: $table.format, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get abstract =>
+      $composableBuilder(column: $table.abstract, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<String> get weather =>
+      $composableBuilder(column: $table.weather, builder: (column) => column);
+
+  GeneratedColumn<String> get mood =>
+      $composableBuilder(column: $table.mood, builder: (column) => column);
+
+  GeneratedColumn<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+}
+
+class $NotesTableManager extends RootTableManager<
+    _$AppDb,
+    Notes,
+    NoteEntity,
+    $NotesFilterComposer,
+    $NotesOrderingComposer,
+    $NotesAnnotationComposer,
+    $NotesCreateCompanionBuilder,
+    $NotesUpdateCompanionBuilder,
+    (NoteEntity, BaseReferences<_$AppDb, Notes, NoteEntity>),
+    NoteEntity,
+    PrefetchHooks Function()> {
+  $NotesTableManager(_$AppDb db, Notes table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $NotesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $NotesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $NotesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> type = const Value.absent(),
+            Value<int> format = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<String?> abstract = const Value.absent(),
+            Value<String?> tags = const Value.absent(),
+            Value<String?> location = const Value.absent(),
+            Value<String?> weather = const Value.absent(),
+            Value<String?> mood = const Value.absent(),
+            Value<int> encryptType = const Value.absent(),
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+          }) =>
+              NotesCompanion(
+            id: id,
+            type: type,
+            format: format,
+            title: title,
+            content: content,
+            abstract: abstract,
+            tags: tags,
+            location: location,
+            weather: weather,
+            mood: mood,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+            categoryId: categoryId,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int type,
+            required int format,
+            required String title,
+            required String content,
+            Value<String?> abstract = const Value.absent(),
+            Value<String?> tags = const Value.absent(),
+            Value<String?> location = const Value.absent(),
+            Value<String?> weather = const Value.absent(),
+            Value<String?> mood = const Value.absent(),
+            required int encryptType,
+            Value<String?> encryptArguments = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+            Value<int?> categoryId = const Value.absent(),
+          }) =>
+              NotesCompanion.insert(
+            id: id,
+            type: type,
+            format: format,
+            title: title,
+            content: content,
+            abstract: abstract,
+            tags: tags,
+            location: location,
+            weather: weather,
+            mood: mood,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+            categoryId: categoryId,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $NotesProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    Notes,
+    NoteEntity,
+    $NotesFilterComposer,
+    $NotesOrderingComposer,
+    $NotesAnnotationComposer,
+    $NotesCreateCompanionBuilder,
+    $NotesUpdateCompanionBuilder,
+    (NoteEntity, BaseReferences<_$AppDb, Notes, NoteEntity>),
+    NoteEntity,
+    PrefetchHooks Function()>;
+typedef $FilesCreateCompanionBuilder = FilesCompanion Function({
+  Value<int> id,
+  required int type,
+  required String name,
+  required String path,
+  Value<String?> thumbnailPath,
+  required String format,
+  Value<String?> checksum,
+  required int encryptType,
+  Value<String?> encryptArguments,
+  Value<String?> remark,
+  Value<int?> categoryId,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $FilesUpdateCompanionBuilder = FilesCompanion Function({
+  Value<int> id,
+  Value<int> type,
+  Value<String> name,
+  Value<String> path,
+  Value<String?> thumbnailPath,
+  Value<String> format,
+  Value<String?> checksum,
+  Value<int> encryptType,
+  Value<String?> encryptArguments,
+  Value<String?> remark,
+  Value<int?> categoryId,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $FilesFilterComposer extends Composer<_$AppDb, Files> {
+  $FilesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get thumbnailPath => $composableBuilder(
+      column: $table.thumbnailPath, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get format => $composableBuilder(
+      column: $table.format, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get checksum => $composableBuilder(
+      column: $table.checksum, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get remark => $composableBuilder(
+      column: $table.remark, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $FilesOrderingComposer extends Composer<_$AppDb, Files> {
+  $FilesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get thumbnailPath => $composableBuilder(
+      column: $table.thumbnailPath,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get format => $composableBuilder(
+      column: $table.format, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get checksum => $composableBuilder(
+      column: $table.checksum, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get remark => $composableBuilder(
+      column: $table.remark, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $FilesAnnotationComposer extends Composer<_$AppDb, Files> {
+  $FilesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<String> get thumbnailPath => $composableBuilder(
+      column: $table.thumbnailPath, builder: (column) => column);
+
+  GeneratedColumn<String> get format =>
+      $composableBuilder(column: $table.format, builder: (column) => column);
+
+  GeneratedColumn<String> get checksum =>
+      $composableBuilder(column: $table.checksum, builder: (column) => column);
+
+  GeneratedColumn<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments, builder: (column) => column);
+
+  GeneratedColumn<String> get remark =>
+      $composableBuilder(column: $table.remark, builder: (column) => column);
+
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $FilesTableManager extends RootTableManager<
+    _$AppDb,
+    Files,
+    FileEntity,
+    $FilesFilterComposer,
+    $FilesOrderingComposer,
+    $FilesAnnotationComposer,
+    $FilesCreateCompanionBuilder,
+    $FilesUpdateCompanionBuilder,
+    (FileEntity, BaseReferences<_$AppDb, Files, FileEntity>),
+    FileEntity,
+    PrefetchHooks Function()> {
+  $FilesTableManager(_$AppDb db, Files table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $FilesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $FilesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $FilesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> type = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> path = const Value.absent(),
+            Value<String?> thumbnailPath = const Value.absent(),
+            Value<String> format = const Value.absent(),
+            Value<String?> checksum = const Value.absent(),
+            Value<int> encryptType = const Value.absent(),
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String?> remark = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              FilesCompanion(
+            id: id,
+            type: type,
+            name: name,
+            path: path,
+            thumbnailPath: thumbnailPath,
+            format: format,
+            checksum: checksum,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            remark: remark,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int type,
+            required String name,
+            required String path,
+            Value<String?> thumbnailPath = const Value.absent(),
+            required String format,
+            Value<String?> checksum = const Value.absent(),
+            required int encryptType,
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String?> remark = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              FilesCompanion.insert(
+            id: id,
+            type: type,
+            name: name,
+            path: path,
+            thumbnailPath: thumbnailPath,
+            format: format,
+            checksum: checksum,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            remark: remark,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $FilesProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    Files,
+    FileEntity,
+    $FilesFilterComposer,
+    $FilesOrderingComposer,
+    $FilesAnnotationComposer,
+    $FilesCreateCompanionBuilder,
+    $FilesUpdateCompanionBuilder,
+    (FileEntity, BaseReferences<_$AppDb, Files, FileEntity>),
+    FileEntity,
+    PrefetchHooks Function()>;
+typedef $NoteFilesCreateCompanionBuilder = NoteFilesCompanion Function({
+  Value<int> id,
+  required int noteId,
+  required int fileId,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $NoteFilesUpdateCompanionBuilder = NoteFilesCompanion Function({
+  Value<int> id,
+  Value<int> noteId,
+  Value<int> fileId,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $NoteFilesFilterComposer extends Composer<_$AppDb, NoteFiles> {
+  $NoteFilesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get fileId => $composableBuilder(
+      column: $table.fileId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $NoteFilesOrderingComposer extends Composer<_$AppDb, NoteFiles> {
+  $NoteFilesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get fileId => $composableBuilder(
+      column: $table.fileId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $NoteFilesAnnotationComposer extends Composer<_$AppDb, NoteFiles> {
+  $NoteFilesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get noteId =>
+      $composableBuilder(column: $table.noteId, builder: (column) => column);
+
+  GeneratedColumn<int> get fileId =>
+      $composableBuilder(column: $table.fileId, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $NoteFilesTableManager extends RootTableManager<
+    _$AppDb,
+    NoteFiles,
+    NoteFileEntity,
+    $NoteFilesFilterComposer,
+    $NoteFilesOrderingComposer,
+    $NoteFilesAnnotationComposer,
+    $NoteFilesCreateCompanionBuilder,
+    $NoteFilesUpdateCompanionBuilder,
+    (NoteFileEntity, BaseReferences<_$AppDb, NoteFiles, NoteFileEntity>),
+    NoteFileEntity,
+    PrefetchHooks Function()> {
+  $NoteFilesTableManager(_$AppDb db, NoteFiles table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $NoteFilesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $NoteFilesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $NoteFilesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> noteId = const Value.absent(),
+            Value<int> fileId = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              NoteFilesCompanion(
+            id: id,
+            noteId: noteId,
+            fileId: fileId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int noteId,
+            required int fileId,
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              NoteFilesCompanion.insert(
+            id: id,
+            noteId: noteId,
+            fileId: fileId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $NoteFilesProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    NoteFiles,
+    NoteFileEntity,
+    $NoteFilesFilterComposer,
+    $NoteFilesOrderingComposer,
+    $NoteFilesAnnotationComposer,
+    $NoteFilesCreateCompanionBuilder,
+    $NoteFilesUpdateCompanionBuilder,
+    (NoteFileEntity, BaseReferences<_$AppDb, NoteFiles, NoteFileEntity>),
+    NoteFileEntity,
+    PrefetchHooks Function()>;
+typedef $ChecklistsCreateCompanionBuilder = ChecklistsCompanion Function({
+  Value<int> id,
+  required String name,
+  required int status,
+  Value<String?> deadline,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $ChecklistsUpdateCompanionBuilder = ChecklistsCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<int> status,
+  Value<String?> deadline,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $ChecklistsFilterComposer extends Composer<_$AppDb, Checklists> {
+  $ChecklistsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deadline => $composableBuilder(
+      column: $table.deadline, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $ChecklistsOrderingComposer extends Composer<_$AppDb, Checklists> {
+  $ChecklistsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deadline => $composableBuilder(
+      column: $table.deadline, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $ChecklistsAnnotationComposer extends Composer<_$AppDb, Checklists> {
+  $ChecklistsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get deadline =>
+      $composableBuilder(column: $table.deadline, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $ChecklistsTableManager extends RootTableManager<
+    _$AppDb,
+    Checklists,
+    ChecklistEntity,
+    $ChecklistsFilterComposer,
+    $ChecklistsOrderingComposer,
+    $ChecklistsAnnotationComposer,
+    $ChecklistsCreateCompanionBuilder,
+    $ChecklistsUpdateCompanionBuilder,
+    (ChecklistEntity, BaseReferences<_$AppDb, Checklists, ChecklistEntity>),
+    ChecklistEntity,
+    PrefetchHooks Function()> {
+  $ChecklistsTableManager(_$AppDb db, Checklists table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $ChecklistsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $ChecklistsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $ChecklistsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> status = const Value.absent(),
+            Value<String?> deadline = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              ChecklistsCompanion(
+            id: id,
+            name: name,
+            status: status,
+            deadline: deadline,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required int status,
+            Value<String?> deadline = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              ChecklistsCompanion.insert(
+            id: id,
+            name: name,
+            status: status,
+            deadline: deadline,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $ChecklistsProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    Checklists,
+    ChecklistEntity,
+    $ChecklistsFilterComposer,
+    $ChecklistsOrderingComposer,
+    $ChecklistsAnnotationComposer,
+    $ChecklistsCreateCompanionBuilder,
+    $ChecklistsUpdateCompanionBuilder,
+    (ChecklistEntity, BaseReferences<_$AppDb, Checklists, ChecklistEntity>),
+    ChecklistEntity,
+    PrefetchHooks Function()>;
+typedef $NoteChecklistsCreateCompanionBuilder = NoteChecklistsCompanion
+    Function({
+  Value<int> id,
+  required int noteId,
+  required int checklistId,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $NoteChecklistsUpdateCompanionBuilder = NoteChecklistsCompanion
+    Function({
+  Value<int> id,
+  Value<int> noteId,
+  Value<int> checklistId,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $NoteChecklistsFilterComposer extends Composer<_$AppDb, NoteChecklists> {
+  $NoteChecklistsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get checklistId => $composableBuilder(
+      column: $table.checklistId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $NoteChecklistsOrderingComposer
+    extends Composer<_$AppDb, NoteChecklists> {
+  $NoteChecklistsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get checklistId => $composableBuilder(
+      column: $table.checklistId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $NoteChecklistsAnnotationComposer
+    extends Composer<_$AppDb, NoteChecklists> {
+  $NoteChecklistsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get noteId =>
+      $composableBuilder(column: $table.noteId, builder: (column) => column);
+
+  GeneratedColumn<int> get checklistId => $composableBuilder(
+      column: $table.checklistId, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $NoteChecklistsTableManager extends RootTableManager<
+    _$AppDb,
+    NoteChecklists,
+    NoteChecklistEntity,
+    $NoteChecklistsFilterComposer,
+    $NoteChecklistsOrderingComposer,
+    $NoteChecklistsAnnotationComposer,
+    $NoteChecklistsCreateCompanionBuilder,
+    $NoteChecklistsUpdateCompanionBuilder,
+    (
+      NoteChecklistEntity,
+      BaseReferences<_$AppDb, NoteChecklists, NoteChecklistEntity>
+    ),
+    NoteChecklistEntity,
+    PrefetchHooks Function()> {
+  $NoteChecklistsTableManager(_$AppDb db, NoteChecklists table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $NoteChecklistsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $NoteChecklistsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $NoteChecklistsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> noteId = const Value.absent(),
+            Value<int> checklistId = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              NoteChecklistsCompanion(
+            id: id,
+            noteId: noteId,
+            checklistId: checklistId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int noteId,
+            required int checklistId,
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              NoteChecklistsCompanion.insert(
+            id: id,
+            noteId: noteId,
+            checklistId: checklistId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $NoteChecklistsProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    NoteChecklists,
+    NoteChecklistEntity,
+    $NoteChecklistsFilterComposer,
+    $NoteChecklistsOrderingComposer,
+    $NoteChecklistsAnnotationComposer,
+    $NoteChecklistsCreateCompanionBuilder,
+    $NoteChecklistsUpdateCompanionBuilder,
+    (
+      NoteChecklistEntity,
+      BaseReferences<_$AppDb, NoteChecklists, NoteChecklistEntity>
+    ),
+    NoteChecklistEntity,
+    PrefetchHooks Function()>;
+typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
+  Value<int> id,
+  required String title,
+  Value<String?> url,
+  Value<String?> username,
+  Value<String?> tip,
+  Value<String?> email,
+  Value<String?> expireTime,
+  required String value,
+  required int encryptType,
+  Value<String?> encryptArguments,
+  Value<String?> remark,
+  Value<int?> categoryId,
+  required String createTime,
+  required String lastUpdateTime,
+});
+typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
+  Value<int> id,
+  Value<String> title,
+  Value<String?> url,
+  Value<String?> username,
+  Value<String?> tip,
+  Value<String?> email,
+  Value<String?> expireTime,
+  Value<String> value,
+  Value<int> encryptType,
+  Value<String?> encryptArguments,
+  Value<String?> remark,
+  Value<int?> categoryId,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+});
+
+class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
+  $PasswordsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tip => $composableBuilder(
+      column: $table.tip, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get expireTime => $composableBuilder(
+      column: $table.expireTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get remark => $composableBuilder(
+      column: $table.remark, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
+  $PasswordsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get url => $composableBuilder(
+      column: $table.url, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tip => $composableBuilder(
+      column: $table.tip, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get expireTime => $composableBuilder(
+      column: $table.expireTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get remark => $composableBuilder(
+      column: $table.remark, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
+  $PasswordsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get tip =>
+      $composableBuilder(column: $table.tip, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get expireTime => $composableBuilder(
+      column: $table.expireTime, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<int> get encryptType => $composableBuilder(
+      column: $table.encryptType, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptArguments => $composableBuilder(
+      column: $table.encryptArguments, builder: (column) => column);
+
+  GeneratedColumn<String> get remark =>
+      $composableBuilder(column: $table.remark, builder: (column) => column);
+
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+}
+
+class $PasswordsTableManager extends RootTableManager<
+    _$AppDb,
+    Passwords,
+    PasswordEntity,
+    $PasswordsFilterComposer,
+    $PasswordsOrderingComposer,
+    $PasswordsAnnotationComposer,
+    $PasswordsCreateCompanionBuilder,
+    $PasswordsUpdateCompanionBuilder,
+    (PasswordEntity, BaseReferences<_$AppDb, Passwords, PasswordEntity>),
+    PasswordEntity,
+    PrefetchHooks Function()> {
+  $PasswordsTableManager(_$AppDb db, Passwords table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $PasswordsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $PasswordsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $PasswordsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String?> url = const Value.absent(),
+            Value<String?> username = const Value.absent(),
+            Value<String?> tip = const Value.absent(),
+            Value<String?> email = const Value.absent(),
+            Value<String?> expireTime = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> encryptType = const Value.absent(),
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String?> remark = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+          }) =>
+              PasswordsCompanion(
+            id: id,
+            title: title,
+            url: url,
+            username: username,
+            tip: tip,
+            email: email,
+            expireTime: expireTime,
+            value: value,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            remark: remark,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String title,
+            Value<String?> url = const Value.absent(),
+            Value<String?> username = const Value.absent(),
+            Value<String?> tip = const Value.absent(),
+            Value<String?> email = const Value.absent(),
+            Value<String?> expireTime = const Value.absent(),
+            required String value,
+            required int encryptType,
+            Value<String?> encryptArguments = const Value.absent(),
+            Value<String?> remark = const Value.absent(),
+            Value<int?> categoryId = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+          }) =>
+              PasswordsCompanion.insert(
+            id: id,
+            title: title,
+            url: url,
+            username: username,
+            tip: tip,
+            email: email,
+            expireTime: expireTime,
+            value: value,
+            encryptType: encryptType,
+            encryptArguments: encryptArguments,
+            remark: remark,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $PasswordsProcessedTableManager = ProcessedTableManager<
+    _$AppDb,
+    Passwords,
+    PasswordEntity,
+    $PasswordsFilterComposer,
+    $PasswordsOrderingComposer,
+    $PasswordsAnnotationComposer,
+    $PasswordsCreateCompanionBuilder,
+    $PasswordsUpdateCompanionBuilder,
+    (PasswordEntity, BaseReferences<_$AppDb, Passwords, PasswordEntity>),
+    PasswordEntity,
+    PrefetchHooks Function()>;
+
+class $AppDbManager {
+  final _$AppDb _db;
+  $AppDbManager(this._db);
+  $CategoriesTableManager get categories =>
+      $CategoriesTableManager(_db, _db.categories);
+  $NotesTableManager get notes => $NotesTableManager(_db, _db.notes);
+  $FilesTableManager get files => $FilesTableManager(_db, _db.files);
+  $NoteFilesTableManager get noteFiles =>
+      $NoteFilesTableManager(_db, _db.noteFiles);
+  $ChecklistsTableManager get checklists =>
+      $ChecklistsTableManager(_db, _db.checklists);
+  $NoteChecklistsTableManager get noteChecklists =>
+      $NoteChecklistsTableManager(_db, _db.noteChecklists);
+  $PasswordsTableManager get passwords =>
+      $PasswordsTableManager(_db, _db.passwords);
 }
 
 class FetchNoteBasicsResult {
