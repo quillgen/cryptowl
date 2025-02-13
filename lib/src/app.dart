@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/screens/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,8 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
-import 'screens/login_screen.dart';
-import 'screens/onboarding_screen.dart';
+import 'screens/login.dart';
+import 'screens/introduction.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
@@ -72,10 +73,11 @@ class CryptowlApp extends ConsumerWidget {
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
-          initialRoute: initialized ? "/login" : "/onboarding",
+          initialRoute: initialized ? "/login" : "/introduction",
           routes: {
             "/login": (context) => LoginScreen(),
             "/onboarding": (context) => OnboardingScreen(),
+            "/introduction": (context) => AppIntroductionScreen(),
           },
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(

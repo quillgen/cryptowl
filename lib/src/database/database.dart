@@ -53,7 +53,6 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
   return LazyDatabase(() async {
     final path = await getApplicationDocumentsDirectory();
     final realFile = File(p.join(path.path, file));
-    print("opening database ....$realFile");
     logger.i("openning database:$realFile");
 
     return NativeDatabase.createInBackground(
@@ -68,7 +67,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
           );
         } else {
           final cipherVersion = result.single['cipher_version'];
-          if (cipherVersion != '4.5.6 community') {
+          if (cipherVersion != '4.5.7 community') {
             throw UnsupportedError(
               'This application only supports SQLCipher with version=4.5.6 community, '
               'however database with version=$cipherVersion detected',

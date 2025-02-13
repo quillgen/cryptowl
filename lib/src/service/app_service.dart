@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:logger/logger.dart';
 
@@ -14,9 +15,10 @@ class AppService {
   static KdbxFormat kdbxFormat = KdbxFormat();
 
   final logger = Logger();
+  final Ref ref;
   final KdbxService _kdbxService;
 
-  AppService(this._kdbxService);
+  AppService(this.ref, this._kdbxService);
 
   static Future<File> getAppConfigFile() async {
     return File(await PathUtil.getLocalPath(configFileName));

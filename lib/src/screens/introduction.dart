@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:vector_graphics/vector_graphics.dart';
@@ -64,64 +63,25 @@ final introductionPages = [
   ),
 ];
 
-class OnboardingScreen extends ConsumerWidget {
-  final _formKey = GlobalKey<FormState>();
+class AppIntroductionScreen extends StatelessWidget {
+  const AppIntroductionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: IntroductionScreen(
-        pages: [
-          ...introductionPages,
-          PageViewModel(
-            title: "Get Started",
-            bodyWidget: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                      "A master password is a crucial security measure that safeguards all your sensitive information. By setting a strong master password, you ensure that your accounts and data are protected from unauthorized access, providing peace of mind and enhancing your online security."),
-                  TextFormField(
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: "Master password",
-                      hintText: "Please input your password",
-                    ),
-                  ),
-                  TextFormField(
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: "Repeat password",
-                      hintText: "Please confirm your password again",
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 12),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          // await appService.initialize(store.password);
-                          // if (context.mounted) {
-                          //   Navigator.pushReplacementNamed(context, "/login");
-                          // }
-                        }
-                      },
-                      child: const Text("Create database"),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            decoration: pageDecoration,
-          )
-        ],
+        pages: introductionPages,
         showSkipButton: true,
         showNextButton: true,
-        showDoneButton: false,
+        showDoneButton: true,
         skip: const Text("Skip"),
         next: const Icon(Icons.arrow_right_alt),
+        done: const Text("Start"),
+        onDone: () {
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(context, "/onboarding");
+          }
+        },
       ),
     );
   }
