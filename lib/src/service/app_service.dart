@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';
-import 'package:logger/logger.dart';
 
+import '../../main.dart';
 import '../common/exceptions.dart';
 import '../common/path_util.dart';
 import '../config/meta.dart';
@@ -14,7 +14,6 @@ class AppService {
   static const String configFileName = "app.kdbx";
   static KdbxFormat kdbxFormat = KdbxFormat();
 
-  final logger = Logger();
   final Ref ref;
   final KdbxService _kdbxService;
 
@@ -26,7 +25,7 @@ class AppService {
 
   Future<bool> isInitialized() async {
     final File config = await getAppConfigFile();
-    logger.d("Checking if config file exists: $config");
+    logger.fine("Checking if config file exists: $config");
     return config.existsSync();
   }
 
@@ -37,7 +36,7 @@ class AppService {
       final kdbx = await kdbxFormat.read(data, Credentials(password));
       return _kdbxService.loadMeta(kdbx);
     } on KdbxInvalidKeyException catch (e) {
-      logger.e("Login failed, password incorrect", error: e);
+      logger.severe("Login failed, password incorrect", e);
       throw IncorrectPasswordException();
     }
   }
@@ -47,14 +46,14 @@ class AppService {
     final saved = await kdbx.save();
     final configFile = await getAppConfigFile();
 
-    logger.i("Initializing config:$configFile");
+    logger.fine("Initializing config:$configFile");
 
     assert(!configFile.existsSync());
     configFile.writeAsBytesSync(saved);
 
     final meta = await _kdbxService.loadMeta(kdbx);
     final dbFile = "${meta.dbInstance}.enc";
-    logger.i("Initializing database:$dbFile");
+    logger.fine("Initializing database:$dbFile");
     final db = AppDb.open(dbFile, meta.dbEncryptionKey);
 
     // force to trigger database creation

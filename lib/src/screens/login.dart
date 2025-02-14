@@ -37,33 +37,25 @@ class Authentication extends _$Authentication {
   }
 }
 
-class LoginPasswordInput extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-}
-
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _controller = TextEditingController();
   bool loading = false;
 
   @override
   void dispose() {
-    logger.d("disposing..");
+    logger.fine("disposing..");
     _controller.dispose();
     super.dispose();
   }
 
-  Widget _loginButton() {
+  Widget _loginButton(WidgetRef ref) {
     return ElevatedButton(
       onPressed: () {
         if (_controller.text.isEmpty) {
@@ -89,8 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authenticationProvider);
-
+    logger.fine("~~~building login screen");
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(32.0),
@@ -104,22 +95,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const Text("Please login use you master password."),
             SizedBox(height: 20),
-            TextField(
-              controller: _controller,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: "Master password",
-                errorText: getError(authState.error),
-              ),
-            ),
+            Consumer(builder: (context, ref, child) {
+              final authState = ref.watch(authenticationProvider);
+              return TextField(
+                controller: _controller,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "Master password",
+                  errorText: getError(authState.error),
+                ),
+              );
+            }),
             SizedBox(height: 10),
-            authState.when(
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => _loginButton(),
-              data: (user) => user != null
-                  ? const Text('Already logged in')
-                  : _loginButton(),
-            ),
+            Consumer(builder: (context, ref, child) {
+              final authState = ref.watch(authenticationProvider);
+              return authState.when(
+                loading: () => const CircularProgressIndicator(),
+                error: (error, stack) => _loginButton(ref),
+                data: (user) => user != null
+                    ? const Text('Already logged in')
+                    : _loginButton(ref),
+              );
+            }),
           ],
         ),
       ),

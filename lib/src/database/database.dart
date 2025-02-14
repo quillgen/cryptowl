@@ -5,16 +5,15 @@ import 'package:convert/convert.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:kdbx/kdbx.dart';
-import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/open.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 
+import '../../main.dart';
+
 // run `dart run build_runner build` to generate
 part 'database.g.dart';
-
-final logger = Logger();
 
 @DriftDatabase(include: {'tables.drift'})
 class AppDb extends _$AppDb {
@@ -53,7 +52,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
   return LazyDatabase(() async {
     final path = await getApplicationDocumentsDirectory();
     final realFile = File(p.join(path.path, file));
-    logger.i("openning database:$realFile");
+    logger.fine("openning database:$realFile");
 
     return NativeDatabase.createInBackground(
       realFile,
