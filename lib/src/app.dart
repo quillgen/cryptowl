@@ -1,3 +1,4 @@
+import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/screens/onboarding.dart';
 import 'package:cryptowl/src/screens/splash.dart';
 import 'package:cryptowl/src/service/kdbx_service.dart';
@@ -28,7 +29,10 @@ AppService appService(Ref ref) {
 
 @riverpod
 GoRouter goRouter(Ref ref) {
+  logger.fine("~~~~~~~~~~~~~~~router rebuild");
+
   final onboardingState = ref.watch(onboardingStateProvider);
+  final credentials = ref.watch(currentUserProvider);
   return GoRouter(
     initialLocation: "/splash",
     redirect: (context, state) {
@@ -37,11 +41,11 @@ GoRouter goRouter(Ref ref) {
             if (!initialized) {
               return "/onboarding";
             }
-            final authState = ref.watch(authenticationProvider);
-            return authState.when(
-                data: (credentials) => credentials == null ? "/login" : "/",
-                error: (_, __) => "/login",
-                loading: () => "/login");
+            return credentials == null ? "/login" : "/";
+            // return authState.when(
+            //     data: (credentials) => credentials == null ? "/login" : "/",
+            //     error: (_, __) => "/login",
+            //     loading: () => "/login");
           },
           error: (_, __) => "/error",
           loading: () => "/");

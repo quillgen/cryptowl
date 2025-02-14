@@ -1,4 +1,3 @@
-import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +20,20 @@ class Credentials {
 }
 
 @riverpod
-class Authentication extends _$Authentication {
+class CurrentUser extends _$CurrentUser {
   @override
-  AsyncValue<Credentials?> build() {
-    return const AsyncData(null);
+  Credentials? build() {
+    return null;
+  }
+
+  void setUser(Credentials? user) => state = user;
+}
+
+@riverpod
+class LoginState extends _$LoginState {
+  @override
+  AsyncValue<bool> build() {
+    return AsyncValue.data(false);
   }
 
   Future<void> login(ProtectedValue password) async {
@@ -32,38 +41,38 @@ class Authentication extends _$Authentication {
     await Future.delayed(const Duration(seconds: 1));
     state = await AsyncValue.guard(() async {
       final meta = await ref.read(appServiceProvider).login(password);
-      return Credentials(meta, password);
+      final user = Credentials(meta, password);
+      ref.read(currentUserProvider.notifier).setUser(user);
+      return true;
     });
   }
 }
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _controller = TextEditingController();
-  bool loading = false;
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _inputController = TextEditingController();
 
   @override
   void dispose() {
-    logger.fine("disposing..");
-    _controller.dispose();
+    _inputController.dispose();
     super.dispose();
   }
 
-  Widget _loginButton(WidgetRef ref) {
+  Widget _loginButton() {
     return ElevatedButton(
       onPressed: () {
-        if (_controller.text.isEmpty) {
+        if (_inputController.text.isEmpty) {
           return;
         }
         ref
-            .read(authenticationProvider.notifier)
-            .login(ProtectedValue.fromString(_controller.text));
+            .read(loginStateProvider.notifier)
+            .login(ProtectedValue.fromString(_inputController.text));
       },
       child: const Text("Login"),
     );
@@ -81,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    logger.fine("~~~building login screen");
+    final loginState = ref.watch(loginStateProvider);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(32.0),
@@ -95,28 +104,21 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const Text("Please login use you master password."),
             SizedBox(height: 20),
-            Consumer(builder: (context, ref, child) {
-              final authState = ref.watch(authenticationProvider);
-              return TextField(
-                controller: _controller,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: "Master password",
-                  errorText: getError(authState.error),
-                ),
-              );
-            }),
+            TextField(
+              controller: _inputController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: "Master password",
+                errorText: getError(loginState.error),
+              ),
+            ),
             SizedBox(height: 10),
-            Consumer(builder: (context, ref, child) {
-              final authState = ref.watch(authenticationProvider);
-              return authState.when(
-                loading: () => const CircularProgressIndicator(),
-                error: (error, stack) => _loginButton(ref),
-                data: (user) => user != null
-                    ? const Text('Already logged in')
-                    : _loginButton(ref),
-              );
-            }),
+            loginState.when(
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stack) => _loginButton(),
+              data: (success) =>
+                  success ? const Text('Already logged in') : _loginButton(),
+            ),
           ],
         ),
       ),
