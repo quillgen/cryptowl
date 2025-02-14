@@ -90,71 +90,79 @@ class OnboardingState extends _$OnboardingState {
   Future<void> completeOnboarding(ProtectedValue password) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(appServiceProvider).initialize(password!);
-      ref.invalidate(passwordFormProvider);
+      await ref.read(appServiceProvider).initialize(password);
+      ref.read(initStateProvider.notifier).setInitState(true);
       return true;
     });
   }
 }
 
-class OnboardingScreen extends ConsumerWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final formState = ref.watch(passwordFormProvider);
-    final formNotifier = ref.read(passwordFormProvider.notifier);
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     final onboardingNotifier = ref.read(onboardingStateProvider.notifier);
 
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgPicture(
-              AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
-              height: 50,
-            ),
-            const Text("You need to set a master password to continue."),
-            SizedBox(height: 20),
-            TextField(
-              obscureText: true,
-              onChanged: formNotifier.updatePassword,
-              decoration: InputDecoration(
-                labelText: "Master password",
-                errorText: formState.passwordError,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture(
+                AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
+                height: 50,
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              obscureText: true,
-              onChanged: formNotifier.updateConfirmPassword,
-              decoration: InputDecoration(
-                labelText: "Confirm password",
-                errorText: formState.confirmPasswordError,
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              onChanged: formNotifier.updatePasswordHint,
-              decoration: const InputDecoration(
-                labelText: "Password hint",
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 12),
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (formState.isValid) {
-                    onboardingNotifier.completeOnboarding(formState.password!);
+              const Text("You need to set a master password to continue."),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
                   }
+                  return null;
                 },
-                child: const Text("Create database"),
               ),
-            )
-          ],
+              SizedBox(height: 10),
+              TextFormField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "Confirm password",
+                ),
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Password hint",
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {}
+                    onboardingNotifier.completeOnboarding(
+                        ProtectedValue.fromString(_passwordController.text));
+                  },
+                  child: const Text("Create database"),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

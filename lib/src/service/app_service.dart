@@ -25,8 +25,9 @@ class AppService {
 
   Future<bool> isInitialized() async {
     final File config = await getAppConfigFile();
-    logger.fine("Checking if config file exists: $config");
-    return config.existsSync();
+    final exists = config.existsSync();
+    logger.fine("Checking if config file exists: $config = $exists");
+    return exists;
   }
 
   Future<Meta> login(ProtectedValue password) async {

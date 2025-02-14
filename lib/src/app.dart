@@ -28,27 +28,38 @@ AppService appService(Ref ref) {
 }
 
 @riverpod
+class InitState extends _$InitState {
+  @override
+  bool? build() {
+    return null;
+  }
+
+  Future<void> checkInit() async {
+    final appService = ref.read(appServiceProvider);
+    final inited = await appService.isInitialized();
+    await Future.delayed(const Duration(seconds: 1));
+    state = inited;
+  }
+
+  void setInitState(bool? inited) => state = inited;
+}
+
+@riverpod
 GoRouter goRouter(Ref ref) {
   logger.fine("~~~~~~~~~~~~~~~router rebuild");
 
-  final onboardingState = ref.watch(onboardingStateProvider);
+  final initState = ref.watch(initStateProvider);
   final credentials = ref.watch(currentUserProvider);
   return GoRouter(
     initialLocation: "/splash",
     redirect: (context, state) {
-      return onboardingState.when(
-          data: (initialized) {
-            if (!initialized) {
-              return "/onboarding";
-            }
-            return credentials == null ? "/login" : "/";
-            // return authState.when(
-            //     data: (credentials) => credentials == null ? "/login" : "/",
-            //     error: (_, __) => "/login",
-            //     loading: () => "/login");
-          },
-          error: (_, __) => "/error",
-          loading: () => "/");
+      if (initState == null) {
+        return null;
+      } else if (initState == false) {
+        return "/onboarding";
+      } else {
+        return credentials == null ? "/login" : "/";
+      }
     },
     routes: [
       GoRoute(

@@ -38,7 +38,7 @@ final appServiceProvider = AutoDisposeProvider<AppService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AppServiceRef = AutoDisposeProviderRef<AppService>;
-String _$goRouterHash() => r'd5a46dc1fd66a914c492f7ed59f35ef443fdb1c0';
+String _$goRouterHash() => r'5faf2f5978efbadb4ee4ddd6e7cdad2bf5b6ee9b';
 
 /// See also [goRouter].
 @ProviderFor(goRouter)
@@ -54,5 +54,20 @@ final goRouterProvider = AutoDisposeProvider<GoRouter>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GoRouterRef = AutoDisposeProviderRef<GoRouter>;
+String _$initStateHash() => r'84c53f6b05470c171ca081ce16dc12309611e9e1';
+
+/// See also [InitState].
+@ProviderFor(InitState)
+final initStateProvider =
+    AutoDisposeNotifierProvider<InitState, bool?>.internal(
+  InitState.new,
+  name: r'initStateProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$initStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$InitState = AutoDisposeNotifier<bool?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
