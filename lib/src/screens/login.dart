@@ -37,6 +37,14 @@ class Authentication extends _$Authentication {
   }
 }
 
+class LoginPasswordInput extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
