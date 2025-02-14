@@ -1,5 +1,4 @@
 import 'package:cryptowl/src/common/exceptions.dart';
-import 'package:cryptowl/src/providers/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +6,7 @@ import 'package:kdbx/kdbx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
+import '../app.dart';
 import '../config/meta.dart';
 
 part 'login.g.dart';

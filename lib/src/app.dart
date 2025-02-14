@@ -1,22 +1,61 @@
+import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/screens/onboarding.dart';
+import 'package:cryptowl/src/service/kdbx_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
+import 'screens/home.dart';
 import 'screens/login.dart';
 import 'screens/introduction.dart';
+import 'service/app_service.dart';
 import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
 
 part 'app.g.dart';
 
 @riverpod
-String helloWorld(Ref ref) {
-  return 'Hello world';
+KdbxService kdbxService(Ref ref) {
+  return KdbxService();
+}
+
+@riverpod
+AppService appService(Ref ref) {
+  return AppService(ref, ref.watch(kdbxServiceProvider));
+}
+
+@riverpod
+GoRouter goRouter(Ref ref) {
+  return GoRouter(
+    redirect: (context, state) {
+      final authState = ref.watch(authenticationProvider);
+      logger.d("${authState}");
+      return authState.when(
+          data: (credentials) => credentials == null ? "/login" : "/",
+          error: (_, __) => "/login",
+          loading: () => "/login");
+    },
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => HomeScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => LoginScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/introduction',
+        builder: (context, state) => AppIntroductionScreen(),
+      ),
+    ],
+  );
 }
 
 class CryptowlApp extends ConsumerWidget {
@@ -31,15 +70,12 @@ class CryptowlApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String value = ref.watch(helloWorldProvider);
-    // Glue the SettingsController to the MaterialApp.
-    //
-    // The ListenableBuilder Widget listens to the SettingsController for changes.
-    // Whenever the user updates their settings, the MaterialApp is rebuilt.
+    final router = ref.watch(goRouterProvider);
+
     return ListenableBuilder(
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
-        return MaterialApp(
+        return MaterialApp.router(
           // Providing a restorationScopeId allows the Navigator built by the
           // MaterialApp to restore the navigation stack when a user leaves and
           // returns to the app after it has been killed while running in the
@@ -73,28 +109,7 @@ class CryptowlApp extends ConsumerWidget {
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
-          initialRoute: initialized ? "/login" : "/introduction",
-          routes: {
-            "/login": (context) => LoginScreen(),
-            "/onboarding": (context) => OnboardingScreen(),
-            "/introduction": (context) => AppIntroductionScreen(),
-          },
-          onGenerateRoute: (RouteSettings routeSettings) {
-            return MaterialPageRoute<void>(
-              settings: routeSettings,
-              builder: (BuildContext context) {
-                switch (routeSettings.name) {
-                  case "/settings":
-                    return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
-                  case SampleItemListView.routeName:
-                  default:
-                    return const SampleItemListView();
-                }
-              },
-            );
-          },
+          routerConfig: router,
         );
       },
     );
