@@ -1,5 +1,5 @@
-import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/screens/onboarding.dart';
+import 'package:cryptowl/src/screens/splash.dart';
 import 'package:cryptowl/src/service/kdbx_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,21 +23,34 @@ KdbxService kdbxService(Ref ref) {
 
 @riverpod
 AppService appService(Ref ref) {
-  return AppService(ref, ref.watch(kdbxServiceProvider));
+  return AppService(ref, ref.read(kdbxServiceProvider));
 }
 
 @riverpod
 GoRouter goRouter(Ref ref) {
+  final onboardingState = ref.watch(onboardingStateProvider);
   return GoRouter(
+    initialLocation: "/splash",
     redirect: (context, state) {
-      final authState = ref.watch(authenticationProvider);
-      logger.d("${authState}");
-      return authState.when(
-          data: (credentials) => credentials == null ? "/login" : "/",
-          error: (_, __) => "/login",
-          loading: () => "/login");
+      return onboardingState.when(
+          data: (initialized) {
+            if (!initialized) {
+              return "/onboarding";
+            }
+            final authState = ref.watch(authenticationProvider);
+            return authState.when(
+                data: (credentials) => credentials == null ? "/login" : "/",
+                error: (_, __) => "/login",
+                loading: () => "/login");
+          },
+          error: (_, __) => "/error",
+          loading: () => "/");
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => SplashScreen(),
+      ),
       GoRoute(
         path: '/',
         builder: (context, state) => HomeScreen(),
@@ -61,11 +74,9 @@ GoRouter goRouter(Ref ref) {
 class CryptowlApp extends ConsumerWidget {
   const CryptowlApp({
     super.key,
-    required this.initialized,
     required this.settingsController,
   });
 
-  final bool initialized;
   final SettingsController settingsController;
 
   @override
@@ -76,15 +87,7 @@ class CryptowlApp extends ConsumerWidget {
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp.router(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
           restorationScopeId: 'app',
-
-          // Provide the generated AppLocalizations to the MaterialApp. This
-          // allows descendant Widgets to display the correct translations
-          // depending on the user's locale.
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -92,20 +95,10 @@ class CryptowlApp extends ConsumerWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('en', ''), // English, no country code
+            Locale('en', ''),
           ],
-
-          // Use AppLocalizations to configure the correct application title
-          // depending on the user's locale.
-          //
-          // The appTitle is defined in .arb files found in the localization
-          // directory.
           onGenerateTitle: (BuildContext context) =>
               AppLocalizations.of(context)!.appTitle,
-
-          // Define a light and dark color theme. Then, read the user's
-          // preferred ThemeMode (light, dark, or system default) from the
-          // SettingsController to display the correct theme.
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,

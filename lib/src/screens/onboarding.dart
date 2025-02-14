@@ -80,6 +80,23 @@ class PasswordForm extends _$PasswordForm {
   }
 }
 
+@riverpod
+class OnboardingState extends _$OnboardingState {
+  @override
+  Future<bool> build() async {
+    return await ref.read(appServiceProvider).isInitialized();
+  }
+
+  Future<void> completeOnboarding(ProtectedValue password) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(appServiceProvider).initialize(password!);
+      ref.invalidate(passwordFormProvider);
+      return true;
+    });
+  }
+}
+
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
@@ -87,7 +104,7 @@ class OnboardingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formState = ref.watch(passwordFormProvider);
     final formNotifier = ref.read(passwordFormProvider.notifier);
-    final appService = ref.read(appServiceProvider);
+    final onboardingNotifier = ref.read(onboardingStateProvider.notifier);
 
     return Scaffold(
       body: Padding(
@@ -131,12 +148,7 @@ class OnboardingScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   if (formState.isValid) {
-                    logger.d("Initializing database..");
-                    await appService.initialize(formState.password!);
-                    if (context.mounted) {
-                      ref.invalidate(passwordFormProvider);
-                      Navigator.pushReplacementNamed(context, "/login");
-                    }
+                    onboardingNotifier.completeOnboarding(formState.password!);
                   }
                 },
                 child: const Text("Create database"),

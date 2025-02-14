@@ -1,3 +1,4 @@
+import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   void dispose() {
+    logger.d("disposing..");
     _controller.dispose();
     super.dispose();
   }

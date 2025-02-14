@@ -22,7 +22,7 @@ final kdbxServiceProvider = AutoDisposeProvider<KdbxService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef KdbxServiceRef = AutoDisposeProviderRef<KdbxService>;
-String _$appServiceHash() => r'ccef5749778259a07f117a8e8c93d5dc10f9ed1d';
+String _$appServiceHash() => r'3c36ad8d532acbbbb527f693f8fcf03f87aa9ef2';
 
 /// See also [appService].
 @ProviderFor(appService)
@@ -38,7 +38,7 @@ final appServiceProvider = AutoDisposeProvider<AppService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AppServiceRef = AutoDisposeProviderRef<AppService>;
-String _$goRouterHash() => r'd6fe8cb2b23b39dd43f67b29a03c005970b4b4c5';
+String _$goRouterHash() => r'a6c8195f152aa8d23e412f77cfa00ee881447a09';
 
 /// See also [goRouter].
 @ProviderFor(goRouter)
