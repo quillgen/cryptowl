@@ -1,4 +1,3 @@
-import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/screens/onboarding.dart';
 import 'package:cryptowl/src/screens/splash.dart';
 import 'package:cryptowl/src/service/kdbx_service.dart';
@@ -37,7 +36,7 @@ class InitState extends _$InitState {
   Future<void> checkInit() async {
     final appService = ref.read(appServiceProvider);
     final inited = await appService.isInitialized();
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 5));
     state = inited;
   }
 
@@ -46,8 +45,6 @@ class InitState extends _$InitState {
 
 @riverpod
 GoRouter goRouter(Ref ref) {
-  logger.fine("~~~~~~~~~~~~~~~router rebuild");
-
   final initState = ref.watch(initStateProvider);
   final credentials = ref.watch(currentUserProvider);
   return GoRouter(

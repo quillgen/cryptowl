@@ -38,7 +38,7 @@ final appServiceProvider = AutoDisposeProvider<AppService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AppServiceRef = AutoDisposeProviderRef<AppService>;
-String _$goRouterHash() => r'5faf2f5978efbadb4ee4ddd6e7cdad2bf5b6ee9b';
+String _$goRouterHash() => r'df2a7ca6e729f958befe8e37692359b43bb0a88d';
 
 /// See also [goRouter].
 @ProviderFor(goRouter)
@@ -54,7 +54,7 @@ final goRouterProvider = AutoDisposeProvider<GoRouter>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GoRouterRef = AutoDisposeProviderRef<GoRouter>;
-String _$initStateHash() => r'84c53f6b05470c171ca081ce16dc12309611e9e1';
+String _$initStateHash() => r'bbe6b7404f68c0a676573f8b0fdd3019d670b5da';
 
 /// See also [InitState].
 @ProviderFor(InitState)
