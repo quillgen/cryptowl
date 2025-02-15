@@ -116,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               controller: _inputController,
               obscureText: true,
               textInputAction: TextInputAction.go,
-              onSubmitted: (_) => onLoginSubmitted,
+              onSubmitted: (_) => onLoginSubmitted(),
               decoration: InputDecoration(
                 labelText: "Master password",
                 errorText: getError(loginState.error),
