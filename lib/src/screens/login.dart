@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 import '../app.dart';
@@ -64,16 +65,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  void onLoginSubmitted() {
+    if (_inputController.text.isEmpty) {
+      toastification.show(
+        context: context,
+        title: Text('Please input your password!'),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    ref
+        .read(loginStateProvider.notifier)
+        .login(ProtectedValue.fromString(_inputController.text));
+  }
+
   Widget _loginButton() {
     return ElevatedButton(
-      onPressed: () {
-        if (_inputController.text.isEmpty) {
-          return;
-        }
-        ref
-            .read(loginStateProvider.notifier)
-            .login(ProtectedValue.fromString(_inputController.text));
-      },
+      onPressed: onLoginSubmitted,
       child: const Text("Login"),
     );
   }
@@ -107,6 +115,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             TextField(
               controller: _inputController,
               obscureText: true,
+              textInputAction: TextInputAction.go,
+              onSubmitted: (_) => onLoginSubmitted,
               decoration: InputDecoration(
                 labelText: "Master password",
                 errorText: getError(loginState.error),

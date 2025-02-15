@@ -1,6 +1,8 @@
 import 'package:cryptowl/src/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:vector_graphics/vector_graphics.dart';
 
 class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
@@ -15,7 +17,12 @@ class SplashScreen extends ConsumerWidget {
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Text('Loading....');
+                return Center(
+                  child: SvgPicture(
+                    AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
+                    height: 50,
+                  ),
+                );
               default:
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');

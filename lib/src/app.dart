@@ -36,7 +36,7 @@ class InitState extends _$InitState {
   Future<void> checkInit() async {
     final appService = ref.read(appServiceProvider);
     final inited = await appService.isInitialized();
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 1));
     state = inited;
   }
 
