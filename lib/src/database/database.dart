@@ -37,12 +37,7 @@ class AppDb extends _$AppDb {
 }
 
 void setupSqlCipher() {
-  open
-    ..overrideFor(OperatingSystem.android, openCipherOnAndroid)
-    ..overrideFor(
-        OperatingSystem.linux, () => DynamicLibrary.open('libsqlcipher.so'))
-    ..overrideFor(
-        OperatingSystem.windows, () => DynamicLibrary.open('sqlcipher.dll'));
+  open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
 }
 
 QueryExecutor _openDatabase(String file, ProtectedValue key) {

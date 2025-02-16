@@ -1,6 +1,3 @@
-import 'package:cryptowl/src/screens/onboarding.dart';
-import 'package:cryptowl/src/screens/splash.dart';
-import 'package:cryptowl/src/service/kdbx_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,40 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'providers.dart';
 import 'screens/home.dart';
 import 'screens/login.dart';
 import 'screens/introduction.dart';
-import 'service/app_service.dart';
+import 'screens/onboarding.dart';
+import 'screens/splash.dart';
 import 'settings/settings_controller.dart';
 
 part 'app.g.dart';
-
-@riverpod
-KdbxService kdbxService(Ref ref) {
-  return KdbxService();
-}
-
-@riverpod
-AppService appService(Ref ref) {
-  return AppService(ref, ref.read(kdbxServiceProvider));
-}
-
-@riverpod
-class InitState extends _$InitState {
-  @override
-  bool? build() {
-    return null;
-  }
-
-  Future<void> checkInit() async {
-    final appService = ref.read(appServiceProvider);
-    final inited = await appService.isInitialized();
-    await Future.delayed(const Duration(seconds: 1));
-    state = inited;
-  }
-
-  void setInitState(bool? inited) => state = inited;
-}
 
 @riverpod
 GoRouter goRouter(Ref ref) {
@@ -99,6 +71,7 @@ class CryptowlApp extends ConsumerWidget {
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
           restorationScopeId: 'app',
           localizationsDelegates: const [
             AppLocalizations.delegate,

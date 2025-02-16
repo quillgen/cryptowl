@@ -1,4 +1,3 @@
-import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/common/password_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +6,7 @@ import 'package:kdbx/kdbx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../app.dart';
+import '../providers.dart';
 
 part 'onboarding.g.dart';
 

@@ -7,28 +7,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../app.dart';
 import '../config/meta.dart';
+import '../providers.dart';
 
 part 'login.g.dart';
-
-@immutable
-class Credentials {
-  final Meta meta;
-  final ProtectedValue password;
-
-  const Credentials(this.meta, this.password);
-}
-
-@riverpod
-class CurrentUser extends _$CurrentUser {
-  @override
-  Credentials? build() {
-    return null;
-  }
-
-  void setUser(Credentials? user) => state = user;
-}
 
 @riverpod
 class LoginState extends _$LoginState {
@@ -41,8 +23,7 @@ class LoginState extends _$LoginState {
     state = const AsyncLoading();
     await Future.delayed(const Duration(seconds: 1));
     state = await AsyncValue.guard(() async {
-      final meta = await ref.read(appServiceProvider).login(password);
-      final user = Credentials(meta, password);
+      final user = await ref.read(appServiceProvider).login(password);
       ref.read(currentUserProvider.notifier).setUser(user);
       return true;
     });

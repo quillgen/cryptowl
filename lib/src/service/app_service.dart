@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';
 
@@ -8,6 +9,7 @@ import '../common/exceptions.dart';
 import '../common/path_util.dart';
 import '../config/meta.dart';
 import '../database/database.dart';
+import '../domain/user.dart';
 import 'kdbx_service.dart';
 
 class AppService {
@@ -30,12 +32,13 @@ class AppService {
     return exists;
   }
 
-  Future<Meta> login(ProtectedValue password) async {
+  Future<User> login(ProtectedValue password) async {
     final File config = await getAppConfigFile();
     final data = await config.readAsBytes();
     try {
       final kdbx = await kdbxFormat.read(data, Credentials(password));
-      return _kdbxService.loadMeta(kdbx);
+      final meta = await _kdbxService.loadMeta(kdbx);
+      return User(meta, password);
     } on KdbxInvalidKeyException catch (e) {
       logger.severe("Login failed, password incorrect", e);
       throw IncorrectPasswordException();
