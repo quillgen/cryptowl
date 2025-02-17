@@ -35,6 +35,8 @@ dependencies:
   toastification: ^2.3.0
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
+  flex_color_scheme: ^8.1.1
+  responsive_framework: ^1.5.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,6 +48,7 @@ dev_dependencies:
   drift_dev: ^2.25.1
   freezed: ^2.5.8
   json_serializable: ^6.9.4
+  faker: ^2.2.0
 
 flutter:
   uses-material-design: true

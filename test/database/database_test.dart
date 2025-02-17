@@ -16,7 +16,9 @@ void main() {
 
   setUp(() async {
     database = AppDb.from(NativeDatabase.memory());
-    await database.select(database.notes).get(); // ensure drift is initiallized
+    await database
+        .select(database.categories)
+        .get(); // ensure drift is initiallized
 
     final helper = DatabaseHelper(database);
     await helper.createCategory(1, "test");

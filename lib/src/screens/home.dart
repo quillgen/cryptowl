@@ -1,15 +1,35 @@
+import 'dart:io';
+
+import 'package:cryptowl/main.dart';
 import 'package:flutter/material.dart';
 
 import 'passwords.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    final isDesktop =
+        Platform.isMacOS || Platform.isLinux || Platform.isWindows;
+    logger.fine("is the device desktop? $isDesktop ${Platform.isMacOS}");
+
+    if (isDesktop) {
+      return DesktopHomeScreen();
+    } else {
+      return MobileHomeScreen();
+    }
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class MobileHomeScreen extends StatefulWidget {
+  const MobileHomeScreen({super.key});
+
+  @override
+  State<MobileHomeScreen> createState() => _MobileHomeScreenState();
+}
+
+class _MobileHomeScreenState extends State<MobileHomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentPageIndex = 0;
 
@@ -48,6 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop =
+        Platform.isMacOS || Platform.isLinux || Platform.isWindows;
+    logger.fine("is the device desktop? $isDesktop ${Platform.isMacOS}");
+
     return Scaffold(
       appBar: AppBar(
         title: Text("My passwords"),
@@ -70,13 +94,62 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: <Widget>[
-        PasswordListScreen(),
-        Text("2"),
-        Text("3"),
-        Text("4")
-      ][currentPageIndex],
+      body: Padding(
+        padding: EdgeInsets.all(8),
+        child: <Widget>[
+          PasswordListScreen(),
+          Text("2"),
+          Text("3"),
+          Text("4")
+        ][currentPageIndex],
+      ),
       bottomNavigationBar: _renderNavigationBar(),
+    );
+  }
+}
+
+class DesktopHomeScreen extends StatefulWidget {
+  const DesktopHomeScreen({super.key});
+
+  @override
+  State<DesktopHomeScreen> createState() => _DesktopHomeScreenState();
+}
+
+class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
+  int pageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop =
+        Platform.isMacOS || Platform.isLinux || Platform.isWindows;
+    logger.fine("is the device desktop? $isDesktop ${Platform.isMacOS}");
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("My passwords"),
+        titleSpacing: 8,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings),
+            tooltip: 'Current user information',
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Search',
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'More options',
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(8),
+        child: PasswordListScreen(),
+      ),
     );
   }
 }

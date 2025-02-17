@@ -18,7 +18,7 @@ void main() {
 
   setUp(() async {
     database = AppDb.from(NativeDatabase.memory());
-    await database.select(database.notes).get(); // ensure drift is initiallized
+    await database.select(database.categories).get();
 
     final helper = DatabaseHelper(database);
     await helper.createPassword(1, "test1", "password1");

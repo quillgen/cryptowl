@@ -1,13 +1,11 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';
 
 import '../../main.dart';
 import '../common/exceptions.dart';
 import '../common/path_util.dart';
-import '../config/meta.dart';
 import '../database/database.dart';
 import '../domain/user.dart';
 import 'kdbx_service.dart';
@@ -61,7 +59,7 @@ class AppService {
     final db = AppDb.open(dbFile, meta.dbEncryptionKey);
 
     // force to trigger database creation
-    await db.select(db.notes).get();
+    await db.select(db.passwords).get();
     await db.close();
     return kdbx;
   }

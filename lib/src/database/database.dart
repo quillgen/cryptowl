@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:convert/convert.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -26,8 +27,29 @@ class AppDb extends _$AppDb {
 
   @override
   MigrationStrategy get migration {
+    final now = DateTime.now().toIso8601String();
     return MigrationStrategy(
-      beforeOpen: (details) async {},
+      beforeOpen: (details) async {
+        if (details.wasCreated) {
+          await into(categories).insert(CategoryEntity(
+            id: 1,
+            name: "default",
+            accessLevel: 1,
+            createTime: now,
+            lastUpdateTime: now,
+          ));
+          await into(passwords).insert(PasswordEntity(
+            id: 'test',
+            type: 1,
+            categoryId: 1,
+            title: "test",
+            value: "test",
+            createTime: now,
+            lastUpdateTime: now,
+            isDeleted: 0,
+          ));
+        }
+      },
       onCreate: (Migrator m) async {
         await m.createAll();
         await transaction(() async {});
@@ -47,7 +69,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
   return LazyDatabase(() async {
     final path = await getApplicationDocumentsDirectory();
     final realFile = File(p.join(path.path, file));
-    logger.fine("openning database:$realFile");
+    logger.fine("opening database: $realFile");
 
     return NativeDatabase.createInBackground(
       realFile,
@@ -63,7 +85,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
           final cipherVersion = result.single['cipher_version'];
           if (cipherVersion != '4.5.7 community') {
             throw UnsupportedError(
-              'This application only supports SQLCipher with version=4.5.6 community, '
+              'This application only supports SQLCipher with version=4.5.7 community, '
               'however database with version=$cipherVersion detected',
             );
           }
