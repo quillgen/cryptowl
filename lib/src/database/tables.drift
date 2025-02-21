@@ -21,6 +21,31 @@ CREATE TABLE passwords (
     FOREIGN KEY(category_id) REFERENCES categories(id)
 ) As PasswordEntity;
 
+activePasswords:
+    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=0; 
+
+passwordsByCategory:
+    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=0 and category_id=?; 
+
+passwordsByType:
+    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=0 and type=?; 
+
+favoritePasswords:
+SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=0 and is_favorite=1; 
+
+deletedPasswords: 
+    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=1; 
+
 CREATE TABLE attributes (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     resource_id CHAR(36) NOT NULL,

@@ -9,8 +9,6 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cryptowl/src/database/database.dart';
 
-import '../test_util/database_helper.dart';
-
 void main() {
   late AppDb database;
 
@@ -19,9 +17,6 @@ void main() {
     await database
         .select(database.categories)
         .get(); // ensure drift is initiallized
-
-    final helper = DatabaseHelper(database);
-    await helper.createCategory(1, "test");
   });
 
   tearDown(() async {

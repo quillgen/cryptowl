@@ -1272,6 +1272,95 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final Categories categories = Categories(this);
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
+  Selectable<ActivePasswordsResult> activePasswords() {
+    return customSelect(
+        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
+        variables: [],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => ActivePasswordsResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
+  Selectable<PasswordsByCategoryResult> passwordsByCategory(int var1) {
+    return customSelect(
+        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND category_id = ?1',
+        variables: [
+          Variable<int>(var1)
+        ],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => PasswordsByCategoryResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
+  Selectable<PasswordsByTypeResult> passwordsByType(int var1) {
+    return customSelect(
+        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND type = ?1',
+        variables: [
+          Variable<int>(var1)
+        ],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => PasswordsByTypeResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
+  Selectable<FavoritePasswordsResult> favoritePasswords() {
+    return customSelect(
+        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND is_favorite = 1',
+        variables: [],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => FavoritePasswordsResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
+  Selectable<DeletedPasswordsResult> deletedPasswords() {
+    return customSelect(
+        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 1',
+        variables: [],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => DeletedPasswordsResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1890,4 +1979,99 @@ class $AppDbManager {
       $PasswordsTableManager(_db, _db.passwords);
   $AttributesTableManager get attributes =>
       $AttributesTableManager(_db, _db.attributes);
+}
+
+class ActivePasswordsResult {
+  final String id;
+  final int type;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  ActivePasswordsResult({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
+class PasswordsByCategoryResult {
+  final String id;
+  final int type;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  PasswordsByCategoryResult({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
+class PasswordsByTypeResult {
+  final String id;
+  final int type;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  PasswordsByTypeResult({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
+class FavoritePasswordsResult {
+  final String id;
+  final int type;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  FavoritePasswordsResult({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
+class DeletedPasswordsResult {
+  final String id;
+  final int type;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  DeletedPasswordsResult({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
 }

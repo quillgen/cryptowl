@@ -8,36 +8,84 @@ class PasswordRepository {
 
   PasswordRepository(this.db);
 
-  Future<List<Password>> list() async {
-    final items = await db.passwords.select().get();
-    return items.map((item) => Password.fromEntity(item)).toList();
+  Future<List<PasswordBasic>> list() async {
+    final items = await db.activePasswords().get();
+    return items.map((item) {
+      return PasswordBasic(
+        id: item.id,
+        type: item.type,
+        categoryId: item.categoryId,
+        title: item.title,
+        expireTime:
+            item.expireTime == null ? null : DateTime.parse(item.expireTime!),
+        createTime: DateTime.parse(item.createTime),
+        lastUpdateTime: DateTime.parse(item.lastUpdateTime),
+      );
+    }).toList();
   }
 
-  Future<List<Password>> listByCategory(int category) async {
-    final items = await (db.passwords.select()
-          ..where((i) => i.categoryId.equals(category)))
-        .get();
-    return items.map((item) => Password.fromEntity(item)).toList();
+  Future<List<PasswordBasic>> listByCategory(int category) async {
+    final items = await db.passwordsByCategory(category).get();
+    return items.map((item) {
+      return PasswordBasic(
+        id: item.id,
+        type: item.type,
+        categoryId: item.categoryId,
+        title: item.title,
+        expireTime:
+            item.expireTime == null ? null : DateTime.parse(item.expireTime!),
+        createTime: DateTime.parse(item.createTime),
+        lastUpdateTime: DateTime.parse(item.lastUpdateTime),
+      );
+    }).toList();
   }
 
-  Future<List<Password>> listByType(int type) async {
-    final items =
-        await (db.passwords.select()..where((i) => i.type.equals(type))).get();
-    return items.map((item) => Password.fromEntity(item)).toList();
+  Future<List<PasswordBasic>> listByType(int type) async {
+    final items = await db.passwordsByType(type).get();
+    return items.map((item) {
+      return PasswordBasic(
+        id: item.id,
+        type: item.type,
+        categoryId: item.categoryId,
+        title: item.title,
+        expireTime:
+            item.expireTime == null ? null : DateTime.parse(item.expireTime!),
+        createTime: DateTime.parse(item.createTime),
+        lastUpdateTime: DateTime.parse(item.lastUpdateTime),
+      );
+    }).toList();
   }
 
-  Future<List<Password>> listFavorite() async {
-    final items = await (db.passwords.select()
-          ..where((i) => i.isFavorite.equals(1)))
-        .get();
-    return items.map((item) => Password.fromEntity(item)).toList();
+  Future<List<PasswordBasic>> listFavorite() async {
+    final items = await db.favoritePasswords().get();
+    return items.map((item) {
+      return PasswordBasic(
+        id: item.id,
+        type: item.type,
+        categoryId: item.categoryId,
+        title: item.title,
+        expireTime:
+            item.expireTime == null ? null : DateTime.parse(item.expireTime!),
+        createTime: DateTime.parse(item.createTime),
+        lastUpdateTime: DateTime.parse(item.lastUpdateTime),
+      );
+    }).toList();
   }
 
-  Future<List<Password>> listDeleted() async {
-    final items = await (db.passwords.select()
-          ..where((i) => i.isDeleted.equals(1)))
-        .get();
-    return items.map((item) => Password.fromEntity(item)).toList();
+  Future<List<PasswordBasic>> listDeleted() async {
+    final items = await db.deletedPasswords().get();
+    return items.map((item) {
+      return PasswordBasic(
+        id: item.id,
+        type: item.type,
+        categoryId: item.categoryId,
+        title: item.title,
+        expireTime:
+            item.expireTime == null ? null : DateTime.parse(item.expireTime!),
+        createTime: DateTime.parse(item.createTime),
+        lastUpdateTime: DateTime.parse(item.lastUpdateTime),
+      );
+    }).toList();
   }
 
   Future<Password> findById(String id) async {

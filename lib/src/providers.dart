@@ -8,7 +8,6 @@ import 'domain/user.dart';
 import 'service/app_service.dart';
 import 'service/category_repository.dart';
 import 'service/kdbx_service.dart';
-import 'service/password_service.dart';
 
 part 'providers.g.dart';
 
@@ -20,11 +19,6 @@ KdbxService kdbxService(Ref ref) {
 @riverpod
 AppService appService(Ref ref) {
   return AppService(ref, ref.read(kdbxServiceProvider));
-}
-
-@riverpod
-PasswordService passwordService(Ref ref) {
-  return PasswordService();
 }
 
 @riverpod

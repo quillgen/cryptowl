@@ -10,7 +10,7 @@ import '../../domain/password.dart';
 part 'passwords.g.dart';
 
 @riverpod
-Future<List<Password>> passwords(Ref ref) async {
+Future<List<PasswordBasic>> passwords(Ref ref) async {
   final selectedCategory = ref.watch(selectedCategoryProvider);
   final repository = ref.read(passwordRepositoryProvider);
   logger.fine("Fetching passwords with category=$selectedCategory");

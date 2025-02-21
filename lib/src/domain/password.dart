@@ -3,6 +3,26 @@ import 'package:kdbx/kdbx.dart';
 
 import '../database/database.dart';
 
+class PasswordBasic {
+  String id;
+  int type;
+  int categoryId;
+  String title;
+  DateTime? expireTime;
+  DateTime createTime;
+  DateTime lastUpdateTime;
+
+  PasswordBasic({
+    required this.id,
+    required this.type,
+    required this.categoryId,
+    required this.title,
+    this.expireTime,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
 class Password {
   String? id;
   int type;

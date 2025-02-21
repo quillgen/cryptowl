@@ -38,23 +38,6 @@ final appServiceProvider = AutoDisposeProvider<AppService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AppServiceRef = AutoDisposeProviderRef<AppService>;
-String _$passwordServiceHash() => r'7a3e6dcaee382902427668f334dd8de984836921';
-
-/// See also [passwordService].
-@ProviderFor(passwordService)
-final passwordServiceProvider = AutoDisposeProvider<PasswordService>.internal(
-  passwordService,
-  name: r'passwordServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$passwordServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef PasswordServiceRef = AutoDisposeProviderRef<PasswordService>;
 String _$passwordRepositoryHash() =>
     r'06e68b09b6f4bf17088b4e698c7d2190ba1c0609';
 
