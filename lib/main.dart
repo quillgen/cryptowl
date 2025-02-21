@@ -13,6 +13,7 @@ final logger = Logger('Cryptowl');
 void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
   WidgetsFlutterBinding.ensureInitialized();

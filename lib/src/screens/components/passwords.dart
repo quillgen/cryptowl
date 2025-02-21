@@ -24,7 +24,10 @@ Future<List<PasswordBasic>> passwords(Ref ref) async {
     case CATEGORY_LOGIN:
     case CATEGORY_CARD:
     case CATEGORY_SSH_KEY:
-      return repository.listByType(selectedCategory);
+      {
+        final type = -(10 + selectedCategory);
+        return repository.listByType(type);
+      }
     default:
       return repository.listByCategory(selectedCategory);
   }
