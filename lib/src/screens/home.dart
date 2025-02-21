@@ -6,6 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 import 'components/app_drawer.dart';
 import 'components/password_categories.dart';
+import 'components/password_detail.dart';
 import 'components/passwords.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,10 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: PasswordList(),
             ),
           ),
-          Container(
-            constraints: const BoxConstraints(maxWidth: 100),
+          Expanded(
             child: Center(
-              child: Text("Details"),
+              child: SizedBox(
+                width: 200,
+                child: PasswordDetail(),
+              ),
             ),
           ),
         ],
