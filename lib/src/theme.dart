@@ -20,8 +20,7 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The defined light theme.
   static ThemeData light = FlexThemeData.light(
-    fontFamily: "AgileSans",
-    scheme: FlexScheme.hippieBlue,
+    scheme: FlexScheme.deepBlue,
     subThemesData: const FlexSubThemesData(
       alignedDropdown: true,
       tooltipRadius: 4,
@@ -29,6 +28,7 @@ abstract final class AppTheme {
       tooltipOpacity: 0.9,
       snackBarElevation: 6,
       snackBarBackgroundSchemeColor: SchemeColor.inverseSurface,
+      appBarBackgroundSchemeColor: SchemeColor.primary,
       navigationRailUseIndicator: true,
       navigationRailLabelType: NavigationRailLabelType.all,
     ),
@@ -38,8 +38,7 @@ abstract final class AppTheme {
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
-    fontFamily: "AgileSans",
-    scheme: FlexScheme.hippieBlue,
+    scheme: FlexScheme.deepBlue,
     subThemesData: const FlexSubThemesData(
       blendOnColors: true,
       alignedDropdown: true,

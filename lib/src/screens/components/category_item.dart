@@ -22,7 +22,7 @@ class CategoryItem extends ConsumerWidget {
       visualDensity: VisualDensity(horizontal: 0, vertical: -4),
       leading: Icon(icon),
       title: Text(name),
-      tileColor: isActive ? const Color.fromARGB(255, 238, 244, 255) : null,
+      tileColor: isActive ? Theme.of(context).highlightColor : null,
       onTap: () {
         selectedCategoryNotifier.setSelectedCategory(category);
       },
