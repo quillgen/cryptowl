@@ -1,13 +1,12 @@
 import 'package:cryptowl/main.dart';
-import 'package:flutter/foundation.dart';
+import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'config/meta.dart';
 import 'database/database.dart';
 import 'domain/user.dart';
 import 'service/app_service.dart';
+import 'service/category_repository.dart';
 import 'service/kdbx_service.dart';
 import 'service/password_service.dart';
 
@@ -28,6 +27,18 @@ PasswordService passwordService(Ref ref) {
   return PasswordService();
 }
 
+@riverpod
+PasswordRepository passwordRepository(Ref ref) {
+  final db = ref.watch(userDatabaseProvider);
+  return PasswordRepository(db);
+}
+
+@riverpod
+CategoryRepository categoryRepository(Ref ref) {
+  final db = ref.watch(userDatabaseProvider);
+  return CategoryRepository(db);
+}
+
 @Riverpod(keepAlive: true)
 class CurrentUser extends _$CurrentUser {
   @override
@@ -35,19 +46,23 @@ class CurrentUser extends _$CurrentUser {
     return null;
   }
 
-  void setUser(User user) => state = user;
+  void setUser(User? user) => state = user;
 }
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: false)
 AppDb userDatabase(Ref ref) {
   logger.fine("opening user db...");
   final currentUser = ref.watch(currentUserProvider);
   if (currentUser == null) {
+    logger.severe("Current user not logged in!");
     throw Exception("User not login");
   }
   final meta = currentUser.meta;
   final db = AppDb.open("${meta.dbInstance}.enc", meta.dbEncryptionKey);
-  ref.onDispose(() => db.close());
+  ref.onDispose(() {
+    logger.fine("Disposing db...");
+    db.close();
+  });
   return db;
 }
 

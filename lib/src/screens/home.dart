@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cryptowl/main.dart';
 import 'package:flutter/material.dart';
 
+import 'components/app_drawer.dart';
+import 'components/password_categories.dart';
 import 'passwords.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -148,8 +150,42 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(8),
-        child: PasswordListScreen(),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 240,
+              child: PasswordCategories(),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(
+                    color: const Color.fromARGB(255, 222, 222, 222),
+                    width: 1,
+                  ),
+                  right: BorderSide(
+                    color: const Color.fromARGB(255, 222, 222, 222),
+                    width: 1,
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: SizedBox(
+                width: 350,
+                child: PasswordListScreen(),
+              ),
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 100),
+              child: Center(
+                child: Text("Details"),
+              ),
+            ),
+          ],
+        ),
       ),
+      drawer: AppDrawer(),
     );
   }
 }

@@ -28,11 +28,14 @@ class PasswordListScreen extends ConsumerWidget {
           itemCount: items.length,
           itemBuilder: (_, index) {
             return ListTile(
+              dense: true,
+              contentPadding: EdgeInsets.only(right: 10),
               leading: const Icon(Icons.admin_panel_settings),
               title: Text(items[index].title),
-              trailing: Text("5"),
               shape: Border(
-                bottom: BorderSide(),
+                bottom: BorderSide(
+                  color: const Color.fromARGB(255, 233, 231, 231),
+                ),
               ),
             );
           }),

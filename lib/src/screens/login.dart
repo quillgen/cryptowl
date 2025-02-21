@@ -1,3 +1,4 @@
+import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,15 @@ class LoginState extends _$LoginState {
       final user = await ref.read(appServiceProvider).login(password);
       ref.read(currentUserProvider.notifier).setUser(user);
       return true;
+    });
+  }
+
+  Future<void> logout() async {
+    logger.fine("Logging out...");
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      ref.read(currentUserProvider.notifier).setUser(null);
+      return false;
     });
   }
 }
