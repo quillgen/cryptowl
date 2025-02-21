@@ -36,16 +36,6 @@ class AppDb extends _$AppDb {
             createTime: now,
             lastUpdateTime: now,
           ));
-          await into(passwords).insert(PasswordEntity(
-            id: 'test',
-            type: 1,
-            categoryId: 1,
-            title: "test",
-            value: "test",
-            createTime: now,
-            lastUpdateTime: now,
-            isDeleted: 0,
-          ));
         }
       },
       onCreate: (Migrator m) async {

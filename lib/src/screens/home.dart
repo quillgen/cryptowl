@@ -2,36 +2,20 @@ import 'dart:io';
 
 import 'package:cryptowl/main.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 import 'components/app_drawer.dart';
 import 'components/password_categories.dart';
-import 'passwords.dart';
+import 'components/passwords.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final isDesktop =
-        Platform.isMacOS || Platform.isLinux || Platform.isWindows;
-    logger.fine("is the device desktop? $isDesktop ${Platform.isMacOS}");
-
-    if (isDesktop) {
-      return DesktopHomeScreen();
-    } else {
-      return MobileHomeScreen();
-    }
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class MobileHomeScreen extends StatefulWidget {
-  const MobileHomeScreen({super.key});
-
-  @override
-  State<MobileHomeScreen> createState() => _MobileHomeScreenState();
-}
-
-class _MobileHomeScreenState extends State<MobileHomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentPageIndex = 0;
 
@@ -68,11 +52,62 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
     );
   }
 
+  Widget _renderColumnLayout() {
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 240,
+            child: PasswordCategories(),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color: const Color.fromARGB(255, 222, 222, 222),
+                  width: 1,
+                ),
+                right: BorderSide(
+                  color: const Color.fromARGB(255, 222, 222, 222),
+                  width: 1,
+                ),
+              ),
+            ),
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: SizedBox(
+              width: 350,
+              child: PasswordList(),
+            ),
+          ),
+          Container(
+            constraints: const BoxConstraints(maxWidth: 100),
+            child: Center(
+              child: Text("Details"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderTabContent() {
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: <Widget>[
+        PasswordList(),
+        Text("2"),
+        Text("3"),
+        Text("4")
+      ][currentPageIndex],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDesktop =
-        Platform.isMacOS || Platform.isLinux || Platform.isWindows;
-    logger.fine("is the device desktop? $isDesktop ${Platform.isMacOS}");
+    final isLargeScreen = ResponsiveBreakpoints.of(context).largerThan(MOBILE);
+    logger.fine("is the device desktop? $isLargeScreen");
 
     return Scaffold(
       appBar: AppBar(
@@ -96,16 +131,9 @@ class _MobileHomeScreenState extends State<MobileHomeScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: <Widget>[
-          PasswordListScreen(),
-          Text("2"),
-          Text("3"),
-          Text("4")
-        ][currentPageIndex],
-      ),
-      bottomNavigationBar: _renderNavigationBar(),
+      body: isLargeScreen ? _renderColumnLayout() : _renderTabContent(),
+      bottomNavigationBar: isLargeScreen ? null : _renderNavigationBar(),
+      drawer: AppDrawer(),
     );
   }
 }
@@ -173,7 +201,7 @@ class _DesktopHomeScreenState extends State<DesktopHomeScreen> {
               padding: EdgeInsets.only(left: 10, right: 10),
               child: SizedBox(
                 width: 350,
-                child: PasswordListScreen(),
+                child: PasswordList(),
               ),
             ),
             Container(

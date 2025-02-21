@@ -1,20 +1,29 @@
+import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/providers.dart';
+import 'package:cryptowl/src/screens/components/password_categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../domain/password.dart';
+import '../../domain/password.dart';
 
 part 'passwords.g.dart';
 
 @riverpod
 Future<List<Password>> passwords(Ref ref) async {
-  final db = ref.watch(userDatabaseProvider);
-  return ref.read(passwordServiceProvider).fetchAll(db);
+  final selectedCategory = ref.watch(selectedCategoryProvider);
+  final repository = ref.read(passwordRepositoryProvider);
+  logger.fine("Fetching passwords with category=$selectedCategory");
+  switch (selectedCategory) {
+    case CATEGORY_ALL_ITEMS:
+      return repository.list();
+    default:
+      return repository.listByCategory(selectedCategory);
+  }
 }
 
-class PasswordListScreen extends ConsumerWidget {
-  const PasswordListScreen({super.key});
+class PasswordList extends ConsumerWidget {
+  const PasswordList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

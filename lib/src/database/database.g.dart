@@ -359,6 +359,14 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
+  static const VerificationMeta _isFavoriteMeta =
+      const VerificationMeta('isFavorite');
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
+      'is_favorite', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
   static const VerificationMeta _categoryIdMeta =
       const VerificationMeta('categoryId');
   late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
@@ -397,6 +405,7 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
         value,
         expireTime,
         remark,
+        isFavorite,
         categoryId,
         createTime,
         lastUpdateTime,
@@ -442,6 +451,12 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
     if (data.containsKey('remark')) {
       context.handle(_remarkMeta,
           remark.isAcceptableOrUnknown(data['remark']!, _remarkMeta));
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+          _isFavoriteMeta,
+          isFavorite.isAcceptableOrUnknown(
+              data['is_favorite']!, _isFavoriteMeta));
     }
     if (data.containsKey('category_id')) {
       context.handle(
@@ -490,6 +505,8 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
           .read(DriftSqlType.string, data['${effectivePrefix}expire_time']),
       remark: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}remark']),
+      isFavorite: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}is_favorite'])!,
       categoryId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
       createTime: attachedDatabase.typeMapping
@@ -520,6 +537,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   final String value;
   final String? expireTime;
   final String? remark;
+  final int isFavorite;
   final int categoryId;
   final String createTime;
   final String lastUpdateTime;
@@ -531,6 +549,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       required this.value,
       this.expireTime,
       this.remark,
+      required this.isFavorite,
       required this.categoryId,
       required this.createTime,
       required this.lastUpdateTime,
@@ -548,6 +567,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     if (!nullToAbsent || remark != null) {
       map['remark'] = Variable<String>(remark);
     }
+    map['is_favorite'] = Variable<int>(isFavorite);
     map['category_id'] = Variable<int>(categoryId);
     map['create_time'] = Variable<String>(createTime);
     map['last_update_time'] = Variable<String>(lastUpdateTime);
@@ -566,6 +586,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           : Value(expireTime),
       remark:
           remark == null && nullToAbsent ? const Value.absent() : Value(remark),
+      isFavorite: Value(isFavorite),
       categoryId: Value(categoryId),
       createTime: Value(createTime),
       lastUpdateTime: Value(lastUpdateTime),
@@ -583,6 +604,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       value: serializer.fromJson<String>(json['value']),
       expireTime: serializer.fromJson<String?>(json['expire_time']),
       remark: serializer.fromJson<String?>(json['remark']),
+      isFavorite: serializer.fromJson<int>(json['is_favorite']),
       categoryId: serializer.fromJson<int>(json['category_id']),
       createTime: serializer.fromJson<String>(json['create_time']),
       lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
@@ -599,6 +621,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       'value': serializer.toJson<String>(value),
       'expire_time': serializer.toJson<String?>(expireTime),
       'remark': serializer.toJson<String?>(remark),
+      'is_favorite': serializer.toJson<int>(isFavorite),
       'category_id': serializer.toJson<int>(categoryId),
       'create_time': serializer.toJson<String>(createTime),
       'last_update_time': serializer.toJson<String>(lastUpdateTime),
@@ -613,6 +636,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           String? value,
           Value<String?> expireTime = const Value.absent(),
           Value<String?> remark = const Value.absent(),
+          int? isFavorite,
           int? categoryId,
           String? createTime,
           String? lastUpdateTime,
@@ -624,6 +648,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
         value: value ?? this.value,
         expireTime: expireTime.present ? expireTime.value : this.expireTime,
         remark: remark.present ? remark.value : this.remark,
+        isFavorite: isFavorite ?? this.isFavorite,
         categoryId: categoryId ?? this.categoryId,
         createTime: createTime ?? this.createTime,
         lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
@@ -638,6 +663,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       expireTime:
           data.expireTime.present ? data.expireTime.value : this.expireTime,
       remark: data.remark.present ? data.remark.value : this.remark,
+      isFavorite:
+          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
       createTime:
@@ -658,6 +685,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
           ..write('remark: $remark, ')
+          ..write('isFavorite: $isFavorite, ')
           ..write('categoryId: $categoryId, ')
           ..write('createTime: $createTime, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
@@ -668,7 +696,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
 
   @override
   int get hashCode => Object.hash(id, type, title, value, expireTime, remark,
-      categoryId, createTime, lastUpdateTime, isDeleted);
+      isFavorite, categoryId, createTime, lastUpdateTime, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -679,6 +707,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           other.value == this.value &&
           other.expireTime == this.expireTime &&
           other.remark == this.remark &&
+          other.isFavorite == this.isFavorite &&
           other.categoryId == this.categoryId &&
           other.createTime == this.createTime &&
           other.lastUpdateTime == this.lastUpdateTime &&
@@ -692,6 +721,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   final Value<String> value;
   final Value<String?> expireTime;
   final Value<String?> remark;
+  final Value<int> isFavorite;
   final Value<int> categoryId;
   final Value<String> createTime;
   final Value<String> lastUpdateTime;
@@ -704,6 +734,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     this.value = const Value.absent(),
     this.expireTime = const Value.absent(),
     this.remark = const Value.absent(),
+    this.isFavorite = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.createTime = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
@@ -717,6 +748,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     required String value,
     this.expireTime = const Value.absent(),
     this.remark = const Value.absent(),
+    this.isFavorite = const Value.absent(),
     this.categoryId = const Value.absent(),
     required String createTime,
     required String lastUpdateTime,
@@ -734,6 +766,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     Expression<String>? value,
     Expression<String>? expireTime,
     Expression<String>? remark,
+    Expression<int>? isFavorite,
     Expression<int>? categoryId,
     Expression<String>? createTime,
     Expression<String>? lastUpdateTime,
@@ -747,6 +780,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       if (value != null) 'value': value,
       if (expireTime != null) 'expire_time': expireTime,
       if (remark != null) 'remark': remark,
+      if (isFavorite != null) 'is_favorite': isFavorite,
       if (categoryId != null) 'category_id': categoryId,
       if (createTime != null) 'create_time': createTime,
       if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
@@ -762,6 +796,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       Value<String>? value,
       Value<String?>? expireTime,
       Value<String?>? remark,
+      Value<int>? isFavorite,
       Value<int>? categoryId,
       Value<String>? createTime,
       Value<String>? lastUpdateTime,
@@ -774,6 +809,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       value: value ?? this.value,
       expireTime: expireTime ?? this.expireTime,
       remark: remark ?? this.remark,
+      isFavorite: isFavorite ?? this.isFavorite,
       categoryId: categoryId ?? this.categoryId,
       createTime: createTime ?? this.createTime,
       lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
@@ -803,6 +839,9 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     if (remark.present) {
       map['remark'] = Variable<String>(remark.value);
     }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<int>(isFavorite.value);
+    }
     if (categoryId.present) {
       map['category_id'] = Variable<int>(categoryId.value);
     }
@@ -830,6 +869,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
           ..write('remark: $remark, ')
+          ..write('isFavorite: $isFavorite, ')
           ..write('categoryId: $categoryId, ')
           ..write('createTime: $createTime, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
@@ -1405,6 +1445,7 @@ typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
   required String value,
   Value<String?> expireTime,
   Value<String?> remark,
+  Value<int> isFavorite,
   Value<int> categoryId,
   required String createTime,
   required String lastUpdateTime,
@@ -1418,6 +1459,7 @@ typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
   Value<String> value,
   Value<String?> expireTime,
   Value<String?> remark,
+  Value<int> isFavorite,
   Value<int> categoryId,
   Value<String> createTime,
   Value<String> lastUpdateTime,
@@ -1450,6 +1492,9 @@ class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
 
   ColumnFilters<String> get remark => $composableBuilder(
       column: $table.remark, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get categoryId => $composableBuilder(
       column: $table.categoryId, builder: (column) => ColumnFilters(column));
@@ -1491,6 +1536,9 @@ class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
   ColumnOrderings<String> get remark => $composableBuilder(
       column: $table.remark, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get categoryId => $composableBuilder(
       column: $table.categoryId, builder: (column) => ColumnOrderings(column));
 
@@ -1530,6 +1578,9 @@ class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
 
   GeneratedColumn<String> get remark =>
       $composableBuilder(column: $table.remark, builder: (column) => column);
+
+  GeneratedColumn<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => column);
 
   GeneratedColumn<int> get categoryId => $composableBuilder(
       column: $table.categoryId, builder: (column) => column);
@@ -1573,6 +1624,7 @@ class $PasswordsTableManager extends RootTableManager<
             Value<String> value = const Value.absent(),
             Value<String?> expireTime = const Value.absent(),
             Value<String?> remark = const Value.absent(),
+            Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
             Value<String> createTime = const Value.absent(),
             Value<String> lastUpdateTime = const Value.absent(),
@@ -1586,6 +1638,7 @@ class $PasswordsTableManager extends RootTableManager<
             value: value,
             expireTime: expireTime,
             remark: remark,
+            isFavorite: isFavorite,
             categoryId: categoryId,
             createTime: createTime,
             lastUpdateTime: lastUpdateTime,
@@ -1599,6 +1652,7 @@ class $PasswordsTableManager extends RootTableManager<
             required String value,
             Value<String?> expireTime = const Value.absent(),
             Value<String?> remark = const Value.absent(),
+            Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
             required String createTime,
             required String lastUpdateTime,
@@ -1612,6 +1666,7 @@ class $PasswordsTableManager extends RootTableManager<
             value: value,
             expireTime: expireTime,
             remark: remark,
+            isFavorite: isFavorite,
             categoryId: categoryId,
             createTime: createTime,
             lastUpdateTime: lastUpdateTime,

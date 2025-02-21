@@ -13,6 +13,13 @@ class PasswordRepository {
     return items.map((item) => Password.fromEntity(item)).toList();
   }
 
+  Future<List<Password>> listByCategory(int category) async {
+    final items = await (db.passwords.select()
+          ..where((i) => i.categoryId.equals(category)))
+        .get();
+    return items.map((item) => Password.fromEntity(item)).toList();
+  }
+
   Future<Password> findById(String id) async {
     final item = await (db.passwords.select()
           ..where((tbl) => tbl.id.equals(id)))

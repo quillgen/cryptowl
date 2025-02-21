@@ -9,25 +9,36 @@ class CategoryGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: Row(
-        children: [
-          Icon(
-            MyIcons.chevron_right,
-            size: 12,
+    return Row(
+      children: [
+        InkWell(
+          child: Icon(
+            Icons.keyboard_arrow_right,
+            color: Colors.grey,
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Text(
-              name,
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+          onTap: () {},
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 10),
+          child: Text(
+            name,
+            style: TextStyle(
+              color: Colors.grey,
             ),
           ),
-        ],
-      ),
-      onTap: () {},
+        ),
+        Expanded(child: Container()),
+        Padding(
+          padding: EdgeInsets.only(right: 30),
+          child: InkWell(
+            onTap: () {},
+            child: Icon(
+              Icons.add,
+              color: Colors.grey,
+            ),
+          ),
+        )
+      ],
     );
   }
 }

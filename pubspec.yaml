@@ -59,6 +59,10 @@ flutter:
   assets:
     - assets/images/
   fonts:
-   - family:  MyIcons
-     fonts:
-      - asset: assets/fonts/MyIcons.ttf
+    - family:  MyIcons
+      fonts:
+        - asset: assets/fonts/MyIcons.ttf
+    - family: AgileSans
+      fonts:
+        - asset: assets/fonts/AgileSans-Regular.otf
+   
