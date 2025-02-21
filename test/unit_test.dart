@@ -33,15 +33,18 @@ void main() {
     test('should generate insert password sql', () {
       var faker = Faker();
       var sql =
-          'insert into passwords(id, title, value, category_id, create_time, last_update_time) \nvalues \n';
-      final count = 20;
+          'insert into passwords(id, title, value, category_id, is_favorite, is_deleted, create_time, last_update_time) \nvalues \n';
+      final count = 50;
       for (var i = 0; i < count; i++) {
         final id = UuidUtil.generateUUID();
-        final title = faker.company.name();
-        final value = faker.lorem.sentence();
+        final title = faker.company.name().replaceAll('\'', '');
+        final value = faker.lorem.sentence().replaceAll('\'', '');
         final time = DateTime.now().toIso8601String();
-        final category = Random().nextInt(10) + 1;
-        sql += "('$id', '$title', '$value', $category, '$time', '$time')";
+        final category = Random().nextInt(5) + 1;
+        final favorite = Random().nextInt(2);
+        final deleted = Random().nextInt(2);
+        sql +=
+            "('$id', '$title', '$value', $category, $favorite, $deleted, '$time', '$time')";
         if (i != count - 1) {
           sql += ",\n";
         } else {

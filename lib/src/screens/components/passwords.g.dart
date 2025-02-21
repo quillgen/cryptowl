@@ -6,7 +6,7 @@ part of 'passwords.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$passwordsHash() => r'5301cc8a4783c1d44cba5783a68769c1a1eae1a7';
+String _$passwordsHash() => r'3a058ac7633646896a4bf1817de1cb9ce0387b66';
 
 /// See also [passwords].
 @ProviderFor(passwords)

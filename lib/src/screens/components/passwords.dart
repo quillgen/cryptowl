@@ -17,6 +17,14 @@ Future<List<Password>> passwords(Ref ref) async {
   switch (selectedCategory) {
     case CATEGORY_ALL_ITEMS:
       return repository.list();
+    case CATEGORY_FAVORITE:
+      return repository.listFavorite();
+    case CATEGORY_DELETED:
+      return repository.listDeleted();
+    case CATEGORY_LOGIN:
+    case CATEGORY_CARD:
+    case CATEGORY_SSH_KEY:
+      return repository.listByType(selectedCategory);
     default:
       return repository.listByCategory(selectedCategory);
   }

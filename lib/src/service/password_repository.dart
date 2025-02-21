@@ -20,6 +20,26 @@ class PasswordRepository {
     return items.map((item) => Password.fromEntity(item)).toList();
   }
 
+  Future<List<Password>> listByType(int type) async {
+    final items =
+        await (db.passwords.select()..where((i) => i.type.equals(type))).get();
+    return items.map((item) => Password.fromEntity(item)).toList();
+  }
+
+  Future<List<Password>> listFavorite() async {
+    final items = await (db.passwords.select()
+          ..where((i) => i.isFavorite.equals(1)))
+        .get();
+    return items.map((item) => Password.fromEntity(item)).toList();
+  }
+
+  Future<List<Password>> listDeleted() async {
+    final items = await (db.passwords.select()
+          ..where((i) => i.isDeleted.equals(1)))
+        .get();
+    return items.map((item) => Password.fromEntity(item)).toList();
+  }
+
   Future<Password> findById(String id) async {
     final item = await (db.passwords.select()
           ..where((tbl) => tbl.id.equals(id)))
