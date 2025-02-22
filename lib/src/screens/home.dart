@@ -87,7 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 constraints: BoxConstraints(
                   maxWidth: 550,
                 ),
-                child: PasswordDetail(),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: PasswordDetail(),
+                ),
               ),
             ),
           ),
@@ -118,6 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("My passwords"),
         titleSpacing: 8,
         actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Create password',
+            onPressed: () {},
+          ),
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
             tooltip: 'Current user information',

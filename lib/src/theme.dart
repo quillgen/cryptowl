@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The defined light theme.
   static ThemeData light = FlexThemeData.light(
+    fontFamily: "AgileSans",
     scheme: FlexScheme.deepBlue,
     subThemesData: const FlexSubThemesData(
       alignedDropdown: true,
@@ -38,6 +39,7 @@ abstract final class AppTheme {
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
+    fontFamily: "AgileSans",
     scheme: FlexScheme.deepBlue,
     subThemesData: const FlexSubThemesData(
       blendOnColors: true,
