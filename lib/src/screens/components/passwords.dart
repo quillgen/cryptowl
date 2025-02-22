@@ -46,6 +46,16 @@ class SelectedPassword extends _$SelectedPassword {
   }
 }
 
+@riverpod
+Future<Password?> selectedPasswordDetail(Ref ref) async {
+  final p = ref.watch(selectedPasswordProvider);
+  if (p == null) {
+    return null;
+  }
+  logger.fine("Fetching password detail for ${p.id}");
+  return ref.read(passwordRepositoryProvider).findById(p.id);
+}
+
 class PasswordList extends ConsumerWidget {
   const PasswordList({super.key});
 

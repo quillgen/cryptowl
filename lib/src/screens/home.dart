@@ -83,8 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Center(
-              child: SizedBox(
-                width: 200,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 550,
+                ),
                 child: PasswordDetail(),
               ),
             ),

@@ -23,6 +23,25 @@ final passwordsProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PasswordsRef = AutoDisposeFutureProviderRef<List<PasswordBasic>>;
+String _$selectedPasswordDetailHash() =>
+    r'4b7d640cb933b33fcda10b3bd9fbf58f06e12fc4';
+
+/// See also [selectedPasswordDetail].
+@ProviderFor(selectedPasswordDetail)
+final selectedPasswordDetailProvider =
+    AutoDisposeFutureProvider<Password?>.internal(
+  selectedPasswordDetail,
+  name: r'selectedPasswordDetailProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$selectedPasswordDetailHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SelectedPasswordDetailRef = AutoDisposeFutureProviderRef<Password?>;
 String _$selectedPasswordHash() => r'b32a89f2a741b7a69ff7f1316d91de8fa01e828b';
 
 /// See also [SelectedPassword].
