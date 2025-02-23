@@ -1,6 +1,7 @@
 import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/providers.dart';
 import 'package:cryptowl/src/screens/pages/category_page.dart';
+import 'package:cryptowl/src/screens/pages/detail_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -33,28 +34,6 @@ Future<List<PasswordBasic>> passwords(Ref ref) async {
   }
 }
 
-@riverpod
-class SelectedPassword extends _$SelectedPassword {
-  @override
-  PasswordBasic? build() {
-    return null;
-  }
-
-  void setSelectedPassword(PasswordBasic? selected) {
-    state = selected;
-  }
-}
-
-@riverpod
-Future<Password?> selectedPasswordDetail(Ref ref) async {
-  final p = ref.watch(selectedPasswordProvider);
-  if (p == null) {
-    return null;
-  }
-  logger.fine("Fetching password detail for ${p.id}");
-  return ref.read(passwordRepositoryProvider).findById(p.id);
-}
-
 class PasswordList extends ConsumerWidget {
   const PasswordList({super.key});
 
@@ -62,7 +41,7 @@ class PasswordList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final passwords = ref.watch(passwordsProvider);
     final selected = ref.watch(selectedPasswordProvider);
-    final selectedNotifier = ref.read(selectedPasswordProvider.notifier);
+    final detailPanelNotifier = ref.read(detailPanelStateProvider.notifier);
     return passwords.when(
       loading: () => const Center(
         child: CircularProgressIndicator(),
@@ -79,7 +58,7 @@ class PasswordList extends ConsumerWidget {
               leading: const Icon(Icons.admin_panel_settings),
               title: Text(item.title),
               onTap: () {
-                selectedNotifier.setSelectedPassword(item);
+                detailPanelNotifier.setViewMode(item);
               },
               tileColor: isSelected ? Theme.of(context).highlightColor : null,
               shape: Border(

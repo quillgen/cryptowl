@@ -1,10 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:kdbx/kdbx.dart';
+import 'package:uuid/uuid.dart';
+
 import '../database/database.dart';
 import '../domain/password.dart';
 
 class PasswordRepository {
   final AppDb db;
+  final uuid = Uuid();
 
   PasswordRepository(this.db);
 
@@ -97,7 +100,6 @@ class PasswordRepository {
   }
 
   Future<Password> insert(Password item) async {
-    assert(item.id == null);
     await db.into(db.passwords).insert(item.toCompanion());
     return item;
   }
@@ -106,6 +108,7 @@ class PasswordRepository {
       {String? url, String? username, String? remark}) async {
     final now = DateTime.now();
     final item = Password(
+      id: uuid.v4(),
       type: 1,
       categoryId: 1,
       title: title,

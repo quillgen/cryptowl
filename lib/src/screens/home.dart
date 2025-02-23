@@ -1,20 +1,21 @@
 import 'package:cryptowl/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'components/app_drawer.dart';
 import 'pages/category_page.dart';
-import 'pages/detail_page.dart';
+import 'pages/detail_panel.dart';
 import 'pages/passwords.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentPageIndex = 0;
 
@@ -64,35 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _renderActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        IconButton(
-          tooltip: "Back",
-          onPressed: () {},
-          icon: Icon(Icons.arrow_back_ios_new),
-        ),
-        Expanded(child: Container()),
-        IconButton(
-          tooltip: "Edit",
-          onPressed: () {},
-          icon: Icon(Icons.edit),
-        ),
-        IconButton(
-          tooltip: "Move to trash",
-          onPressed: () {},
-          icon: Icon(Icons.delete),
-        ),
-        IconButton(
-          tooltip: "Send",
-          onPressed: () {},
-          icon: Icon(Icons.forward),
-        ),
-      ],
-    );
-  }
-
   Widget _renderColumnLayout() {
     return Padding(
       padding: EdgeInsets.all(8),
@@ -123,20 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Center(
-              child: Column(
-                children: [
-                  _renderActions(),
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 550,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: DetailPage(),
-                    ),
-                  ),
-                ],
-              ),
+              child: DetailPanel(),
             ),
           ),
         ],
@@ -160,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final isLargeScreen = ResponsiveBreakpoints.of(context).largerThan(MOBILE);
     logger.fine("is the device desktop? $isLargeScreen");
+    final detailPanelNotifier = ref.read(detailPanelStateProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -169,7 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Create password',
-            onPressed: () {},
+            onPressed: () {
+              detailPanelNotifier.setCreateMode();
+            },
           ),
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),

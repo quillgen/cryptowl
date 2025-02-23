@@ -24,7 +24,7 @@ class PasswordBasic {
 }
 
 class Password {
-  String? id;
+  String id;
   int type;
   int categoryId;
   String title;
@@ -35,7 +35,7 @@ class Password {
   DateTime lastUpdateTime;
 
   Password(
-      {this.id,
+      {required this.id,
       required this.type,
       required this.title,
       this.expireTime,
