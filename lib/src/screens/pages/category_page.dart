@@ -4,10 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../domain/category.dart';
 import '../../providers.dart';
-import 'category_group.dart';
-import 'category_item.dart';
+import '../components/category_group.dart';
+import '../components/category_item.dart';
 
-part 'password_categories.g.dart';
+part 'category_page.g.dart';
 
 const CATEGORY_ALL_ITEMS = 0;
 const CATEGORY_FAVORITE = -1;
@@ -33,8 +33,8 @@ class SelectedCategory extends _$SelectedCategory {
   }
 }
 
-class PasswordCategories extends ConsumerWidget {
-  const PasswordCategories({super.key});
+class CategoryPage extends ConsumerWidget {
+  const CategoryPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

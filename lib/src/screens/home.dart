@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:cryptowl/main.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'components/app_drawer.dart';
-import 'components/password_categories.dart';
-import 'components/password_detail.dart';
-import 'components/passwords.dart';
+import 'pages/category_page.dart';
+import 'pages/detail_page.dart';
+import 'pages/passwords.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           SizedBox(
             width: 240,
-            child: PasswordCategories(),
+            child: CategoryPage(),
           ),
           Container(
             decoration: BoxDecoration(
@@ -89,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(left: 8),
-                  child: PasswordDetail(),
+                  child: DetailPage(),
                 ),
               ),
             ),

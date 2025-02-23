@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../my_icons_icons.dart';
-
 class CategoryGroup extends StatelessWidget {
   final String name;
 

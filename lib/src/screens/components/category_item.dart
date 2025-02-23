@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'password_categories.dart';
+import '../pages/category_page.dart';
 
 class CategoryItem extends ConsumerWidget {
   final String name;

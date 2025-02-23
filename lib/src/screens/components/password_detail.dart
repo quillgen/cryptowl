@@ -1,15 +1,12 @@
-import 'package:cryptowl/main.dart';
-import 'package:cryptowl/src/screens/components/passwords.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/password.dart';
 
-class PasswordDetailPage extends StatelessWidget {
+class PasswordDetail extends StatelessWidget {
   final Password password;
 
-  PasswordDetailPage({super.key, required this.password});
+  PasswordDetail({super.key, required this.password});
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
   Widget _renderActions() {
@@ -98,27 +95,6 @@ class PasswordDetailPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(8),
       child: _renderDetail(),
-    );
-  }
-}
-
-class PasswordDetail extends ConsumerWidget {
-  const PasswordDetail({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedState = ref.watch(selectedPasswordDetailProvider);
-
-    return selectedState.when(
-      data: (password) => password == null
-          ? Container()
-          : PasswordDetailPage(
-              password: password,
-            ),
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (e, _) => ErrorWidget(e),
     );
   }
 }

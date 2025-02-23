@@ -1,7 +1,6 @@
 import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/providers.dart';
-import 'package:cryptowl/src/screens/components/password_categories.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:cryptowl/src/screens/pages/category_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

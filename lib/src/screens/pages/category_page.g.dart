@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'password_categories.dart';
+part of 'category_page.dart';
 
 // **************************************************************************
 // RiverpodGenerator
