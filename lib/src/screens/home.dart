@@ -18,6 +18,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentPageIndex = 0;
 
+  Future<void> _securityInfoDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Valut information'),
+            content: const Text(
+              'Your valut is encrypted ...',
+            ),
+          );
+        });
+  }
+
   NavigationBar _renderNavigationBar() {
     return NavigationBar(
       onDestinationSelected: (int index) {
@@ -46,6 +59,35 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedIcon: Icon(Icons.settings),
           icon: Icon(Icons.settings_outlined),
           label: 'Settings',
+        ),
+      ],
+    );
+  }
+
+  Widget _renderActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        IconButton(
+          tooltip: "Back",
+          onPressed: () {},
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+        Expanded(child: Container()),
+        IconButton(
+          tooltip: "Edit",
+          onPressed: () {},
+          icon: Icon(Icons.edit),
+        ),
+        IconButton(
+          tooltip: "Move to trash",
+          onPressed: () {},
+          icon: Icon(Icons.delete),
+        ),
+        IconButton(
+          tooltip: "Send",
+          onPressed: () {},
+          icon: Icon(Icons.forward),
         ),
       ],
     );
@@ -81,14 +123,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Center(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: 550,
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: DetailPage(),
-                ),
+              child: Column(
+                children: [
+                  _renderActions(),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 550,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: DetailPage(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -127,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
             tooltip: 'Current user information',
-            onPressed: () {},
+            onPressed: () => _securityInfoDialog(context),
           ),
           IconButton(
             icon: const Icon(Icons.search),

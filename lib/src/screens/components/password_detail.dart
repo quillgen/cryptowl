@@ -9,42 +9,10 @@ class PasswordDetail extends StatelessWidget {
   PasswordDetail({super.key, required this.password});
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
-  Widget _renderActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        IconButton(
-          tooltip: "Edit",
-          onPressed: () {},
-          icon: Icon(Icons.edit),
-        ),
-        IconButton(
-          tooltip: "Move to trash",
-          onPressed: () {},
-          icon: Icon(Icons.delete),
-        ),
-        IconButton(
-          tooltip: "Send",
-          onPressed: () {},
-          icon: Icon(Icons.forward),
-        ),
-        IconButton(
-          tooltip: "Close",
-          onPressed: () {},
-          icon: Icon(Icons.close),
-        ),
-      ],
-    );
-  }
-
   Widget _renderDetail() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _renderActions(),
-        SizedBox(
-          height: 20,
-        ),
         TextFormField(
           style: TextStyle(fontSize: 14),
           key: Key("password.${password.id}.id"),
