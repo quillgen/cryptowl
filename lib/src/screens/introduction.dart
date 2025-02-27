@@ -63,8 +63,11 @@ final introductionPages = [
   ),
 ];
 
-class AppIntroductionScreen extends StatelessWidget {
-  const AppIntroductionScreen({super.key});
+class IntroductionPage extends StatelessWidget {
+  const IntroductionPage({super.key});
+
+  static const String path = '/introduction';
+  static const String name = 'Introduction';
 
   @override
   Widget build(BuildContext context) {

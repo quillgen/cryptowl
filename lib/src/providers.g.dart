@@ -39,12 +39,11 @@ final appServiceProvider = AutoDisposeProvider<AppService>.internal(
 // ignore: unused_element
 typedef AppServiceRef = AutoDisposeProviderRef<AppService>;
 String _$passwordRepositoryHash() =>
-    r'06e68b09b6f4bf17088b4e698c7d2190ba1c0609';
+    r'86b83492875ce1f0a6338ede94ad0ded972e2324';
 
 /// See also [passwordRepository].
 @ProviderFor(passwordRepository)
-final passwordRepositoryProvider =
-    AutoDisposeProvider<PasswordRepository>.internal(
+final passwordRepositoryProvider = Provider<PasswordRepository>.internal(
   passwordRepository,
   name: r'passwordRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -56,14 +55,13 @@ final passwordRepositoryProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef PasswordRepositoryRef = AutoDisposeProviderRef<PasswordRepository>;
+typedef PasswordRepositoryRef = ProviderRef<PasswordRepository>;
 String _$categoryRepositoryHash() =>
-    r'65cc4f183255dbbc8075ee8d138a9ac9e641153d';
+    r'c5a84246ae3ffc7edcc7441eb8bda5e8f286e27b';
 
 /// See also [categoryRepository].
 @ProviderFor(categoryRepository)
-final categoryRepositoryProvider =
-    AutoDisposeProvider<CategoryRepository>.internal(
+final categoryRepositoryProvider = Provider<CategoryRepository>.internal(
   categoryRepository,
   name: r'categoryRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -75,12 +73,12 @@ final categoryRepositoryProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CategoryRepositoryRef = AutoDisposeProviderRef<CategoryRepository>;
-String _$userDatabaseHash() => r'9a7742a0ffcdf1396db931610eade835706ea0e8';
+typedef CategoryRepositoryRef = ProviderRef<CategoryRepository>;
+String _$userDatabaseHash() => r'99ddb816d972a970aff559738b1695a832497af3';
 
 /// See also [userDatabase].
 @ProviderFor(userDatabase)
-final userDatabaseProvider = AutoDisposeProvider<AppDb>.internal(
+final userDatabaseProvider = Provider<AppDb>.internal(
   userDatabase,
   name: r'userDatabaseProvider',
   debugGetCreateSourceHash:
@@ -91,7 +89,7 @@ final userDatabaseProvider = AutoDisposeProvider<AppDb>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UserDatabaseRef = AutoDisposeProviderRef<AppDb>;
+typedef UserDatabaseRef = ProviderRef<AppDb>;
 String _$currentUserHash() => r'914d37ced3f0f492908c1995f8e44b88aa4fff0c';
 
 /// See also [CurrentUser].

@@ -8,7 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../config/meta.dart';
 import '../providers.dart';
 
 part 'login.g.dart';
@@ -42,6 +41,9 @@ class LoginState extends _$LoginState {
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
+
+  static const String path = '/login';
+  static const String name = 'Login';
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();

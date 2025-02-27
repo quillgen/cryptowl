@@ -21,13 +21,13 @@ AppService appService(Ref ref) {
   return AppService(ref, ref.read(kdbxServiceProvider));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 PasswordRepository passwordRepository(Ref ref) {
   final db = ref.watch(userDatabaseProvider);
   return PasswordRepository(db);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 CategoryRepository categoryRepository(Ref ref) {
   final db = ref.watch(userDatabaseProvider);
   return CategoryRepository(db);
@@ -43,7 +43,7 @@ class CurrentUser extends _$CurrentUser {
   void setUser(User? user) => state = user;
 }
 
-@Riverpod(keepAlive: false)
+@Riverpod(keepAlive: true)
 AppDb userDatabase(Ref ref) {
   logger.fine("opening user db...");
   final currentUser = ref.watch(currentUserProvider);

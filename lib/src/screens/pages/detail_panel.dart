@@ -1,6 +1,6 @@
 import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/domain/password.dart';
-import 'package:cryptowl/src/screens/pages/passwords.dart';
+import 'package:cryptowl/src/pages/passwords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';

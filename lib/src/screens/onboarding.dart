@@ -96,14 +96,17 @@ class OnboardingState extends _$OnboardingState {
   }
 }
 
-class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+class OnboardingPage extends ConsumerStatefulWidget {
+  const OnboardingPage({super.key});
+
+  static const String path = '/onboarding';
+  static const String name = 'Onboarding';
 
   @override
-  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingPage> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingPage> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
 

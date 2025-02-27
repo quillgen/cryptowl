@@ -4,9 +4,10 @@ import 'package:cryptowl/src/screens/pages/category_page.dart';
 import 'package:cryptowl/src/screens/pages/detail_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../domain/password.dart';
+import '../domain/password.dart';
 
 part 'passwords.g.dart';
 
@@ -46,7 +47,10 @@ class PasswordList extends ConsumerWidget {
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
-      error: (e, _) => ErrorWidget(e),
+      error: (e, _) {
+        logger.severe(e);
+        return ErrorWidget(e);
+      },
       data: (items) => ListView.builder(
           itemCount: items.length,
           itemBuilder: (_, index) {
@@ -58,7 +62,8 @@ class PasswordList extends ConsumerWidget {
               leading: const Icon(Icons.admin_panel_settings),
               title: Text(item.title),
               onTap: () {
-                detailPanelNotifier.setViewMode(item);
+                //detailPanelNotifier.setViewMode(item);
+                context.push("/passwords/${item.id}");
               },
               tileColor: isSelected ? Theme.of(context).highlightColor : null,
               shape: Border(
@@ -74,6 +79,28 @@ class PasswordList extends ConsumerWidget {
               ),
             );
           }),
+    );
+  }
+}
+
+/// The home page.
+class PasswordsPage extends StatelessWidget {
+  /// Construct the home page.
+  const PasswordsPage({super.key});
+
+  /// The path for the home page.
+  static const String path = '/passwords';
+
+  /// The name for the home page.
+  static const String name = 'Passwords';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Passwords Page'),
+      ),
+      body: PasswordList(),
     );
   }
 }

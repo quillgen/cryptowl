@@ -5,8 +5,11 @@ import 'package:vector_graphics/vector_graphics.dart';
 
 import '../providers.dart';
 
-class SplashScreen extends ConsumerWidget {
-  const SplashScreen({super.key});
+class SplashPage extends ConsumerWidget {
+  const SplashPage({super.key});
+
+  static const String path = '/splash';
+  static const String name = 'Splash';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

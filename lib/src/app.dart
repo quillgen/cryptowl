@@ -1,58 +1,180 @@
-import 'package:cryptowl/src/theme.dart';
+import 'package:cryptowl/main.dart';
+import 'package:cryptowl/src/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 
+import 'pages/generator_page.dart';
+import 'pages/more_page.dart';
+import 'pages/password_detail_page.dart';
+import 'pages/passwords.dart';
+import 'pages/send_page.dart';
 import 'providers.dart';
-import 'screens/home.dart';
+import 'scaffold_shell.dart';
 import 'screens/login.dart';
-import 'screens/introduction.dart';
 import 'screens/onboarding.dart';
-import 'screens/splash.dart';
 import 'settings/settings_controller.dart';
 
 part 'app.g.dart';
+
+final GlobalKey<NavigatorState> rootNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'root');
+
+final GlobalKey<NavigatorState> passwordsNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'passwords');
+final GlobalKey<NavigatorState> generatorNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'generator');
+final GlobalKey<NavigatorState> sendNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'send');
+final GlobalKey<NavigatorState> settingsNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'settings');
 
 @riverpod
 GoRouter goRouter(Ref ref) {
   final initState = ref.watch(initStateProvider);
   final credentials = ref.watch(currentUserProvider);
-  return GoRouter(
-    initialLocation: "/splash",
-    redirect: (context, state) {
-      if (initState == null) {
-        return null;
-      } else if (initState == false) {
-        return "/onboarding";
-      } else {
-        return credentials == null ? "/login" : "/";
-      }
+  logger.fine("Router rebuiding...");
+
+  final GoRoute unauthenticatedRoutes = GoRoute(
+    name: LoginScreen.name,
+    path: LoginScreen.path,
+    pageBuilder: (BuildContext context, GoRouterState state) {
+      return const MaterialPage<void>(child: LoginScreen());
     },
-    routes: [
+    redirect: (BuildContext context, GoRouterState state) {
+      if (credentials != null) {
+        return PasswordsPage.path;
+      }
+      return null;
+    },
+    routes: <RouteBase>[
       GoRoute(
-        path: '/splash',
-        builder: (context, state) => SplashScreen(),
+        name: OnboardingPage.name,
+        path: OnboardingPage.path,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return const MaterialPage<void>(
+            child: OnboardingPage(),
+          );
+        },
       ),
-      GoRoute(
-        path: '/',
-        builder: (context, state) => HomeScreen(),
+    ],
+  );
+
+  final StatefulShellRoute authenticatedRoutes =
+      StatefulShellRoute.indexedStack(
+    parentNavigatorKey: rootNavigatorKey,
+    builder: (
+      BuildContext context,
+      GoRouterState state,
+      StatefulNavigationShell navigationShell,
+    ) {
+      return ScaffoldShell(navigationShell: navigationShell);
+    },
+    redirect: (BuildContext context, GoRouterState state) {
+      if (credentials == null) {
+        return LoginScreen.path;
+      }
+      return null;
+    },
+    branches: <StatefulShellBranch>[
+      StatefulShellBranch(
+        navigatorKey: passwordsNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: PasswordsPage.name,
+            path: PasswordsPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(
+                child: PasswordsPage(),
+              );
+            },
+            routes: <RouteBase>[
+              GoRoute(
+                name: PasswordDetailPage.name,
+                path: PasswordDetailPage.path,
+                parentNavigatorKey: rootNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return const MaterialPage<void>(
+                    fullscreenDialog: true,
+                    child: PasswordDetailPage(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => LoginScreen(),
+      StatefulShellBranch(
+        navigatorKey: sendNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: SendPage.name,
+            path: SendPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: SendPage());
+            },
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => OnboardingScreen(),
+      StatefulShellBranch(
+        navigatorKey: generatorNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: GeneratorPage.name,
+            path: GeneratorPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: GeneratorPage());
+            },
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/introduction',
-        builder: (context, state) => AppIntroductionScreen(),
+      StatefulShellBranch(
+        navigatorKey: settingsNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: MorePage.name,
+            path: MorePage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(
+                key: ValueKey<String>(MorePage.name),
+                child: MorePage(),
+              );
+            },
+            routes: <RouteBase>[],
+          ),
+        ],
       ),
+    ],
+  );
+
+  final List<GoRoute> openRoutes = <GoRoute>[
+    GoRoute(
+      name: SplashPage.name,
+      path: SplashPage.path,
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return const MaterialPage<void>(
+          child: SplashPage(),
+        );
+      },
+    ),
+  ];
+
+  return GoRouter(
+    navigatorKey: rootNavigatorKey,
+    debugLogDiagnostics: true,
+    redirect: (context, state) {
+      if (state.uri.path == '/') {
+        return PasswordsPage.path;
+      }
+      return null;
+    },
+    routes: <RouteBase>[
+      unauthenticatedRoutes,
+      authenticatedRoutes,
+      ...openRoutes,
     ],
   );
 }
@@ -73,15 +195,7 @@ class CryptowlApp extends ConsumerWidget {
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp.router(
-          builder: (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: [
-              const Breakpoint(start: 0, end: 450, name: MOBILE),
-              const Breakpoint(start: 451, end: 800, name: TABLET),
-              const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-              const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-            ],
-          ),
+          routerConfig: router,
           debugShowCheckedModeBanner: false,
           restorationScopeId: 'app',
           localizationsDelegates: const [
@@ -95,10 +209,9 @@ class CryptowlApp extends ConsumerWidget {
           ],
           onGenerateTitle: (BuildContext context) =>
               AppLocalizations.of(context)!.appTitle,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: settingsController.themeMode,
-          routerConfig: router,
+          // theme: AppTheme.light,
+          // darkTheme: AppTheme.dark,
+          //themeMode: settingsController.themeMode,
         );
       },
     );
