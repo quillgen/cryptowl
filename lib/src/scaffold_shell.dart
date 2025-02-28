@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'pages/generator_page.dart';
 import 'pages/more_page.dart';
-import 'pages/passwords.dart';
+import 'pages/password_list_page.dart';
 import 'pages/send_page.dart';
 
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
@@ -38,7 +38,7 @@ class ScaffoldShell extends StatelessWidget {
       destinations: navigationShell.route.branches.map(
         (StatefulShellBranch e) {
           return switch (e.defaultRoute?.name) {
-            PasswordsPage.name => const NavigationDestination(
+            PasswordListPage.name => const NavigationDestination(
                 icon: Icon(Icons.password), label: 'Passwords'),
             SendPage.name => const NavigationDestination(
                 icon: Icon(Icons.send), label: 'Send'),

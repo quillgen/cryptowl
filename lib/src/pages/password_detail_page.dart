@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../main.dart';
+import '../components/password_detail.dart';
 import '../domain/password.dart';
 import '../providers.dart';
-import '../components/password_detail.dart';
 
 part 'password_detail_page.g.dart';
 
@@ -31,7 +31,10 @@ class PasswordDetailPage extends ConsumerWidget {
         title: Text('Password detail'),
       ),
       body: detailFuture.when(
-        data: (p) => PasswordDetail(password: p),
+        data: (p) => Padding(
+          padding: EdgeInsets.all(12),
+          child: PasswordDetail(password: p),
+        ),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),

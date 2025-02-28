@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:vector_graphics/vector_graphics.dart';
+
+import 'onboarding.dart';
 
 const pageDecoration = PageDecoration(
   imagePadding: EdgeInsets.only(top: 24, bottom: 24),
@@ -66,7 +69,7 @@ final introductionPages = [
 class IntroductionPage extends StatelessWidget {
   const IntroductionPage({super.key});
 
-  static const String path = '/introduction';
+  static const String path = 'introduction';
   static const String name = 'Introduction';
 
   @override
@@ -82,7 +85,10 @@ class IntroductionPage extends StatelessWidget {
         done: const Text("Start"),
         onDone: () {
           if (context.mounted) {
-            Navigator.pushReplacementNamed(context, "/onboarding");
+            context.goNamed(
+              OnboardingPage.name,
+              queryParameters: <String, String>{'skip': "true"},
+            );
           }
         },
       ),

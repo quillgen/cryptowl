@@ -99,7 +99,7 @@ class OnboardingState extends _$OnboardingState {
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 
-  static const String path = '/onboarding';
+  static const String path = 'onboarding';
   static const String name = 'Onboarding';
 
   @override

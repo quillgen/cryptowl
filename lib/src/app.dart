@@ -1,4 +1,5 @@
 import 'package:cryptowl/main.dart';
+import 'package:cryptowl/src/pages/introduction.dart';
 import 'package:cryptowl/src/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -11,11 +12,15 @@ import 'pages/generator_page.dart';
 import 'pages/login.dart';
 import 'pages/more_page.dart';
 import 'pages/onboarding.dart';
+import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
-import 'pages/passwords.dart';
+import 'pages/password_edit_page.dart';
+import 'pages/password_list_page.dart';
 import 'pages/send_page.dart';
 import 'providers.dart';
 import 'scaffold_shell.dart';
+import 'theme.dart';
+import 'util.dart';
 
 part 'app.g.dart';
 
@@ -44,12 +49,33 @@ GoRouter goRouter(Ref ref) {
       return const MaterialPage<void>(child: LoginScreen());
     },
     redirect: (BuildContext context, GoRouterState state) {
-      if (credentials != null) {
-        return PasswordsPage.path;
+      final skip = state.uri.queryParameters["skip"];
+      logger.fine("-> ${state.fullPath}");
+      if (initState == null) {
+        return SplashPage.path;
+      } else if (initState == false) {
+        if (skip != null && skip == "true") {
+          return null;
+        } else {
+          return "${LoginScreen.path}/${IntroductionPage.path}";
+        }
+      } else {
+        if (credentials != null) {
+          return PasswordListPage.path;
+        }
+        return null;
       }
-      return null;
     },
     routes: <RouteBase>[
+      GoRoute(
+        name: IntroductionPage.name,
+        path: IntroductionPage.path,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          return const MaterialPage<void>(
+            child: IntroductionPage(),
+          );
+        },
+      ),
       GoRoute(
         name: OnboardingPage.name,
         path: OnboardingPage.path,
@@ -83,11 +109,11 @@ GoRouter goRouter(Ref ref) {
         navigatorKey: passwordsNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
-            name: PasswordsPage.name,
-            path: PasswordsPage.path,
+            name: PasswordListPage.name,
+            path: PasswordListPage.path,
             pageBuilder: (BuildContext context, GoRouterState state) {
               return const NoTransitionPage<void>(
-                child: PasswordsPage(),
+                child: PasswordListPage(),
               );
             },
             routes: <RouteBase>[
@@ -99,6 +125,28 @@ GoRouter goRouter(Ref ref) {
                   return const MaterialPage<void>(
                     //fullscreenDialog: true,
                     child: PasswordDetailPage(),
+                  );
+                },
+              ),
+              GoRoute(
+                name: PasswordEditPage.name,
+                path: PasswordEditPage.path,
+                parentNavigatorKey: passwordsNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return const MaterialPage<void>(
+                    //fullscreenDialog: true,
+                    child: PasswordEditPage(),
+                  );
+                },
+              ),
+              GoRoute(
+                name: PasswordCreatePage.name,
+                path: PasswordCreatePage.path,
+                parentNavigatorKey: passwordsNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return const MaterialPage<void>(
+                    //fullscreenDialog: true,
+                    child: PasswordCreatePage(),
                   );
                 },
               ),
@@ -166,7 +214,7 @@ GoRouter goRouter(Ref ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       if (state.uri.path == '/') {
-        return PasswordsPage.path;
+        return PasswordListPage.path;
       }
       return null;
     },
@@ -186,7 +234,10 @@ class CryptowlApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    TextTheme textTheme =
+        createTextTheme(context, "Noto Sans SC", "Noto Sans SC");
 
+    MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -202,9 +253,12 @@ class CryptowlApp extends ConsumerWidget {
       ],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      // theme: AppTheme.light,
-      // darkTheme: AppTheme.dark,
-      //themeMode: settingsController.themeMode,
+      theme: ThemeData(
+        fontFamily: "AgileSans",
+      ),
+      // theme: theme.light(),
+      // darkTheme: theme.dark(),
+      //themeMode:  ThemeMo,
     );
   }
 }
