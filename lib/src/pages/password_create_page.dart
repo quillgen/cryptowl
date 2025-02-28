@@ -42,6 +42,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                style: TextStyle(fontSize: 14),
                 controller: _titleController,
                 obscureText: false,
                 decoration: InputDecoration(
@@ -56,6 +57,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
               ),
               SizedBox(height: 10),
               TextFormField(
+                style: TextStyle(fontSize: 14),
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../components/password_detail.dart';
 import 'password_detail_page.dart';
 
 class PasswordEditPage extends ConsumerWidget {
@@ -22,7 +21,7 @@ class PasswordEditPage extends ConsumerWidget {
       body: detailFuture.when(
         data: (p) => Padding(
           padding: EdgeInsets.all(12),
-          child: PasswordDetail(password: p),
+          child: Text("test"),
         ),
         loading: () => const Center(
           child: CircularProgressIndicator(),
