@@ -1,36 +1,41 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-/// The profile page.
-class PasswordDetailPage extends StatelessWidget {
-  /// Construct the profile page.
+import '../../main.dart';
+import '../domain/password.dart';
+import '../providers.dart';
+import '../components/password_detail.dart';
+
+part 'password_detail_page.g.dart';
+
+@riverpod
+Future<Password> passwordDetail(Ref ref, String id) async {
+  logger.fine("Fetching password detail for $id");
+  return ref.read(passwordRepositoryProvider).findById(id);
+}
+
+class PasswordDetailPage extends ConsumerWidget {
   const PasswordDetailPage({super.key});
 
-  /// The path for the profile page.
-  static const String path = 'detail';
-
-  /// The name for the profile page.
+  static const String path = 'detail/:id';
   static const String name = 'Detail';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = GoRouterState.of(context).pathParameters["id"]!;
+    final detailFuture = ref.watch(passwordDetailProvider(id));
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Password detail'),
+        title: Text('Password detail'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () => <void>{},
-              child: const Text('Hello'),
-            ),
-          ],
+      body: detailFuture.when(
+        data: (p) => PasswordDetail(password: p),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
         ),
+        error: (e, _) => ErrorWidget(e),
       ),
     );
   }

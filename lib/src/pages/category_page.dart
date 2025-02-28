@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../domain/category.dart';
-import '../../providers.dart';
 import '../components/category_group.dart';
 import '../components/category_item.dart';
+import '../domain/category.dart';
+import '../providers.dart';
 
 part 'category_page.g.dart';
 

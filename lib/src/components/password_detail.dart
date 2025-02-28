@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../domain/password.dart';
+import '../domain/password.dart';
 
 class PasswordDetail extends StatelessWidget {
   final Password password;

@@ -1,5 +1,5 @@
 import 'package:cryptowl/main.dart';
-import 'package:cryptowl/src/screens/splash.dart';
+import 'package:cryptowl/src/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,15 +8,14 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'pages/generator_page.dart';
+import 'pages/login.dart';
 import 'pages/more_page.dart';
+import 'pages/onboarding.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/passwords.dart';
 import 'pages/send_page.dart';
 import 'providers.dart';
 import 'scaffold_shell.dart';
-import 'screens/login.dart';
-import 'screens/onboarding.dart';
-import 'settings/settings_controller.dart';
 
 part 'app.g.dart';
 
@@ -95,10 +94,10 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 name: PasswordDetailPage.name,
                 path: PasswordDetailPage.path,
-                parentNavigatorKey: rootNavigatorKey,
+                parentNavigatorKey: passwordsNavigatorKey,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return const MaterialPage<void>(
-                    fullscreenDialog: true,
+                    //fullscreenDialog: true,
                     child: PasswordDetailPage(),
                   );
                 },
@@ -182,38 +181,30 @@ GoRouter goRouter(Ref ref) {
 class CryptowlApp extends ConsumerWidget {
   const CryptowlApp({
     super.key,
-    required this.settingsController,
   });
-
-  final SettingsController settingsController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
-    return ListenableBuilder(
-      listenable: settingsController,
-      builder: (BuildContext context, Widget? child) {
-        return MaterialApp.router(
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          restorationScopeId: 'app',
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''),
-          ],
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.appTitle,
-          // theme: AppTheme.light,
-          // darkTheme: AppTheme.dark,
-          //themeMode: settingsController.themeMode,
-        );
-      },
+    return MaterialApp.router(
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+      restorationScopeId: 'app',
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+      ],
+      onGenerateTitle: (BuildContext context) =>
+          AppLocalizations.of(context)!.appTitle,
+      // theme: AppTheme.light,
+      // darkTheme: AppTheme.dark,
+      //themeMode: settingsController.themeMode,
     );
   }
 }
