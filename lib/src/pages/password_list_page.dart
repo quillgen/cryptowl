@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../domain/password.dart';
+import 'drawer_menu.dart';
 import 'password_create_page.dart';
 import 'password_detail_page.dart';
 
@@ -48,8 +49,19 @@ class PasswordListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Passwords Page'),
+        title: const Text('Passwords'),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
       ),
+      drawer: DrawerMenu(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.goNamed(
@@ -75,7 +87,9 @@ class PasswordListPage extends ConsumerWidget {
               return ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.only(right: 10),
-                leading: const Icon(Icons.admin_panel_settings),
+                leading: const Icon(
+                  Icons.admin_panel_settings,
+                ),
                 title: Text(item.title),
                 onTap: () {
                   context.goNamed(

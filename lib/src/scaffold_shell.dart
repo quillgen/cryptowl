@@ -27,6 +27,7 @@ class ScaffoldShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
       useDrawer: false,
+      internalAnimations: false,
       body: (BuildContext context) => navigationShell,
       selectedIndex: navigationShell.currentIndex,
       onSelectedIndexChange: (int index) {

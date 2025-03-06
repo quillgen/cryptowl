@@ -20,7 +20,6 @@ import 'pages/send_page.dart';
 import 'providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
-import 'util.dart';
 
 part 'app.g.dart';
 
@@ -234,10 +233,7 @@ class CryptowlApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
-    TextTheme textTheme =
-        createTextTheme(context, "Noto Sans SC", "Noto Sans SC");
 
-    MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -253,11 +249,8 @@ class CryptowlApp extends ConsumerWidget {
       ],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      theme: ThemeData(
-        fontFamily: "AgileSans",
-      ),
-      // theme: theme.light(),
-      // darkTheme: theme.dark(),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       //themeMode:  ThemeMo,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'database/database.dart';
@@ -75,4 +76,9 @@ class InitState extends _$InitState {
   }
 
   void setInitState(bool? inited) => state = inited;
+}
+
+@riverpod
+Future<PackageInfo> packageInfo(Ref ref) async {
+  return PackageInfo.fromPlatform();
 }

@@ -90,6 +90,22 @@ final userDatabaseProvider = Provider<AppDb>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef UserDatabaseRef = ProviderRef<AppDb>;
+String _$packageInfoHash() => r'907ba5b02ed285ba1e951e58a932554b0a8da650';
+
+/// See also [packageInfo].
+@ProviderFor(packageInfo)
+final packageInfoProvider = AutoDisposeFutureProvider<PackageInfo>.internal(
+  packageInfo,
+  name: r'packageInfoProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$packageInfoHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PackageInfoRef = AutoDisposeFutureProviderRef<PackageInfo>;
 String _$currentUserHash() => r'914d37ced3f0f492908c1995f8e44b88aa4fff0c';
 
 /// See also [CurrentUser].
