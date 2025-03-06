@@ -4,8 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 import '../providers.dart';
+import 'login.dart';
 
-const infoTextStyle = TextStyle(fontSize: 10, color: Colors.black38);
+const infoTextStyle = TextStyle(fontSize: 10, color: Colors.white);
 
 class VersionInfo extends ConsumerWidget {
   const VersionInfo({super.key});
@@ -22,17 +23,18 @@ class VersionInfo extends ConsumerWidget {
   }
 }
 
-class DrawerMenu extends StatelessWidget {
+class DrawerMenu extends ConsumerWidget {
   const DrawerMenu({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginNotifier = ref.read(loginStateProvider.notifier);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
-            //decoration: BoxDecoration(color: Colors.grey),
+            decoration: BoxDecoration(color: Colors.deepPurple),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +42,8 @@ class DrawerMenu extends StatelessWidget {
                 Row(
                   children: [
                     SvgPicture(
-                      AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
+                      AssetBytesLoader(
+                          "assets/images/cryptowl-full-dark.svg.vec"),
                       height: 40,
                     ),
                     VersionInfo(),
@@ -67,9 +70,41 @@ class DrawerMenu extends StatelessWidget {
           ),
           ListTile(
             title: const Text('About'),
+            onTap: () => _dialogBuilder(context),
+          ),
+          ListTile(
+            title: const Text('Logout'),
+            onTap: () async => loginNotifier.logout(),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cryptowl'),
+          content: const Text(
+            'Cryptowl is a password manager,\n'
+            'all your data is encrypted on local device.\n'
+            'It is free opensource software,\n'
+            'may you enjoy it!',
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge),
+              child: const Text('Dismiss'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
     );
   }
 }

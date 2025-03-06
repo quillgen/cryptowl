@@ -37,6 +37,12 @@ Future<List<PasswordBasic>> passwords(Ref ref) async {
   }
 }
 
+enum FilterMenu {
+  all,
+  favorite,
+  deleted,
+}
+
 class PasswordListPage extends ConsumerWidget {
   const PasswordListPage({super.key});
 
@@ -57,9 +63,53 @@ class PasswordListPage extends ConsumerWidget {
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
+              tooltip: "Menu",
             );
           },
         ),
+        actions: [
+          PopupMenuButton<FilterMenu>(
+            icon: const Icon(Icons.filter_alt),
+            tooltip: "Filter passwords",
+            onSelected: (FilterMenu item) {},
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<FilterMenu>>[
+              PopupMenuItem<FilterMenu>(
+                value: FilterMenu.all,
+                child: CheckboxListTile(
+                  title: Text("Hide deleted items"),
+                  value: true,
+                  onChanged: (bool? value) {},
+                ),
+              ),
+              PopupMenuItem<FilterMenu>(
+                value: FilterMenu.favorite,
+                child: CheckboxListTile(
+                  title: Text("Favorite"),
+                  value: true,
+                  onChanged: (bool? value) {},
+                ),
+              ),
+              PopupMenuItem<FilterMenu>(
+                value: FilterMenu.deleted,
+                child: CheckboxListTile(
+                  title: Text("Deleted items"),
+                  value: true,
+                  onChanged: (bool? value) {},
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search),
+            tooltip: "Search",
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.more_vert),
+            tooltip: "More operations",
+          ),
+        ],
       ),
       drawer: DrawerMenu(),
       floatingActionButton: FloatingActionButton(
