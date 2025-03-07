@@ -112,6 +112,8 @@ class PasswordRepository {
       type: 1,
       categoryId: 1,
       title: title,
+      username: username,
+      uri: url,
       value: value,
       remark: remark,
       createTime: now,

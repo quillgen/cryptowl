@@ -6,9 +6,16 @@ class Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SvgPicture(
-        AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
-        height: 50,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture(
+            AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
+            height: 50,
+          ),
+          Text("There are no items in your valut.")
+        ],
       ),
     );
   }

@@ -50,7 +50,7 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "Username",
                 readonly: true,
-                value: "",
+                value: password.username,
               ),
               FormInput(
                 name: "Password",
@@ -62,7 +62,7 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "URI",
                 readonly: true,
-                value: "",
+                value: password.uri,
               ),
               SizedBox(height: 20),
               FormInput(
