@@ -12,6 +12,8 @@ CREATE TABLE passwords (
     title TEXT NOT NULL,
     value TEXT NOT NULL,
     expire_time TEXT,
+    username TEXT,
+    uri TEXT,
     remark TEXT,
     is_favorite INTEGER NOT NULL DEFAULT 0,
     category_id INTEGER NOT NULL DEFAULT 1,

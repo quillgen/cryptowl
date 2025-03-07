@@ -353,6 +353,19 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
+  static const VerificationMeta _usernameMeta =
+      const VerificationMeta('username');
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+      'username', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _uriMeta = const VerificationMeta('uri');
+  late final GeneratedColumn<String> uri = GeneratedColumn<String>(
+      'uri', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
   late final GeneratedColumn<String> remark = GeneratedColumn<String>(
       'remark', aliasedName, true,
@@ -404,6 +417,8 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
         title,
         value,
         expireTime,
+        username,
+        uri,
         remark,
         isFavorite,
         categoryId,
@@ -447,6 +462,14 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
           _expireTimeMeta,
           expireTime.isAcceptableOrUnknown(
               data['expire_time']!, _expireTimeMeta));
+    }
+    if (data.containsKey('username')) {
+      context.handle(_usernameMeta,
+          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
+    }
+    if (data.containsKey('uri')) {
+      context.handle(
+          _uriMeta, uri.isAcceptableOrUnknown(data['uri']!, _uriMeta));
     }
     if (data.containsKey('remark')) {
       context.handle(_remarkMeta,
@@ -503,6 +526,10 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
           .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
       expireTime: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}expire_time']),
+      username: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}username']),
+      uri: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}uri']),
       remark: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}remark']),
       isFavorite: attachedDatabase.typeMapping
@@ -536,6 +563,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   final String title;
   final String value;
   final String? expireTime;
+  final String? username;
+  final String? uri;
   final String? remark;
   final int isFavorite;
   final int categoryId;
@@ -548,6 +577,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       required this.title,
       required this.value,
       this.expireTime,
+      this.username,
+      this.uri,
       this.remark,
       required this.isFavorite,
       required this.categoryId,
@@ -563,6 +594,12 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     map['value'] = Variable<String>(value);
     if (!nullToAbsent || expireTime != null) {
       map['expire_time'] = Variable<String>(expireTime);
+    }
+    if (!nullToAbsent || username != null) {
+      map['username'] = Variable<String>(username);
+    }
+    if (!nullToAbsent || uri != null) {
+      map['uri'] = Variable<String>(uri);
     }
     if (!nullToAbsent || remark != null) {
       map['remark'] = Variable<String>(remark);
@@ -584,6 +621,10 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       expireTime: expireTime == null && nullToAbsent
           ? const Value.absent()
           : Value(expireTime),
+      username: username == null && nullToAbsent
+          ? const Value.absent()
+          : Value(username),
+      uri: uri == null && nullToAbsent ? const Value.absent() : Value(uri),
       remark:
           remark == null && nullToAbsent ? const Value.absent() : Value(remark),
       isFavorite: Value(isFavorite),
@@ -603,6 +644,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       title: serializer.fromJson<String>(json['title']),
       value: serializer.fromJson<String>(json['value']),
       expireTime: serializer.fromJson<String?>(json['expire_time']),
+      username: serializer.fromJson<String?>(json['username']),
+      uri: serializer.fromJson<String?>(json['uri']),
       remark: serializer.fromJson<String?>(json['remark']),
       isFavorite: serializer.fromJson<int>(json['is_favorite']),
       categoryId: serializer.fromJson<int>(json['category_id']),
@@ -620,6 +663,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       'title': serializer.toJson<String>(title),
       'value': serializer.toJson<String>(value),
       'expire_time': serializer.toJson<String?>(expireTime),
+      'username': serializer.toJson<String?>(username),
+      'uri': serializer.toJson<String?>(uri),
       'remark': serializer.toJson<String?>(remark),
       'is_favorite': serializer.toJson<int>(isFavorite),
       'category_id': serializer.toJson<int>(categoryId),
@@ -635,6 +680,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           String? title,
           String? value,
           Value<String?> expireTime = const Value.absent(),
+          Value<String?> username = const Value.absent(),
+          Value<String?> uri = const Value.absent(),
           Value<String?> remark = const Value.absent(),
           int? isFavorite,
           int? categoryId,
@@ -647,6 +694,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
         title: title ?? this.title,
         value: value ?? this.value,
         expireTime: expireTime.present ? expireTime.value : this.expireTime,
+        username: username.present ? username.value : this.username,
+        uri: uri.present ? uri.value : this.uri,
         remark: remark.present ? remark.value : this.remark,
         isFavorite: isFavorite ?? this.isFavorite,
         categoryId: categoryId ?? this.categoryId,
@@ -662,6 +711,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       value: data.value.present ? data.value.value : this.value,
       expireTime:
           data.expireTime.present ? data.expireTime.value : this.expireTime,
+      username: data.username.present ? data.username.value : this.username,
+      uri: data.uri.present ? data.uri.value : this.uri,
       remark: data.remark.present ? data.remark.value : this.remark,
       isFavorite:
           data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
@@ -684,6 +735,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           ..write('title: $title, ')
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
+          ..write('username: $username, ')
+          ..write('uri: $uri, ')
           ..write('remark: $remark, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('categoryId: $categoryId, ')
@@ -695,8 +748,20 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   }
 
   @override
-  int get hashCode => Object.hash(id, type, title, value, expireTime, remark,
-      isFavorite, categoryId, createTime, lastUpdateTime, isDeleted);
+  int get hashCode => Object.hash(
+      id,
+      type,
+      title,
+      value,
+      expireTime,
+      username,
+      uri,
+      remark,
+      isFavorite,
+      categoryId,
+      createTime,
+      lastUpdateTime,
+      isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -706,6 +771,8 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
           other.title == this.title &&
           other.value == this.value &&
           other.expireTime == this.expireTime &&
+          other.username == this.username &&
+          other.uri == this.uri &&
           other.remark == this.remark &&
           other.isFavorite == this.isFavorite &&
           other.categoryId == this.categoryId &&
@@ -720,6 +787,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   final Value<String> title;
   final Value<String> value;
   final Value<String?> expireTime;
+  final Value<String?> username;
+  final Value<String?> uri;
   final Value<String?> remark;
   final Value<int> isFavorite;
   final Value<int> categoryId;
@@ -733,6 +802,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     this.title = const Value.absent(),
     this.value = const Value.absent(),
     this.expireTime = const Value.absent(),
+    this.username = const Value.absent(),
+    this.uri = const Value.absent(),
     this.remark = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.categoryId = const Value.absent(),
@@ -747,6 +818,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     required String title,
     required String value,
     this.expireTime = const Value.absent(),
+    this.username = const Value.absent(),
+    this.uri = const Value.absent(),
     this.remark = const Value.absent(),
     this.isFavorite = const Value.absent(),
     this.categoryId = const Value.absent(),
@@ -765,6 +838,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     Expression<String>? title,
     Expression<String>? value,
     Expression<String>? expireTime,
+    Expression<String>? username,
+    Expression<String>? uri,
     Expression<String>? remark,
     Expression<int>? isFavorite,
     Expression<int>? categoryId,
@@ -779,6 +854,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       if (title != null) 'title': title,
       if (value != null) 'value': value,
       if (expireTime != null) 'expire_time': expireTime,
+      if (username != null) 'username': username,
+      if (uri != null) 'uri': uri,
       if (remark != null) 'remark': remark,
       if (isFavorite != null) 'is_favorite': isFavorite,
       if (categoryId != null) 'category_id': categoryId,
@@ -795,6 +872,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       Value<String>? title,
       Value<String>? value,
       Value<String?>? expireTime,
+      Value<String?>? username,
+      Value<String?>? uri,
       Value<String?>? remark,
       Value<int>? isFavorite,
       Value<int>? categoryId,
@@ -808,6 +887,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
       title: title ?? this.title,
       value: value ?? this.value,
       expireTime: expireTime ?? this.expireTime,
+      username: username ?? this.username,
+      uri: uri ?? this.uri,
       remark: remark ?? this.remark,
       isFavorite: isFavorite ?? this.isFavorite,
       categoryId: categoryId ?? this.categoryId,
@@ -835,6 +916,12 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     }
     if (expireTime.present) {
       map['expire_time'] = Variable<String>(expireTime.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (uri.present) {
+      map['uri'] = Variable<String>(uri.value);
     }
     if (remark.present) {
       map['remark'] = Variable<String>(remark.value);
@@ -868,6 +955,8 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
           ..write('title: $title, ')
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
+          ..write('username: $username, ')
+          ..write('uri: $uri, ')
           ..write('remark: $remark, ')
           ..write('isFavorite: $isFavorite, ')
           ..write('categoryId: $categoryId, ')
@@ -1533,6 +1622,8 @@ typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
   required String title,
   required String value,
   Value<String?> expireTime,
+  Value<String?> username,
+  Value<String?> uri,
   Value<String?> remark,
   Value<int> isFavorite,
   Value<int> categoryId,
@@ -1547,6 +1638,8 @@ typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
   Value<String> title,
   Value<String> value,
   Value<String?> expireTime,
+  Value<String?> username,
+  Value<String?> uri,
   Value<String?> remark,
   Value<int> isFavorite,
   Value<int> categoryId,
@@ -1578,6 +1671,12 @@ class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
 
   ColumnFilters<String> get expireTime => $composableBuilder(
       column: $table.expireTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uri => $composableBuilder(
+      column: $table.uri, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get remark => $composableBuilder(
       column: $table.remark, builder: (column) => ColumnFilters(column));
@@ -1622,6 +1721,12 @@ class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
   ColumnOrderings<String> get expireTime => $composableBuilder(
       column: $table.expireTime, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uri => $composableBuilder(
+      column: $table.uri, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get remark => $composableBuilder(
       column: $table.remark, builder: (column) => ColumnOrderings(column));
 
@@ -1664,6 +1769,12 @@ class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
 
   GeneratedColumn<String> get expireTime => $composableBuilder(
       column: $table.expireTime, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get uri =>
+      $composableBuilder(column: $table.uri, builder: (column) => column);
 
   GeneratedColumn<String> get remark =>
       $composableBuilder(column: $table.remark, builder: (column) => column);
@@ -1712,6 +1823,8 @@ class $PasswordsTableManager extends RootTableManager<
             Value<String> title = const Value.absent(),
             Value<String> value = const Value.absent(),
             Value<String?> expireTime = const Value.absent(),
+            Value<String?> username = const Value.absent(),
+            Value<String?> uri = const Value.absent(),
             Value<String?> remark = const Value.absent(),
             Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
@@ -1726,6 +1839,8 @@ class $PasswordsTableManager extends RootTableManager<
             title: title,
             value: value,
             expireTime: expireTime,
+            username: username,
+            uri: uri,
             remark: remark,
             isFavorite: isFavorite,
             categoryId: categoryId,
@@ -1740,6 +1855,8 @@ class $PasswordsTableManager extends RootTableManager<
             required String title,
             required String value,
             Value<String?> expireTime = const Value.absent(),
+            Value<String?> username = const Value.absent(),
+            Value<String?> uri = const Value.absent(),
             Value<String?> remark = const Value.absent(),
             Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
@@ -1754,6 +1871,8 @@ class $PasswordsTableManager extends RootTableManager<
             title: title,
             value: value,
             expireTime: expireTime,
+            username: username,
+            uri: uri,
             remark: remark,
             isFavorite: isFavorite,
             categoryId: categoryId,

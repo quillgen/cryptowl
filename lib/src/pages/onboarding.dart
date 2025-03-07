@@ -1,4 +1,5 @@
 import 'package:cryptowl/src/common/password_validator.dart';
+import 'package:cryptowl/src/components/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -129,18 +130,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingPage> {
               ),
               const Text("You need to set a master password to continue."),
               SizedBox(height: 20),
-              TextFormField(
+              FormInput(
+                name: "Master password",
+                protected: true,
+                required: true,
                 controller: _passwordController,
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 10),
               TextFormField(
+                style: TextStyle(fontSize: 14),
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Confirm password",
@@ -148,6 +146,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingPage> {
               ),
               SizedBox(height: 10),
               TextFormField(
+                style: TextStyle(fontSize: 14),
                 decoration: InputDecoration(
                   labelText: "Password hint",
                 ),

@@ -28,11 +28,10 @@ class Password {
   int type;
   int categoryId;
   String title;
-
   DateTime? expireTime;
   ProtectedValue value;
   String? username;
-  String? url;
+  String? uri;
   String? remark;
   DateTime createTime;
   DateTime lastUpdateTime;
@@ -44,7 +43,7 @@ class Password {
       this.expireTime,
       required this.value,
       this.username,
-      this.url,
+      this.uri,
       this.remark,
       required this.categoryId,
       required this.createTime,
@@ -56,6 +55,8 @@ class Password {
       type: Value(type),
       title: Value(title),
       value: Value(value.getText()),
+      username: Value.absentIfNull(username),
+      uri: Value.absentIfNull(uri),
       remark: Value.absentIfNull(remark),
       expireTime: Value.absentIfNull(expireTime?.toIso8601String()),
       createTime: Value(createTime.toIso8601String()),
@@ -70,6 +71,8 @@ class Password {
       type: entity.type,
       categoryId: entity.categoryId,
       title: entity.title,
+      username: entity.username,
+      uri: entity.uri,
       remark: entity.remark,
       expireTime:
           entity.expireTime == null ? null : DateTime.parse(entity.expireTime!),
