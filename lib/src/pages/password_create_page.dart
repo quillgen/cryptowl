@@ -1,4 +1,3 @@
-import 'package:cryptowl/src/pages/password_list_page.dart';
 import 'package:cryptowl/src/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +32,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create password'),
+        title: Text('Add item'),
       ),
       body: Padding(
         padding: EdgeInsets.all(12),

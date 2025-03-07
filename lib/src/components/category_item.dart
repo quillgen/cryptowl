@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../pages/category_page.dart';
+import '../providers.dart';
 
 class CategoryItem extends ConsumerWidget {
   final String name;

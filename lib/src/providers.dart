@@ -5,6 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'database/database.dart';
+import 'domain/category.dart';
+import 'domain/password.dart';
 import 'domain/user.dart';
 import 'service/app_service.dart';
 import 'service/category_repository.dart';
@@ -81,4 +83,52 @@ class InitState extends _$InitState {
 @riverpod
 Future<PackageInfo> packageInfo(Ref ref) async {
   return PackageInfo.fromPlatform();
+}
+
+const CATEGORY_ALL_ITEMS = 0;
+const CATEGORY_FAVORITE = -1;
+const CATEGORY_DELETED = -2;
+const CATEGORY_LOGIN = -11;
+const CATEGORY_CARD = -12;
+const CATEGORY_SSH_KEY = -13;
+
+@riverpod
+Future<List<Category>> categories(Ref ref) async {
+  return ref.watch(categoryRepositoryProvider).list();
+}
+
+@riverpod
+class SelectedCategory extends _$SelectedCategory {
+  @override
+  int build() {
+    return 0;
+  }
+
+  void setSelectedCategory(int selected) {
+    state = selected;
+  }
+}
+
+@riverpod
+Future<List<PasswordBasic>> passwords(Ref ref) async {
+  final selectedCategory = ref.watch(selectedCategoryProvider);
+  final repository = ref.read(passwordRepositoryProvider);
+  logger.fine("Fetching passwords with category=$selectedCategory");
+  switch (selectedCategory) {
+    case CATEGORY_ALL_ITEMS:
+      return repository.list();
+    case CATEGORY_FAVORITE:
+      return repository.listFavorite();
+    case CATEGORY_DELETED:
+      return repository.listDeleted();
+    case CATEGORY_LOGIN:
+    case CATEGORY_CARD:
+    case CATEGORY_SSH_KEY:
+      {
+        final type = -(10 + selectedCategory);
+        return repository.listByType(type);
+      }
+    default:
+      return repository.listByCategory(selectedCategory);
+  }
 }

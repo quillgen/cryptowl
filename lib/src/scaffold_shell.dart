@@ -8,8 +8,8 @@ import 'package:go_router/go_router.dart';
 
 import 'pages/generator_page.dart';
 import 'pages/more_page.dart';
-import 'pages/password_list_page.dart';
 import 'pages/send_page.dart';
+import 'pages/valut_page.dart';
 
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
 /// to create a shell for the application.
@@ -39,14 +39,14 @@ class ScaffoldShell extends StatelessWidget {
       destinations: navigationShell.route.branches.map(
         (StatefulShellBranch e) {
           return switch (e.defaultRoute?.name) {
-            PasswordListPage.name => const NavigationDestination(
-                icon: Icon(Icons.password), label: 'Passwords'),
+            ValutPage.name => const NavigationDestination(
+                icon: Icon(Icons.password), label: 'My vault'),
             SendPage.name => const NavigationDestination(
-                icon: Icon(Icons.send), label: 'Send'),
+                icon: Icon(Icons.photo), label: 'Photos'),
             GeneratorPage.name => const NavigationDestination(
-                icon: Icon(Icons.key), label: 'Generator'),
+                icon: Icon(Icons.mail_lock), label: 'Send'),
             MorePage.name => const NavigationDestination(
-                icon: Icon(Icons.settings), label: 'More'),
+                icon: Icon(Icons.settings), label: 'Settings'),
             _ => throw UnimplementedError(
                 'The route ${e.defaultRoute?.name} is not implemented.',
               ),

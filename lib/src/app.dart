@@ -15,8 +15,8 @@ import 'pages/onboarding.dart';
 import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
-import 'pages/password_list_page.dart';
 import 'pages/send_page.dart';
+import 'pages/valut_page.dart';
 import 'providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
@@ -60,7 +60,7 @@ GoRouter goRouter(Ref ref) {
         }
       } else {
         if (credentials != null) {
-          return PasswordListPage.path;
+          return ValutPage.path;
         }
         return null;
       }
@@ -108,11 +108,11 @@ GoRouter goRouter(Ref ref) {
         navigatorKey: passwordsNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
-            name: PasswordListPage.name,
-            path: PasswordListPage.path,
+            name: ValutPage.name,
+            path: ValutPage.path,
             pageBuilder: (BuildContext context, GoRouterState state) {
               return const NoTransitionPage<void>(
-                child: PasswordListPage(),
+                child: ValutPage(),
               );
             },
             routes: <RouteBase>[
@@ -213,7 +213,7 @@ GoRouter goRouter(Ref ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       if (state.uri.path == '/') {
-        return PasswordListPage.path;
+        return ValutPage.path;
       }
       return null;
     },
@@ -234,6 +234,9 @@ class CryptowlApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
+    final textTheme = TextTheme();
+    final theme = MaterialTheme(textTheme);
+
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -249,8 +252,8 @@ class CryptowlApp extends ConsumerWidget {
       ],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: theme.light(),
+      darkTheme: theme.dark(),
       //themeMode:  ThemeMo,
     );
   }

@@ -66,15 +66,15 @@ class DrawerMenu extends ConsumerWidget {
             title: const Text('Backup'),
           ),
           ListTile(
-            title: const Text('Help'),
-          ),
-          ListTile(
             title: const Text('About'),
             onTap: () => _dialogBuilder(context),
           ),
           ListTile(
-            title: const Text('Logout'),
+            title: const Text('Lock'),
             onTap: () async => loginNotifier.logout(),
+          ),
+          ListTile(
+            title: const Text('Exit'),
           ),
         ],
       ),

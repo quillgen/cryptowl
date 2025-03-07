@@ -1,37 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../components/category_group.dart';
-import '../components/category_item.dart';
-import '../domain/category.dart';
 import '../providers.dart';
-
-part 'category_page.g.dart';
-
-const CATEGORY_ALL_ITEMS = 0;
-const CATEGORY_FAVORITE = -1;
-const CATEGORY_DELETED = -2;
-const CATEGORY_LOGIN = -11;
-const CATEGORY_CARD = -12;
-const CATEGORY_SSH_KEY = -13;
-
-@riverpod
-Future<List<Category>> categories(Ref ref) async {
-  return ref.watch(categoryRepositoryProvider).list();
-}
-
-@riverpod
-class SelectedCategory extends _$SelectedCategory {
-  @override
-  int build() {
-    return 0;
-  }
-
-  void setSelectedCategory(int selected) {
-    state = selected;
-  }
-}
+import 'category_group.dart';
+import 'category_item.dart';
 
 class CategoryPage extends ConsumerWidget {
   const CategoryPage({super.key});
