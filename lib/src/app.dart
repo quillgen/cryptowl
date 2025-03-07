@@ -234,9 +234,6 @@ class CryptowlApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
 
-    final textTheme = TextTheme();
-    final theme = MaterialTheme(textTheme);
-
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -252,8 +249,8 @@ class CryptowlApp extends ConsumerWidget {
       ],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      theme: theme.light(),
-      darkTheme: theme.dark(),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       //themeMode:  ThemeMo,
     );
   }

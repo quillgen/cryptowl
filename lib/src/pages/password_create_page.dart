@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdbx/kdbx.dart';
 
+import '../components/form_input.dart';
+
 class PasswordCreatePage extends ConsumerStatefulWidget {
   const PasswordCreatePage({super.key});
 
@@ -14,15 +16,23 @@ class PasswordCreatePage extends ConsumerStatefulWidget {
   ConsumerState<PasswordCreatePage> createState() => _PasswordCreatePageState();
 }
 
+const formTextStyle = TextStyle(fontSize: 14);
+
 class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _uriController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _remarkController = TextEditingController();
 
   @override
   void dispose() {
     _titleController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
+    _uriController.dispose();
+    _remarkController.dispose();
     super.dispose();
   }
 
@@ -32,7 +42,25 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Text('Add item'),
+        actions: [
+          TextButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  await passwordRepository.create(_titleController.text,
+                      ProtectedValue.fromString(_passwordController.text),
+                      username: _usernameController.text,
+                      url: _uriController.text,
+                      remark: _remarkController.text);
+                  ref.invalidate(passwordsProvider);
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                }
+              },
+              child: Text("Save"))
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(12),
@@ -40,48 +68,38 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              TextFormField(
-                style: TextStyle(fontSize: 14),
+              FormInput(
                 controller: _titleController,
-                obscureText: false,
-                decoration: InputDecoration(
-                  labelText: "TITLE",
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                style: TextStyle(fontSize: 14),
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: "PASSWORD",
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
+                name: "Name",
+                protected: false,
+                required: true,
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await passwordRepository.create(_titleController.text,
-                        ProtectedValue.fromString(_passwordController.text));
-                    ref.invalidate(passwordsProvider);
-                    if (context.mounted) {
-                      context.pop();
-                    }
-                  }
-                },
-                child: const Text('Submit'),
+              FormInput(
+                controller: _usernameController,
+                name: "Username",
+                protected: false,
+                required: true,
+              ),
+              FormInput(
+                controller: _passwordController,
+                name: "Password",
+                protected: true,
+                required: true,
+              ),
+              SizedBox(height: 20),
+              FormInput(
+                controller: _uriController,
+                name: "URI",
+                protected: false,
+                required: false,
+              ),
+              SizedBox(height: 20),
+              FormInput(
+                controller: _remarkController,
+                name: "Remark",
+                protected: false,
+                required: false,
               ),
             ],
           ),

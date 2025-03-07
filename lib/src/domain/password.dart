@@ -28,8 +28,11 @@ class Password {
   int type;
   int categoryId;
   String title;
+
   DateTime? expireTime;
   ProtectedValue value;
+  String? username;
+  String? url;
   String? remark;
   DateTime createTime;
   DateTime lastUpdateTime;
@@ -40,6 +43,8 @@ class Password {
       required this.title,
       this.expireTime,
       required this.value,
+      this.username,
+      this.url,
       this.remark,
       required this.categoryId,
       required this.createTime,
