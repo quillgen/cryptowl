@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cryptowl/src/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +20,26 @@ class PasswordCreatePage extends ConsumerStatefulWidget {
 
 const formTextStyle = TextStyle(fontSize: 14);
 
+typedef IconEntry = DropdownMenuEntry<ClassificationLabel>;
+
+enum ClassificationLabel {
+  confidential('Confidential', Icons.abc),
+  secret('Secret', Icons.shield),
+  topSecret('Top Secret', Icons.shield);
+
+  const ClassificationLabel(this.label, this.icon);
+
+  final String label;
+  final IconData icon;
+
+  static final List<IconEntry> entries = UnmodifiableListView<IconEntry>(
+    values.map<IconEntry>(
+      (ClassificationLabel icon) => IconEntry(
+          value: icon, label: icon.label, leadingIcon: Icon(icon.icon)),
+    ),
+  );
+}
+
 class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -25,6 +47,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   final _uriController = TextEditingController();
   final _passwordController = TextEditingController();
   final _remarkController = TextEditingController();
+  final _iconController = TextEditingController();
 
   @override
   void dispose() {
@@ -33,6 +56,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
     _passwordController.dispose();
     _uriController.dispose();
     _remarkController.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 
@@ -68,33 +92,48 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
           key: _formKey,
           child: Column(
             children: <Widget>[
+              DropdownMenu<ClassificationLabel>(
+                expandedInsets: EdgeInsets.zero,
+                controller: _iconController,
+                requestFocusOnTap: true,
+                leadingIcon: const Icon(Icons.local_police),
+                label: const Text('Classification'),
+                inputDecorationTheme: const InputDecorationTheme(
+                  filled: true,
+                  isDense: true,
+                ),
+                onSelected: (ClassificationLabel? icon) {},
+                dropdownMenuEntries: ClassificationLabel.entries,
+              ),
+              SizedBox(height: 10),
               FormInput(
                 controller: _titleController,
                 name: "Name",
                 protected: false,
                 required: true,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               FormInput(
                 controller: _usernameController,
                 name: "Username",
                 protected: false,
                 required: true,
               ),
+              SizedBox(height: 10),
               FormInput(
                 controller: _passwordController,
                 name: "Password",
                 protected: true,
                 required: true,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               FormInput(
                 controller: _uriController,
                 name: "URI",
                 protected: false,
                 required: false,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               FormInput(
                 controller: _remarkController,
                 name: "Remark",

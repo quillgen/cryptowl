@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const formTextStyle = TextStyle(fontSize: 14);
+const formTextStyle = TextStyle();
 
 enum Menu { copy, show, generate }
 

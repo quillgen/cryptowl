@@ -41,6 +41,7 @@ dependencies:
   flutter_adaptive_scaffold: ^0.3.2
   google_fonts: ^6.2.1
   package_info_plus: ^8.3.0
+  radio_group_v2: ^3.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
