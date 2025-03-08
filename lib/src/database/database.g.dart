@@ -334,6 +334,14 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT 1',
       defaultValue: const CustomExpression('1'));
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, false,
@@ -414,6 +422,7 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
   List<GeneratedColumn> get $columns => [
         id,
         type,
+        classification,
         title,
         value,
         expireTime,
@@ -444,6 +453,12 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
     if (data.containsKey('type')) {
       context.handle(
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    }
+    if (data.containsKey('classification')) {
+      context.handle(
+          _classificationMeta,
+          classification.isAcceptableOrUnknown(
+              data['classification']!, _classificationMeta));
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -520,6 +535,8 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       value: attachedDatabase.typeMapping
@@ -560,6 +577,7 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
 class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String value;
   final String? expireTime;
@@ -574,6 +592,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   const PasswordEntity(
       {required this.id,
       required this.type,
+      required this.classification,
       required this.title,
       required this.value,
       this.expireTime,
@@ -590,6 +609,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['type'] = Variable<int>(type);
+    map['classification'] = Variable<int>(classification);
     map['title'] = Variable<String>(title);
     map['value'] = Variable<String>(value);
     if (!nullToAbsent || expireTime != null) {
@@ -616,6 +636,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return PasswordsCompanion(
       id: Value(id),
       type: Value(type),
+      classification: Value(classification),
       title: Value(title),
       value: Value(value),
       expireTime: expireTime == null && nullToAbsent
@@ -641,6 +662,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return PasswordEntity(
       id: serializer.fromJson<String>(json['id']),
       type: serializer.fromJson<int>(json['type']),
+      classification: serializer.fromJson<int>(json['classification']),
       title: serializer.fromJson<String>(json['title']),
       value: serializer.fromJson<String>(json['value']),
       expireTime: serializer.fromJson<String?>(json['expire_time']),
@@ -660,6 +682,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'type': serializer.toJson<int>(type),
+      'classification': serializer.toJson<int>(classification),
       'title': serializer.toJson<String>(title),
       'value': serializer.toJson<String>(value),
       'expire_time': serializer.toJson<String?>(expireTime),
@@ -677,6 +700,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   PasswordEntity copyWith(
           {String? id,
           int? type,
+          int? classification,
           String? title,
           String? value,
           Value<String?> expireTime = const Value.absent(),
@@ -691,6 +715,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       PasswordEntity(
         id: id ?? this.id,
         type: type ?? this.type,
+        classification: classification ?? this.classification,
         title: title ?? this.title,
         value: value ?? this.value,
         expireTime: expireTime.present ? expireTime.value : this.expireTime,
@@ -707,6 +732,9 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return PasswordEntity(
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
+      classification: data.classification.present
+          ? data.classification.value
+          : this.classification,
       title: data.title.present ? data.title.value : this.title,
       value: data.value.present ? data.value.value : this.value,
       expireTime:
@@ -732,6 +760,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return (StringBuffer('PasswordEntity(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('classification: $classification, ')
           ..write('title: $title, ')
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
@@ -751,6 +780,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
   int get hashCode => Object.hash(
       id,
       type,
+      classification,
       title,
       value,
       expireTime,
@@ -768,6 +798,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
       (other is PasswordEntity &&
           other.id == this.id &&
           other.type == this.type &&
+          other.classification == this.classification &&
           other.title == this.title &&
           other.value == this.value &&
           other.expireTime == this.expireTime &&
@@ -784,6 +815,7 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
 class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   final Value<String> id;
   final Value<int> type;
+  final Value<int> classification;
   final Value<String> title;
   final Value<String> value;
   final Value<String?> expireTime;
@@ -799,6 +831,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   const PasswordsCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
+    this.classification = const Value.absent(),
     this.title = const Value.absent(),
     this.value = const Value.absent(),
     this.expireTime = const Value.absent(),
@@ -815,6 +848,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   PasswordsCompanion.insert({
     required String id,
     this.type = const Value.absent(),
+    this.classification = const Value.absent(),
     required String title,
     required String value,
     this.expireTime = const Value.absent(),
@@ -835,6 +869,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   static Insertable<PasswordEntity> custom({
     Expression<String>? id,
     Expression<int>? type,
+    Expression<int>? classification,
     Expression<String>? title,
     Expression<String>? value,
     Expression<String>? expireTime,
@@ -851,6 +886,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
+      if (classification != null) 'classification': classification,
       if (title != null) 'title': title,
       if (value != null) 'value': value,
       if (expireTime != null) 'expire_time': expireTime,
@@ -869,6 +905,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
   PasswordsCompanion copyWith(
       {Value<String>? id,
       Value<int>? type,
+      Value<int>? classification,
       Value<String>? title,
       Value<String>? value,
       Value<String?>? expireTime,
@@ -884,6 +921,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     return PasswordsCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
+      classification: classification ?? this.classification,
       title: title ?? this.title,
       value: value ?? this.value,
       expireTime: expireTime ?? this.expireTime,
@@ -907,6 +945,9 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     }
     if (type.present) {
       map['type'] = Variable<int>(type.value);
+    }
+    if (classification.present) {
+      map['classification'] = Variable<int>(classification.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -952,6 +993,7 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     return (StringBuffer('PasswordsCompanion(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('classification: $classification, ')
           ..write('title: $title, ')
           ..write('value: $value, ')
           ..write('expireTime: $expireTime, ')
@@ -1363,13 +1405,14 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final Attributes attributes = Attributes(this);
   Selectable<ActivePasswordsResult> activePasswords() {
     return customSelect(
-        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
         variables: [],
         readsFrom: {
           passwords,
         }).map((QueryRow row) => ActivePasswordsResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
           title: row.read<String>('title'),
           expireTime: row.readNullable<String>('expire_time'),
           categoryId: row.read<int>('category_id'),
@@ -1380,7 +1423,7 @@ abstract class _$AppDb extends GeneratedDatabase {
 
   Selectable<PasswordsByCategoryResult> passwordsByCategory(int var1) {
     return customSelect(
-        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND category_id = ?1',
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND category_id = ?1',
         variables: [
           Variable<int>(var1)
         ],
@@ -1389,6 +1432,7 @@ abstract class _$AppDb extends GeneratedDatabase {
         }).map((QueryRow row) => PasswordsByCategoryResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
           title: row.read<String>('title'),
           expireTime: row.readNullable<String>('expire_time'),
           categoryId: row.read<int>('category_id'),
@@ -1399,7 +1443,7 @@ abstract class _$AppDb extends GeneratedDatabase {
 
   Selectable<PasswordsByTypeResult> passwordsByType(int var1) {
     return customSelect(
-        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND type = ?1',
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND type = ?1',
         variables: [
           Variable<int>(var1)
         ],
@@ -1408,6 +1452,7 @@ abstract class _$AppDb extends GeneratedDatabase {
         }).map((QueryRow row) => PasswordsByTypeResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
           title: row.read<String>('title'),
           expireTime: row.readNullable<String>('expire_time'),
           categoryId: row.read<int>('category_id'),
@@ -1418,13 +1463,14 @@ abstract class _$AppDb extends GeneratedDatabase {
 
   Selectable<FavoritePasswordsResult> favoritePasswords() {
     return customSelect(
-        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND is_favorite = 1',
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND is_favorite = 1',
         variables: [],
         readsFrom: {
           passwords,
         }).map((QueryRow row) => FavoritePasswordsResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
           title: row.read<String>('title'),
           expireTime: row.readNullable<String>('expire_time'),
           categoryId: row.read<int>('category_id'),
@@ -1435,13 +1481,14 @@ abstract class _$AppDb extends GeneratedDatabase {
 
   Selectable<DeletedPasswordsResult> deletedPasswords() {
     return customSelect(
-        'SELECT id, type, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 1',
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 1',
         variables: [],
         readsFrom: {
           passwords,
         }).map((QueryRow row) => DeletedPasswordsResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
           title: row.read<String>('title'),
           expireTime: row.readNullable<String>('expire_time'),
           categoryId: row.read<int>('category_id'),
@@ -1619,6 +1666,7 @@ typedef $CategoriesProcessedTableManager = ProcessedTableManager<
 typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
   required String id,
   Value<int> type,
+  Value<int> classification,
   required String title,
   required String value,
   Value<String?> expireTime,
@@ -1635,6 +1683,7 @@ typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
 typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
   Value<String> id,
   Value<int> type,
+  Value<int> classification,
   Value<String> title,
   Value<String> value,
   Value<String?> expireTime,
@@ -1662,6 +1711,10 @@ class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
 
   ColumnFilters<int> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
@@ -1712,6 +1765,10 @@ class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
   ColumnOrderings<int> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
 
@@ -1760,6 +1817,9 @@ class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
 
   GeneratedColumn<int> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<int> get classification => $composableBuilder(
+      column: $table.classification, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
@@ -1820,6 +1880,7 @@ class $PasswordsTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<int> type = const Value.absent(),
+            Value<int> classification = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> value = const Value.absent(),
             Value<String?> expireTime = const Value.absent(),
@@ -1836,6 +1897,7 @@ class $PasswordsTableManager extends RootTableManager<
               PasswordsCompanion(
             id: id,
             type: type,
+            classification: classification,
             title: title,
             value: value,
             expireTime: expireTime,
@@ -1852,6 +1914,7 @@ class $PasswordsTableManager extends RootTableManager<
           createCompanionCallback: ({
             required String id,
             Value<int> type = const Value.absent(),
+            Value<int> classification = const Value.absent(),
             required String title,
             required String value,
             Value<String?> expireTime = const Value.absent(),
@@ -1868,6 +1931,7 @@ class $PasswordsTableManager extends RootTableManager<
               PasswordsCompanion.insert(
             id: id,
             type: type,
+            classification: classification,
             title: title,
             value: value,
             expireTime: expireTime,
@@ -2103,6 +2167,7 @@ class $AppDbManager {
 class ActivePasswordsResult {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String? expireTime;
   final int categoryId;
@@ -2111,6 +2176,7 @@ class ActivePasswordsResult {
   ActivePasswordsResult({
     required this.id,
     required this.type,
+    required this.classification,
     required this.title,
     this.expireTime,
     required this.categoryId,
@@ -2122,6 +2188,7 @@ class ActivePasswordsResult {
 class PasswordsByCategoryResult {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String? expireTime;
   final int categoryId;
@@ -2130,6 +2197,7 @@ class PasswordsByCategoryResult {
   PasswordsByCategoryResult({
     required this.id,
     required this.type,
+    required this.classification,
     required this.title,
     this.expireTime,
     required this.categoryId,
@@ -2141,6 +2209,7 @@ class PasswordsByCategoryResult {
 class PasswordsByTypeResult {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String? expireTime;
   final int categoryId;
@@ -2149,6 +2218,7 @@ class PasswordsByTypeResult {
   PasswordsByTypeResult({
     required this.id,
     required this.type,
+    required this.classification,
     required this.title,
     this.expireTime,
     required this.categoryId,
@@ -2160,6 +2230,7 @@ class PasswordsByTypeResult {
 class FavoritePasswordsResult {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String? expireTime;
   final int categoryId;
@@ -2168,6 +2239,7 @@ class FavoritePasswordsResult {
   FavoritePasswordsResult({
     required this.id,
     required this.type,
+    required this.classification,
     required this.title,
     this.expireTime,
     required this.categoryId,
@@ -2179,6 +2251,7 @@ class FavoritePasswordsResult {
 class DeletedPasswordsResult {
   final String id;
   final int type;
+  final int classification;
   final String title;
   final String? expireTime;
   final int categoryId;
@@ -2187,6 +2260,7 @@ class DeletedPasswordsResult {
   DeletedPasswordsResult({
     required this.id,
     required this.type,
+    required this.classification,
     required this.title,
     this.expireTime,
     required this.categoryId,

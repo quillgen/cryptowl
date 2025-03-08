@@ -1,27 +1,26 @@
 import 'package:cryptowl/src/components/password_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'drawer_menu.dart';
+import '../providers.dart';
+import 'filter_drawer.dart';
+import 'menu_drawer.dart';
 import 'password_create_page.dart';
 
-enum FilterMenu {
-  all,
-  favorite,
-  deleted,
-}
-
-class ValutPage extends StatefulWidget {
+class ValutPage extends ConsumerStatefulWidget {
   const ValutPage({super.key});
 
   static const String path = '/myvalut';
   static const String name = 'MyValut';
 
   @override
-  State<ValutPage> createState() => _ValutPageState();
+  ConsumerState<ValutPage> createState() => _ValutPageState();
 }
 
-class _ValutPageState extends State<ValutPage> with TickerProviderStateMixin {
+class _ValutPageState extends ConsumerState<ValutPage>
+    with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   late TabController _tabController;
 
   @override
@@ -38,7 +37,15 @@ class _ValutPageState extends State<ValutPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final filterState = ref.watch(classificationFiltersProvider);
+    int filterCount = 0;
+    if (filterState.topSecret) filterCount++;
+    if (filterState.secret) filterCount++;
+    if (filterState.confidential) filterCount++;
+    if (filterState.includeDeleted) filterCount++;
+
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('My valut'),
         leading: Builder(
@@ -63,36 +70,15 @@ class _ValutPageState extends State<ValutPage> with TickerProviderStateMixin {
           ],
         ),
         actions: [
-          PopupMenuButton<FilterMenu>(
-            icon: const Icon(Icons.filter_alt),
-            tooltip: "Filter passwords",
-            onSelected: (FilterMenu item) {},
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<FilterMenu>>[
-              PopupMenuItem<FilterMenu>(
-                value: FilterMenu.all,
-                child: CheckboxListTile(
-                  title: Text("Top secret"),
-                  value: true,
-                  onChanged: (bool? value) {},
-                ),
-              ),
-              PopupMenuItem<FilterMenu>(
-                value: FilterMenu.favorite,
-                child: CheckboxListTile(
-                  title: Text("Secret"),
-                  value: true,
-                  onChanged: (bool? value) {},
-                ),
-              ),
-              PopupMenuItem<FilterMenu>(
-                value: FilterMenu.deleted,
-                child: CheckboxListTile(
-                  title: Text("Confidential"),
-                  value: true,
-                  onChanged: (bool? value) {},
-                ),
-              ),
-            ],
+          IconButton(
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
+            },
+            icon: filterCount == 0
+                ? Icon(Icons.filter_alt)
+                : Badge.count(
+                    count: filterCount, child: const Icon(Icons.filter_alt)),
+            tooltip: "Filter",
           ),
           IconButton(
             onPressed: () {},
@@ -106,7 +92,8 @@ class _ValutPageState extends State<ValutPage> with TickerProviderStateMixin {
           ),
         ],
       ),
-      drawer: DrawerMenu(),
+      drawer: MenuDrawer(),
+      endDrawer: FilterDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.goNamed(

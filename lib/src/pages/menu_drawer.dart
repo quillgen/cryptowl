@@ -23,8 +23,8 @@ class VersionInfo extends ConsumerWidget {
   }
 }
 
-class DrawerMenu extends ConsumerWidget {
-  const DrawerMenu({super.key});
+class MenuDrawer extends ConsumerWidget {
+  const MenuDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

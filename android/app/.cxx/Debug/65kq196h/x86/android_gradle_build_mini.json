@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/riguz/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/riguz/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/riguz/Workspace/cryptowl/android/app/.cxx/Debug/65kq196h/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/riguz/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/riguz/Workspace/cryptowl/android/app/.cxx/Debug/65kq196h/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

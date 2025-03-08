@@ -106,6 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const Text("Please login use you master password."),
             SizedBox(height: 20),
             TextField(
+              autofocus: true,
               controller: _inputController,
               obscureText: true,
               textInputAction: TextInputAction.go,

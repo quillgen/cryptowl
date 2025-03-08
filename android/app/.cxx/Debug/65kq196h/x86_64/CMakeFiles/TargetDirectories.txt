@@ -1,0 +1,2 @@
+/Users/riguz/Workspace/cryptowl/android/app/.cxx/Debug/65kq196h/x86_64/CMakeFiles/edit_cache.dir
+/Users/riguz/Workspace/cryptowl/android/app/.cxx/Debug/65kq196h/x86_64/CMakeFiles/rebuild_cache.dir

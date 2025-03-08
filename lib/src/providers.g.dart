@@ -184,5 +184,23 @@ final selectedCategoryProvider =
 );
 
 typedef _$SelectedCategory = AutoDisposeNotifier<int>;
+String _$classificationFiltersHash() =>
+    r'a3ad2fac2ea28986c5e8fa65ebf79ad1c511bf82';
+
+/// See also [ClassificationFilters].
+@ProviderFor(ClassificationFilters)
+final classificationFiltersProvider = AutoDisposeNotifierProvider<
+    ClassificationFilters, ClassificationFilterState>.internal(
+  ClassificationFilters.new,
+  name: r'classificationFiltersProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$classificationFiltersHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ClassificationFilters
+    = AutoDisposeNotifier<ClassificationFilterState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

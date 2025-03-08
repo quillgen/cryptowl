@@ -1,6 +1,7 @@
 import 'package:cryptowl/main.dart';
 import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,6 +13,7 @@ import 'service/app_service.dart';
 import 'service/category_repository.dart';
 import 'service/kdbx_service.dart';
 
+part 'providers.freezed.dart';
 part 'providers.g.dart';
 
 @riverpod
@@ -106,6 +108,52 @@ class SelectedCategory extends _$SelectedCategory {
 
   void setSelectedCategory(int selected) {
     state = selected;
+  }
+}
+
+@freezed
+abstract class ClassificationFilterState with _$ClassificationFilterState {
+  const factory ClassificationFilterState({
+    required bool topSecret,
+    required bool secret,
+    required bool confidential,
+    required bool includeDeleted,
+  }) = _ClassificationFilterState;
+}
+
+@riverpod
+class ClassificationFilters extends _$ClassificationFilters {
+  @override
+  ClassificationFilterState build() {
+    return ClassificationFilterState(
+        topSecret: false,
+        secret: false,
+        confidential: false,
+        includeDeleted: false);
+  }
+
+  void clearFilters() {
+    state = ClassificationFilterState(
+        topSecret: false,
+        secret: false,
+        confidential: false,
+        includeDeleted: false);
+  }
+
+  void checkTopSecret(bool checked) {
+    state = state.copyWith(topSecret: checked);
+  }
+
+  void checkSecret(bool checked) {
+    state = state.copyWith(secret: checked);
+  }
+
+  void checkConfidential(bool checked) {
+    state = state.copyWith(confidential: checked);
+  }
+
+  void checkIncludeDeleted(bool checked) {
+    state = state.copyWith(includeDeleted: checked);
   }
 }
 

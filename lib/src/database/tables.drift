@@ -9,6 +9,7 @@ CREATE TABLE categories (
 CREATE TABLE passwords (
     id CHAR(36) NOT NULL PRIMARY KEY,
     type INTEGER NOT NULL DEFAULT 1,
+    classification INTEGER NOT NULL DEFAULT 0,
     title TEXT NOT NULL,
     value TEXT NOT NULL,
     expire_time TEXT,
@@ -24,27 +25,27 @@ CREATE TABLE passwords (
 ) As PasswordEntity;
 
 activePasswords:
-    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords
     WHERE is_deleted=0; 
 
 passwordsByCategory:
-    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords
     WHERE is_deleted=0 and category_id=?; 
 
 passwordsByType:
-    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords
     WHERE is_deleted=0 and type=?; 
 
 favoritePasswords:
-SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords
     WHERE is_deleted=0 and is_favorite=1; 
 
 deletedPasswords: 
-    SELECT id, type, title, expire_time, category_id, create_time, last_update_time
+    SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords
     WHERE is_deleted=1; 
 

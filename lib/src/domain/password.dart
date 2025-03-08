@@ -3,11 +3,16 @@ import 'package:kdbx/kdbx.dart';
 
 import '../database/database.dart';
 
+const CONFIDENTIAL = -1;
+const SECRET = 0;
+const TOP_SECRET = 99;
+
 class PasswordBasic {
   String id;
   int type;
   int categoryId;
   String title;
+  int classification;
   DateTime? expireTime;
   DateTime createTime;
   DateTime lastUpdateTime;
@@ -17,6 +22,7 @@ class PasswordBasic {
     required this.type,
     required this.categoryId,
     required this.title,
+    this.classification = SECRET,
     this.expireTime,
     required this.createTime,
     required this.lastUpdateTime,
@@ -26,6 +32,7 @@ class PasswordBasic {
 class Password {
   String id;
   int type;
+  int classification;
   int categoryId;
   String title;
   DateTime? expireTime;
@@ -39,6 +46,7 @@ class Password {
   Password(
       {required this.id,
       required this.type,
+      this.classification = SECRET,
       required this.title,
       this.expireTime,
       required this.value,
@@ -53,6 +61,7 @@ class Password {
     return PasswordsCompanion(
       id: Value.absentIfNull(id),
       type: Value(type),
+      classification: Value(classification),
       title: Value(title),
       value: Value(value.getText()),
       username: Value.absentIfNull(username),
@@ -69,6 +78,7 @@ class Password {
     return Password(
       id: entity.id,
       type: entity.type,
+      classification: entity.classification,
       categoryId: entity.categoryId,
       title: entity.title,
       username: entity.username,
