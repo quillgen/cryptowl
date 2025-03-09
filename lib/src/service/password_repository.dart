@@ -6,7 +6,7 @@ import '../database/database.dart';
 import '../domain/password.dart';
 
 class PasswordRepository {
-  final AppDb db;
+  final SqliteDb db;
   final uuid = Uuid();
 
   PasswordRepository(this.db);
@@ -104,7 +104,8 @@ class PasswordRepository {
     return item;
   }
 
-  Future<Password> create(String title, ProtectedValue value,
+  Future<Password> create(
+      int classification, String title, ProtectedValue value,
       {String? url, String? username, String? remark}) async {
     final now = DateTime.now();
     final item = Password(

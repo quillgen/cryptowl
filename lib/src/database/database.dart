@@ -6,18 +6,19 @@ import 'package:drift/native.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3/open.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
+import 'package:sqlite3/open.dart';
 
 import '../../main.dart';
+import '../config/version.dart';
 
 // run `dart run build_runner build` to generate
 part 'database.g.dart';
 
 @DriftDatabase(include: {'tables.drift'})
-class AppDb extends _$AppDb {
-  AppDb.from(QueryExecutor e) : super(e);
-  AppDb.open(String file, ProtectedValue password)
+class SqliteDb extends _$SqliteDb {
+  SqliteDb.from(QueryExecutor e) : super(e);
+  SqliteDb.open(String file, ProtectedValue password)
       : super(_openDatabase(file, password));
 
   @override
@@ -71,9 +72,9 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
           );
         } else {
           final cipherVersion = result.single['cipher_version'];
-          if (cipherVersion != '4.5.7 community') {
+          if (cipherVersion != SQLCIPHER_VERSION) {
             throw UnsupportedError(
-              'This application only supports SQLCipher with version=4.5.7 community, '
+              "This application only supports SQLCipher with version=$SQLCIPHER_VERSION, "
               'however database with version=$cipherVersion detected',
             );
           }

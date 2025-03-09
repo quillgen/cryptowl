@@ -74,11 +74,11 @@ final categoryRepositoryProvider = Provider<CategoryRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CategoryRepositoryRef = ProviderRef<CategoryRepository>;
-String _$userDatabaseHash() => r'99ddb816d972a970aff559738b1695a832497af3';
+String _$userDatabaseHash() => r'af8c2dff94a2294f49805f1ace71dce8751c89de';
 
 /// See also [userDatabase].
 @ProviderFor(userDatabase)
-final userDatabaseProvider = Provider<AppDb>.internal(
+final userDatabaseProvider = Provider<SqliteDb>.internal(
   userDatabase,
   name: r'userDatabaseProvider',
   debugGetCreateSourceHash:
@@ -89,7 +89,7 @@ final userDatabaseProvider = Provider<AppDb>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UserDatabaseRef = ProviderRef<AppDb>;
+typedef UserDatabaseRef = ProviderRef<SqliteDb>;
 String _$packageInfoHash() => r'907ba5b02ed285ba1e951e58a932554b0a8da650';
 
 /// See also [packageInfo].

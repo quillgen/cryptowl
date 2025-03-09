@@ -1397,9 +1397,9 @@ class AttributesCompanion extends UpdateCompanion<Attribute> {
   }
 }
 
-abstract class _$AppDb extends GeneratedDatabase {
-  _$AppDb(QueryExecutor e) : super(e);
-  $AppDbManager get managers => $AppDbManager(this);
+abstract class _$SqliteDb extends GeneratedDatabase {
+  _$SqliteDb(QueryExecutor e) : super(e);
+  $SqliteDbManager get managers => $SqliteDbManager(this);
   late final Categories categories = Categories(this);
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
@@ -1520,7 +1520,7 @@ typedef $CategoriesUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<String> lastUpdateTime,
 });
 
-class $CategoriesFilterComposer extends Composer<_$AppDb, Categories> {
+class $CategoriesFilterComposer extends Composer<_$SqliteDb, Categories> {
   $CategoriesFilterComposer({
     required super.$db,
     required super.$table,
@@ -1545,7 +1545,7 @@ class $CategoriesFilterComposer extends Composer<_$AppDb, Categories> {
       builder: (column) => ColumnFilters(column));
 }
 
-class $CategoriesOrderingComposer extends Composer<_$AppDb, Categories> {
+class $CategoriesOrderingComposer extends Composer<_$SqliteDb, Categories> {
   $CategoriesOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1570,7 +1570,7 @@ class $CategoriesOrderingComposer extends Composer<_$AppDb, Categories> {
       builder: (column) => ColumnOrderings(column));
 }
 
-class $CategoriesAnnotationComposer extends Composer<_$AppDb, Categories> {
+class $CategoriesAnnotationComposer extends Composer<_$SqliteDb, Categories> {
   $CategoriesAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1595,7 +1595,7 @@ class $CategoriesAnnotationComposer extends Composer<_$AppDb, Categories> {
 }
 
 class $CategoriesTableManager extends RootTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Categories,
     CategoryEntity,
     $CategoriesFilterComposer,
@@ -1603,10 +1603,10 @@ class $CategoriesTableManager extends RootTableManager<
     $CategoriesAnnotationComposer,
     $CategoriesCreateCompanionBuilder,
     $CategoriesUpdateCompanionBuilder,
-    (CategoryEntity, BaseReferences<_$AppDb, Categories, CategoryEntity>),
+    (CategoryEntity, BaseReferences<_$SqliteDb, Categories, CategoryEntity>),
     CategoryEntity,
     PrefetchHooks Function()> {
-  $CategoriesTableManager(_$AppDb db, Categories table)
+  $CategoriesTableManager(_$SqliteDb db, Categories table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -1652,7 +1652,7 @@ class $CategoriesTableManager extends RootTableManager<
 }
 
 typedef $CategoriesProcessedTableManager = ProcessedTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Categories,
     CategoryEntity,
     $CategoriesFilterComposer,
@@ -1660,7 +1660,7 @@ typedef $CategoriesProcessedTableManager = ProcessedTableManager<
     $CategoriesAnnotationComposer,
     $CategoriesCreateCompanionBuilder,
     $CategoriesUpdateCompanionBuilder,
-    (CategoryEntity, BaseReferences<_$AppDb, Categories, CategoryEntity>),
+    (CategoryEntity, BaseReferences<_$SqliteDb, Categories, CategoryEntity>),
     CategoryEntity,
     PrefetchHooks Function()>;
 typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
@@ -1698,7 +1698,7 @@ typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
   Value<int> rowid,
 });
 
-class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
+class $PasswordsFilterComposer extends Composer<_$SqliteDb, Passwords> {
   $PasswordsFilterComposer({
     required super.$db,
     required super.$table,
@@ -1751,7 +1751,7 @@ class $PasswordsFilterComposer extends Composer<_$AppDb, Passwords> {
       column: $table.isDeleted, builder: (column) => ColumnFilters(column));
 }
 
-class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
+class $PasswordsOrderingComposer extends Composer<_$SqliteDb, Passwords> {
   $PasswordsOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1804,7 +1804,7 @@ class $PasswordsOrderingComposer extends Composer<_$AppDb, Passwords> {
       column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
 }
 
-class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
+class $PasswordsAnnotationComposer extends Composer<_$SqliteDb, Passwords> {
   $PasswordsAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1856,7 +1856,7 @@ class $PasswordsAnnotationComposer extends Composer<_$AppDb, Passwords> {
 }
 
 class $PasswordsTableManager extends RootTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Passwords,
     PasswordEntity,
     $PasswordsFilterComposer,
@@ -1864,10 +1864,10 @@ class $PasswordsTableManager extends RootTableManager<
     $PasswordsAnnotationComposer,
     $PasswordsCreateCompanionBuilder,
     $PasswordsUpdateCompanionBuilder,
-    (PasswordEntity, BaseReferences<_$AppDb, Passwords, PasswordEntity>),
+    (PasswordEntity, BaseReferences<_$SqliteDb, Passwords, PasswordEntity>),
     PasswordEntity,
     PrefetchHooks Function()> {
-  $PasswordsTableManager(_$AppDb db, Passwords table)
+  $PasswordsTableManager(_$SqliteDb db, Passwords table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -1953,7 +1953,7 @@ class $PasswordsTableManager extends RootTableManager<
 }
 
 typedef $PasswordsProcessedTableManager = ProcessedTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Passwords,
     PasswordEntity,
     $PasswordsFilterComposer,
@@ -1961,7 +1961,7 @@ typedef $PasswordsProcessedTableManager = ProcessedTableManager<
     $PasswordsAnnotationComposer,
     $PasswordsCreateCompanionBuilder,
     $PasswordsUpdateCompanionBuilder,
-    (PasswordEntity, BaseReferences<_$AppDb, Passwords, PasswordEntity>),
+    (PasswordEntity, BaseReferences<_$SqliteDb, Passwords, PasswordEntity>),
     PasswordEntity,
     PrefetchHooks Function()>;
 typedef $AttributesCreateCompanionBuilder = AttributesCompanion Function({
@@ -1983,7 +1983,7 @@ typedef $AttributesUpdateCompanionBuilder = AttributesCompanion Function({
   Value<String> lastUpdateTime,
 });
 
-class $AttributesFilterComposer extends Composer<_$AppDb, Attributes> {
+class $AttributesFilterComposer extends Composer<_$SqliteDb, Attributes> {
   $AttributesFilterComposer({
     required super.$db,
     required super.$table,
@@ -2014,7 +2014,7 @@ class $AttributesFilterComposer extends Composer<_$AppDb, Attributes> {
       builder: (column) => ColumnFilters(column));
 }
 
-class $AttributesOrderingComposer extends Composer<_$AppDb, Attributes> {
+class $AttributesOrderingComposer extends Composer<_$SqliteDb, Attributes> {
   $AttributesOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2045,7 +2045,7 @@ class $AttributesOrderingComposer extends Composer<_$AppDb, Attributes> {
       builder: (column) => ColumnOrderings(column));
 }
 
-class $AttributesAnnotationComposer extends Composer<_$AppDb, Attributes> {
+class $AttributesAnnotationComposer extends Composer<_$SqliteDb, Attributes> {
   $AttributesAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2076,7 +2076,7 @@ class $AttributesAnnotationComposer extends Composer<_$AppDb, Attributes> {
 }
 
 class $AttributesTableManager extends RootTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Attributes,
     Attribute,
     $AttributesFilterComposer,
@@ -2084,10 +2084,10 @@ class $AttributesTableManager extends RootTableManager<
     $AttributesAnnotationComposer,
     $AttributesCreateCompanionBuilder,
     $AttributesUpdateCompanionBuilder,
-    (Attribute, BaseReferences<_$AppDb, Attributes, Attribute>),
+    (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
     Attribute,
     PrefetchHooks Function()> {
-  $AttributesTableManager(_$AppDb db, Attributes table)
+  $AttributesTableManager(_$SqliteDb db, Attributes table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2141,7 +2141,7 @@ class $AttributesTableManager extends RootTableManager<
 }
 
 typedef $AttributesProcessedTableManager = ProcessedTableManager<
-    _$AppDb,
+    _$SqliteDb,
     Attributes,
     Attribute,
     $AttributesFilterComposer,
@@ -2149,13 +2149,13 @@ typedef $AttributesProcessedTableManager = ProcessedTableManager<
     $AttributesAnnotationComposer,
     $AttributesCreateCompanionBuilder,
     $AttributesUpdateCompanionBuilder,
-    (Attribute, BaseReferences<_$AppDb, Attributes, Attribute>),
+    (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
     Attribute,
     PrefetchHooks Function()>;
 
-class $AppDbManager {
-  final _$AppDb _db;
-  $AppDbManager(this._db);
+class $SqliteDbManager {
+  final _$SqliteDb _db;
+  $SqliteDbManager(this._db);
   $CategoriesTableManager get categories =>
       $CategoriesTableManager(_db, _db.categories);
   $PasswordsTableManager get passwords =>

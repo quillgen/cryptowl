@@ -49,7 +49,7 @@ class CurrentUser extends _$CurrentUser {
 }
 
 @Riverpod(keepAlive: true)
-AppDb userDatabase(Ref ref) {
+SqliteDb userDatabase(Ref ref) {
   logger.fine("opening user db...");
   final currentUser = ref.watch(currentUserProvider);
   if (currentUser == null) {
@@ -57,7 +57,7 @@ AppDb userDatabase(Ref ref) {
     throw Exception("User not login");
   }
   final meta = currentUser.meta;
-  final db = AppDb.open("${meta.dbInstance}.enc", meta.dbEncryptionKey);
+  final db = SqliteDb.open("${meta.dbInstance}.enc", meta.dbEncryptionKey);
   ref.onDispose(() {
     logger.fine("Disposing db...");
     db.close();

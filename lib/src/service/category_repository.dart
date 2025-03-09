@@ -1,9 +1,10 @@
 import 'package:drift/drift.dart';
+
 import '../database/database.dart';
 import '../domain/category.dart';
 
 class CategoryRepository {
-  final AppDb db;
+  final SqliteDb db;
 
   CategoryRepository(this.db);
 

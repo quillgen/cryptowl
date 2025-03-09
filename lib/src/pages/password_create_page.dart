@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,14 +30,17 @@ enum ClassificationLabel {
       Icon(
         Icons.remove_moderator,
         color: Colors.green,
-      )),
-  secret('Secret', Icon(Icons.verified_user, color: Colors.orange)),
-  topSecret('Top Secret', Icon(Icons.verified_user, color: Colors.red));
+      ),
+      CONFIDENTIAL),
+  secret('Secret', Icon(Icons.verified_user, color: Colors.orange), SECRET),
+  topSecret(
+      'Top Secret', Icon(Icons.verified_user, color: Colors.red), TOP_SECRET);
 
-  const ClassificationLabel(this.label, this.icon);
+  const ClassificationLabel(this.label, this.icon, this.level);
 
   final String label;
   final Icon icon;
+  final int level;
 
   static final List<IconEntry> entries = UnmodifiableListView<IconEntry>(
     values.map<IconEntry>(
@@ -55,7 +59,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   final _remarkController = TextEditingController();
   final _classificationController = TextEditingController();
 
-  ClassificationLabel label = ClassificationLabel.secret;
+  ClassificationLabel classification = ClassificationLabel.secret;
 
   @override
   void dispose() {
@@ -71,7 +75,6 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   @override
   Widget build(BuildContext context) {
     final passwordRepository = ref.read(passwordRepositoryProvider);
-    print("$label");
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -80,7 +83,9 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
           TextButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  await passwordRepository.create(_titleController.text,
+                  await passwordRepository.create(
+                      classification.level,
+                      _titleController.text,
                       ProtectedValue.fromString(_passwordController.text),
                       username: _usernameController.text,
                       url: _uriController.text,
@@ -106,7 +111,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
                 controller: _classificationController,
                 initialSelection: ClassificationLabel.secret,
                 requestFocusOnTap: true,
-                leadingIcon: label.icon,
+                leadingIcon: classification.icon,
                 label: const Text('Classification'),
                 inputDecorationTheme: const InputDecorationTheme(
                   filled: true,
@@ -114,7 +119,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
                 ),
                 onSelected: (ClassificationLabel? value) {
                   setState(() {
-                    label = value ?? ClassificationLabel.secret;
+                    classification = value ?? ClassificationLabel.secret;
                   });
                 },
                 dropdownMenuEntries: ClassificationLabel.entries,

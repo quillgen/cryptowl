@@ -4,7 +4,7 @@ const formTextStyle = TextStyle();
 
 enum Menu { copy, show, generate }
 
-class FormInput extends StatelessWidget {
+class FormInput extends StatefulWidget {
   final String name;
   final bool protected;
   final bool required;
@@ -22,24 +22,44 @@ class FormInput extends StatelessWidget {
       this.readonly = false});
 
   @override
+  State<FormInput> createState() => _FormInputState();
+}
+
+class _FormInputState extends State<FormInput> {
+  late bool obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    obscureText = widget.protected;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
       style: formTextStyle,
-      controller: controller,
-      obscureText: protected,
-      readOnly: readonly,
-      initialValue: value,
+      controller: widget.controller,
+      obscureText: obscureText,
+      readOnly: widget.readonly,
+      initialValue: widget.value,
       decoration: InputDecoration(
-        prefixIcon: Icon(protected ? Icons.shield : Icons.abc),
-        labelText: name,
+        prefixIcon: Icon(widget.protected ? Icons.shield : Icons.abc),
+        labelText: widget.name,
         labelStyle: formTextStyle,
-        suffixIcon: protected
+        suffixIcon: widget.protected
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                      onPressed: () {}, icon: Icon(Icons.remove_red_eye)),
+                      onPressed: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                      icon: Icon(obscureText
+                          ? Icons.visibility_off
+                          : Icons.visibility)),
                   IconButton(onPressed: () {}, icon: Icon(Icons.lock_reset)),
                   PopupMenuButton<Menu>(
                     icon: const Icon(Icons.more_vert),
@@ -74,7 +94,7 @@ class FormInput extends StatelessWidget {
             : null,
       ),
       validator: (value) {
-        if (required && (value == null || value.isEmpty)) {
+        if (widget.required && (value == null || value.isEmpty)) {
           return 'Please enter some text';
         }
         return null;

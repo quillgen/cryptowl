@@ -119,7 +119,7 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 name: PasswordDetailPage.name,
                 path: PasswordDetailPage.path,
-                parentNavigatorKey: passwordsNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return const MaterialPage<void>(
                     //fullscreenDialog: true,
@@ -130,7 +130,7 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 name: PasswordEditPage.name,
                 path: PasswordEditPage.path,
-                parentNavigatorKey: passwordsNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return const MaterialPage<void>(
                     //fullscreenDialog: true,
@@ -141,7 +141,7 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 name: PasswordCreatePage.name,
                 path: PasswordCreatePage.path,
-                parentNavigatorKey: passwordsNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   return const MaterialPage<void>(
                     //fullscreenDialog: true,

@@ -21,7 +21,7 @@ class KdbxService {
     final credentials = Credentials(masterPassword);
     final kdbx = kdbxFormat.create(
       credentials,
-      'eDiting KeyStore',
+      'Cryptowl Kdbx',
     );
     final rootGroup = kdbx.body.rootGroup;
     final entry = KdbxEntry.create(kdbx, rootGroup);

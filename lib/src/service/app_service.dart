@@ -56,7 +56,7 @@ class AppService {
     final meta = await _kdbxService.loadMeta(kdbx);
     final dbFile = "${meta.dbInstance}.enc";
     logger.fine("Initializing database:$dbFile");
-    final db = AppDb.open(dbFile, meta.dbEncryptionKey);
+    final db = SqliteDb.open(dbFile, meta.dbEncryptionKey);
 
     // force to trigger database creation
     await db.select(db.passwords).get();
