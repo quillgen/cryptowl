@@ -1,5 +1,5 @@
 name: Run Tests
-run-name: ${{ github.actor }} running tests 🚀
+run-name: Unit test🚀
 on: [push]
 jobs:
   build:
@@ -15,5 +15,3 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build apk
-      - run: flutter build appbundle

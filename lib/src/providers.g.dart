@@ -6,6 +6,22 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$fileServiceHash() => r'60dd49ad3a0baccaf934d3be85807ed0ce176c54';
+
+/// See also [fileService].
+@ProviderFor(fileService)
+final fileServiceProvider = AutoDisposeProvider<FileService>.internal(
+  fileService,
+  name: r'fileServiceProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$fileServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FileServiceRef = AutoDisposeProviderRef<FileService>;
 String _$kdbxServiceHash() => r'48c787a4da4cb9d4d7e4ba89153605b60b89fca0';
 
 /// See also [kdbxService].
@@ -22,7 +38,7 @@ final kdbxServiceProvider = AutoDisposeProvider<KdbxService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef KdbxServiceRef = AutoDisposeProviderRef<KdbxService>;
-String _$appServiceHash() => r'e0a38da2c6978d45ed533050b99900ba4c60931b';
+String _$appServiceHash() => r'a7fe03eea5747a722c8adcdd1c5c27548163c2c4';
 
 /// See also [appService].
 @ProviderFor(appService)

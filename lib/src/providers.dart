@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/service/file_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -17,13 +18,19 @@ part 'providers.freezed.dart';
 part 'providers.g.dart';
 
 @riverpod
+FileService fileService(Ref ref) {
+  return FileService();
+}
+
+@riverpod
 KdbxService kdbxService(Ref ref) {
   return KdbxService();
 }
 
 @riverpod
 AppService appService(Ref ref) {
-  return AppService(ref.read(kdbxServiceProvider));
+  return AppService(
+      ref.read(fileServiceProvider), ref.read(kdbxServiceProvider));
 }
 
 @Riverpod(keepAlive: true)
