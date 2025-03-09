@@ -54,6 +54,7 @@ dev_dependencies:
   freezed: ^2.5.8
   json_serializable: ^6.9.4
   faker: ^2.2.0
+  mockito: ^5.4.5
 
 flutter:
   uses-material-design: true

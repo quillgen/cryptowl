@@ -23,7 +23,7 @@ KdbxService kdbxService(Ref ref) {
 
 @riverpod
 AppService appService(Ref ref) {
-  return AppService(ref, ref.read(kdbxServiceProvider));
+  return AppService(ref.read(kdbxServiceProvider));
 }
 
 @Riverpod(keepAlive: true)

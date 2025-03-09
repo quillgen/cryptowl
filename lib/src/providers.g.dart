@@ -22,7 +22,7 @@ final kdbxServiceProvider = AutoDisposeProvider<KdbxService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef KdbxServiceRef = AutoDisposeProviderRef<KdbxService>;
-String _$appServiceHash() => r'3c36ad8d532acbbbb527f693f8fcf03f87aa9ef2';
+String _$appServiceHash() => r'e0a38da2c6978d45ed533050b99900ba4c60931b';
 
 /// See also [appService].
 @ProviderFor(appService)
