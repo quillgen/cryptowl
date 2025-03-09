@@ -1,5 +1,3 @@
-import 'package:cryptowl/src/common/password_validator.dart';
-import 'package:cryptowl/src/components/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +5,8 @@ import 'package:kdbx/kdbx.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
+import '../common/password_validator.dart';
+import '../components/form_input.dart';
 import '../providers.dart';
 
 part 'onboarding.g.dart';

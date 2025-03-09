@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:cryptowl/src/domain/password.dart';
 import 'package:kdbx/kdbx.dart';
+
+import '../domain/password.dart';
 
 class EncryptionService {
   Future<String> encryptPassword(

@@ -1,8 +1,8 @@
-import 'package:cryptowl/src/components/password_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../components/password_list.dart';
 import '../providers.dart';
 import 'filter_drawer.dart';
 import 'menu_drawer.dart';

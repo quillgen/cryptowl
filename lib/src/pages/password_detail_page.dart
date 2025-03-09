@@ -1,4 +1,3 @@
-import 'package:cryptowl/src/components/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../main.dart';
+import '../components/form_input.dart';
 import '../domain/password.dart';
 import '../providers.dart';
 

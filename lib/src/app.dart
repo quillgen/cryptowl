@@ -1,6 +1,3 @@
-import 'package:cryptowl/main.dart';
-import 'package:cryptowl/src/pages/introduction.dart';
-import 'package:cryptowl/src/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../main.dart';
 import 'pages/generator_page.dart';
+import 'pages/introduction.dart';
 import 'pages/login.dart';
 import 'pages/more_page.dart';
 import 'pages/onboarding.dart';
@@ -16,6 +15,7 @@ import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
 import 'pages/send_page.dart';
+import 'pages/splash.dart';
 import 'pages/valut_page.dart';
 import 'providers.dart';
 import 'scaffold_shell.dart';

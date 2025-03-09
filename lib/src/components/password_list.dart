@@ -1,11 +1,11 @@
-import 'package:cryptowl/main.dart';
-import 'package:cryptowl/src/domain/password.dart';
-import 'package:cryptowl/src/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../main.dart';
+import '../domain/password.dart';
 import '../pages/password_detail_page.dart';
+import '../providers.dart';
 import 'empty.dart';
 
 enum FilterMenu {

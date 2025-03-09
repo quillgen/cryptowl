@@ -1,10 +1,9 @@
-import 'package:cryptowl/main.dart';
-import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../main.dart';
 import 'database/database.dart';
 import 'domain/category.dart';
 import 'domain/password.dart';
@@ -12,6 +11,7 @@ import 'domain/user.dart';
 import 'service/app_service.dart';
 import 'service/category_repository.dart';
 import 'service/kdbx_service.dart';
+import 'service/password_repository.dart';
 
 part 'providers.freezed.dart';
 part 'providers.g.dart';
