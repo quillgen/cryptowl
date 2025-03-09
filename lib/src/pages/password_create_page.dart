@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdbx/kdbx.dart';
 
+import '../components/dropdown_formfield.dart';
 import '../components/form_input.dart';
 
 class PasswordCreatePage extends ConsumerStatefulWidget {
@@ -23,19 +24,24 @@ const formTextStyle = TextStyle(fontSize: 14);
 typedef IconEntry = DropdownMenuEntry<ClassificationLabel>;
 
 enum ClassificationLabel {
-  confidential('Confidential', Icons.abc),
-  secret('Secret', Icons.shield),
-  topSecret('Top Secret', Icons.shield);
+  confidential(
+      'Confidential',
+      Icon(
+        Icons.remove_moderator,
+        color: Colors.green,
+      )),
+  secret('Secret', Icon(Icons.verified_user, color: Colors.orange)),
+  topSecret('Top Secret', Icon(Icons.verified_user, color: Colors.red));
 
   const ClassificationLabel(this.label, this.icon);
 
   final String label;
-  final IconData icon;
+  final Icon icon;
 
   static final List<IconEntry> entries = UnmodifiableListView<IconEntry>(
     values.map<IconEntry>(
-      (ClassificationLabel icon) => IconEntry(
-          value: icon, label: icon.label, leadingIcon: Icon(icon.icon)),
+      (ClassificationLabel icon) =>
+          IconEntry(value: icon, label: icon.label, leadingIcon: icon.icon),
     ),
   );
 }
@@ -47,7 +53,9 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
   final _uriController = TextEditingController();
   final _passwordController = TextEditingController();
   final _remarkController = TextEditingController();
-  final _iconController = TextEditingController();
+  final _classificationController = TextEditingController();
+
+  ClassificationLabel label = ClassificationLabel.secret;
 
   @override
   void dispose() {
@@ -56,14 +64,14 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
     _passwordController.dispose();
     _uriController.dispose();
     _remarkController.dispose();
-    _iconController.dispose();
+    _classificationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final passwordRepository = ref.read(passwordRepositoryProvider);
-
+    print("$label");
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -92,18 +100,34 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              DropdownMenu<ClassificationLabel>(
+              DropdownMenuFormField<ClassificationLabel>(
+                enableFilter: true,
                 expandedInsets: EdgeInsets.zero,
-                controller: _iconController,
+                controller: _classificationController,
+                initialSelection: ClassificationLabel.secret,
                 requestFocusOnTap: true,
-                leadingIcon: const Icon(Icons.local_police),
+                leadingIcon: label.icon,
                 label: const Text('Classification'),
                 inputDecorationTheme: const InputDecorationTheme(
                   filled: true,
                   isDense: true,
                 ),
-                onSelected: (ClassificationLabel? icon) {},
+                onSelected: (ClassificationLabel? value) {
+                  setState(() {
+                    label = value ?? ClassificationLabel.secret;
+                  });
+                },
                 dropdownMenuEntries: ClassificationLabel.entries,
+                validator: (ClassificationLabel? value) {
+                  final input = _classificationController.text;
+                  if (value == null ||
+                      !ClassificationLabel.values
+                          .map((label) => label.label)
+                          .contains(input)) {
+                    return 'Please select a classification.';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               FormInput(
