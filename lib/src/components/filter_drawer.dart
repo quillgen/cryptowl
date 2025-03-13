@@ -23,8 +23,9 @@ class PasswordFilterNotifier extends StateNotifier<List<PasswordFilter>> {
   List<PasswordFilter> check(
       List<PasswordFilter> selected, PasswordFilter option) {
     if (selected.contains(option)) {
-      selected.remove(option);
-      return [...selected];
+      final tmp = List<PasswordFilter>.from(selected);
+      tmp.remove(option);
+      return [...tmp];
     } else {
       return [option, ...selected];
     }

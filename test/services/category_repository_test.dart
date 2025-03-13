@@ -1,11 +1,22 @@
+import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
+import 'package:cryptowl/src/domain/user.dart';
+import 'package:cryptowl/src/providers/credentials.dart';
+import 'package:cryptowl/src/service/category_repository.dart';
 import 'package:drift/native.dart';
 import 'package:faker/faker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kdbx/kdbx.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+@GenerateMocks([Ref, KdbxFile, SqliteConfig])
+import 'category_repository_test.mocks.dart';
 
 void main() {
   late SqliteDb database;
-  //late CategoryRepository repository;
+  late CategoryRepository repository;
 
   Future<int> createCategories() async {
     const sql = """
@@ -19,12 +30,16 @@ void main() {
     return database.executor.runInsert(sql, []);
   }
 
+  final mockRef = MockRef();
+
   setUp(() async {
     database = SqliteDb.from(NativeDatabase.memory());
     await database.select(database.categories).get();
-    //repository = CategoryRepository();
+    repository = CategoryRepository(mockRef);
 
     await createCategories();
+
+    provideDummy<Future<Session?>>(Future.value(null));
   });
 
   tearDown(() async {
@@ -50,8 +65,11 @@ void main() {
     print(sql);
   }, skip: true);
 
-  // test('should get all categories', () async {
-  //   final list = await repository.list();
-  //   expect(list.length, 5); // category 1 is default and migrated
-  // });
+  test('should get all categories', () async {
+    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
+        (_) async => Session(MockKdbxFile(), MockSqliteConfig(), database));
+
+    final list = await repository.list();
+    expect(list.length, 5); // category 1 is default and migrated
+  });
 }

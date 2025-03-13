@@ -23,7 +23,6 @@ final fileServiceProvider = Provider((ref) {
 
 final appServiceProvider = Provider((ref) {
   return AppService(
-    ref,
     ref.read(fileServiceProvider),
   );
 });

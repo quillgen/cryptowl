@@ -1,13 +1,12 @@
+import 'package:cryptowl/src/service/app_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
-import 'package:cryptowl/src/service/kdbx_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-// Annotation which generates the cat.mocks.dart library and the MockCat class.
-@GenerateNiceMocks([MockSpec<FileService>(), MockSpec<KdbxService>()])
+@GenerateNiceMocks([MockSpec<FileService>()])
 import 'app_service_test.mocks.dart';
 
 const String kTemporaryPath = 'temporaryPath';
@@ -67,8 +66,8 @@ class MockPathProviderPlatform extends Mock
 
 void main() {
   final mockFileService = MockFileService();
-  //final mockKdbxService = MockKdbxService();
-  //final service = AppService(mockFileService, mockKdbxService);
+
+  final service = AppService(mockFileService);
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -76,19 +75,19 @@ void main() {
     PathProviderPlatform.instance = MockPathProviderPlatform();
   });
 
-  // group("check app initialization", () {
-  //   test('should return false if config file not exists', () async {
-  //     when(mockFileService.hasConfigFile()).thenAnswer((_) async => false);
-  //     final initialized = await service.isInitialized();
+  group("check app initialization", () {
+    test('should return false if config file not exists', () async {
+      when(mockFileService.hasConfigFile()).thenAnswer((_) async => false);
+      final initialized = await service.isInitialized();
 
-  //     expect(initialized, false);
-  //   });
+      expect(initialized, false);
+    });
 
-  //   test('should return true if config file exists', () async {
-  //     when(mockFileService.hasConfigFile()).thenAnswer((_) async => true);
-  //     final initialized = await service.isInitialized();
+    test('should return true if config file exists', () async {
+      when(mockFileService.hasConfigFile()).thenAnswer((_) async => true);
+      final initialized = await service.isInitialized();
 
-  //     expect(initialized, true);
-  //   });
-  // });
+      expect(initialized, true);
+    });
+  });
 }

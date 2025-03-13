@@ -1,15 +1,27 @@
 import 'dart:math';
 
 import 'package:cryptowl/src/common/random_util.dart';
+import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
+import 'package:cryptowl/src/domain/user.dart';
+import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:drift/native.dart';
 import 'package:faker/faker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kdbx/kdbx.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+@GenerateMocks([Ref, KdbxFile, SqliteConfig])
+import 'password_repository_test.mocks.dart';
 
 void main() {
   late SqliteDb database;
   late PasswordRepository repository;
+
+  final mockRef = MockRef();
 
   Future<int> createPasswords() async {
     const sql = """
@@ -32,9 +44,13 @@ void main() {
   setUp(() async {
     database = SqliteDb.from(NativeDatabase.memory());
     await database.select(database.categories).get();
-    // repository = PasswordRepository(database);
+    repository = PasswordRepository(mockRef);
 
     await createPasswords();
+    provideDummy<Future<Session?>>(Future.value(null));
+
+    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
+        (_) async => Session(MockKdbxFile(), MockSqliteConfig(), database));
   });
 
   tearDown(() async {
@@ -66,32 +82,32 @@ void main() {
     print(sql);
   }, skip: true);
 
-  // test('should get all undeleted passwords', () async {
-  //   final list = await repository.list();
-  //   expect(list.length, 8);
-  // });
+  test('should get all undeleted passwords', () async {
+    final list = await repository.list();
+    expect(list.length, 8);
+  });
 
-  // test('should get deleted passwords', () async {
-  //   final list = await repository.listDeleted();
-  //   expect(list.length, 2);
-  // });
+  test('should get deleted passwords', () async {
+    final list = await repository.listDeleted();
+    expect(list.length, 2);
+  });
 
-  // test('should get favorite passwords', () async {
-  //   final list = await repository.listFavorite();
-  //   expect(list.length, 5);
-  // });
+  test('should get favorite passwords', () async {
+    final list = await repository.listFavorite();
+    expect(list.length, 5);
+  });
 
-  // test('should get passwords by type', () async {
-  //   final type1 = await repository.listByType(1);
-  //   final type2 = await repository.listByType(2);
-  //   expect(type1.length, 4);
-  //   expect(type2.length, 1);
-  // });
+  test('should get passwords by type', () async {
+    final type1 = await repository.listByType(1);
+    final type2 = await repository.listByType(2);
+    expect(type1.length, 4);
+    expect(type2.length, 1);
+  });
 
-  // test('should get passwords by category', () async {
-  //   final r1 = await repository.listByCategory(5);
-  //   final r2 = await repository.listByCategory(1);
-  //   expect(r1.length, 3);
-  //   expect(r2.length, 1);
-  // });
+  test('should get passwords by category', () async {
+    final r1 = await repository.listByCategory(5);
+    final r2 = await repository.listByCategory(1);
+    expect(r1.length, 3);
+    expect(r2.length, 1);
+  });
 }

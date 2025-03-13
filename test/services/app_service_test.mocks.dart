@@ -3,13 +3,10 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i4;
 import 'dart:io' as _i2;
 
-import 'package:cryptowl/src/config/sqlite.dart' as _i4;
-import 'package:cryptowl/src/service/file_service.dart' as _i5;
-import 'package:cryptowl/src/service/kdbx_repository.dart' as _i3;
-import 'package:cryptowl/src/service/kdbx_service.dart' as _i7;
+import 'package:cryptowl/src/service/file_service.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -31,73 +28,29 @@ class _FakeFile_0 extends _i1.SmartFake implements _i2.File {
     : super(parent, parentInvocation);
 }
 
-class _FakeKdbxRepository_1 extends _i1.SmartFake
-    implements _i3.KdbxRepository {
-  _FakeKdbxRepository_1(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
-class _FakeSqliteConfig_2 extends _i1.SmartFake implements _i4.SqliteConfig {
-  _FakeSqliteConfig_2(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
 /// A class which mocks [FileService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFileService extends _i1.Mock implements _i5.FileService {
+class MockFileService extends _i1.Mock implements _i3.FileService {
   @override
-  _i6.Future<_i2.File> getConfigFile() =>
+  _i4.Future<_i2.File> getConfigFile() =>
       (super.noSuchMethod(
             Invocation.method(#getConfigFile, []),
-            returnValue: _i6.Future<_i2.File>.value(
+            returnValue: _i4.Future<_i2.File>.value(
               _FakeFile_0(this, Invocation.method(#getConfigFile, [])),
             ),
-            returnValueForMissingStub: _i6.Future<_i2.File>.value(
+            returnValueForMissingStub: _i4.Future<_i2.File>.value(
               _FakeFile_0(this, Invocation.method(#getConfigFile, [])),
             ),
           )
-          as _i6.Future<_i2.File>);
+          as _i4.Future<_i2.File>);
 
   @override
-  _i6.Future<bool> hasConfigFile() =>
+  _i4.Future<bool> hasConfigFile() =>
       (super.noSuchMethod(
             Invocation.method(#hasConfigFile, []),
-            returnValue: _i6.Future<bool>.value(false),
-            returnValueForMissingStub: _i6.Future<bool>.value(false),
+            returnValue: _i4.Future<bool>.value(false),
+            returnValueForMissingStub: _i4.Future<bool>.value(false),
           )
-          as _i6.Future<bool>);
-}
-
-/// A class which mocks [KdbxService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockKdbxService extends _i1.Mock implements _i7.KdbxService {
-  @override
-  _i3.KdbxRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakeKdbxRepository_1(
-              this,
-              Invocation.getter(#repository),
-            ),
-            returnValueForMissingStub: _FakeKdbxRepository_1(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i3.KdbxRepository);
-
-  @override
-  _i6.Future<_i4.SqliteConfig> loadConfig() =>
-      (super.noSuchMethod(
-            Invocation.method(#loadConfig, []),
-            returnValue: _i6.Future<_i4.SqliteConfig>.value(
-              _FakeSqliteConfig_2(this, Invocation.method(#loadConfig, [])),
-            ),
-            returnValueForMissingStub: _i6.Future<_i4.SqliteConfig>.value(
-              _FakeSqliteConfig_2(this, Invocation.method(#loadConfig, [])),
-            ),
-          )
-          as _i6.Future<_i4.SqliteConfig>);
+          as _i4.Future<bool>);
 }

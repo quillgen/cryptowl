@@ -6,7 +6,6 @@ import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/service/file_service.dart';
 import 'package:cryptowl/src/service/kdbx_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:logging/logging.dart';
 
@@ -18,10 +17,9 @@ class AppService {
   static KdbxFormat kdbxFormat = KdbxFormat();
 
   final logger = Logger('AppService');
-  final Ref ref;
   final FileService fileService;
 
-  AppService(this.ref, this.fileService);
+  AppService(this.fileService);
 
   Future<bool> isInitialized() async {
     // fixme:
