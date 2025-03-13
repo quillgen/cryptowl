@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/database/database.dart';
 import 'package:drift/drift.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:uuid/uuid.dart';
@@ -114,6 +115,11 @@ class PasswordRepository extends SqlcipherRepository {
     final db = await requireDb();
     await db.passwords.replaceOne(item.toCompanion());
     return item;
+  }
+
+  Future<bool> delete(String id) async {
+    final db = await requireDb();
+    return db.passwords.deleteOne(PasswordsCompanion(id: Value(id)));
   }
 
   Future<Password> create(

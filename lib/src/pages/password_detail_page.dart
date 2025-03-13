@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../main.dart';
 import '../components/form_input.dart';
+import '../components/password_list.dart';
 import '../domain/password.dart';
 
 final passwordDetailProvider =
@@ -29,6 +30,8 @@ class PasswordDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final id = GoRouterState.of(context).pathParameters["id"]!;
     final detailFuture = ref.watch(passwordDetailProvider(id));
+
+    final passwordRepository = ref.read(passwordRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Password detail'),
@@ -41,7 +44,17 @@ class PasswordDetailPage extends ConsumerWidget {
                 );
               },
               icon: Icon(Icons.edit_note)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.delete_outline)),
+          IconButton(
+              onPressed: () async {
+                final success = await passwordRepository.delete(id);
+                if (success) {
+                  ref.invalidate(passwordsProvider);
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                }
+              },
+              icon: Icon(Icons.delete_outline)),
         ],
       ),
       body: detailFuture.when(
@@ -65,7 +78,7 @@ class PasswordDetailPage extends ConsumerWidget {
                 name: "Password",
                 readonly: true,
                 protected: true,
-                value: password.title,
+                value: password.value.getText(),
               ),
               SizedBox(height: 20),
               FormInput(
