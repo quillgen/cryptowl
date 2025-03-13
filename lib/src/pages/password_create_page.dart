@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cryptowl/src/components/password_list.dart';
 import 'package:cryptowl/src/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +91,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
                       username: _usernameController.text,
                       url: _uriController.text,
                       remark: _remarkController.text);
-                  //ref.invalidate(passwordsProvider);
+                  ref.invalidate(passwordsProvider);
                   if (context.mounted) {
                     context.pop();
                   }

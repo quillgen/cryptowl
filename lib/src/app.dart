@@ -36,7 +36,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final onboardingState = ref.watch(onboardingProvider);
   final loginState = ref.watch(asyncLoginProvider);
   logger.fine(
-      "Router rebuilding...onboardingState=$onboardingState loginState=$loginState");
+      "Router rebuilding ---> onboardingState=$onboardingState loginState=$loginState");
 
   final GoRoute unauthenticatedRoutes = GoRoute(
     name: LoginScreen.name,
@@ -44,34 +44,15 @@ final routerProvider = Provider<GoRouter>((ref) {
     pageBuilder: (BuildContext context, GoRouterState state) {
       return const MaterialPage<void>(child: LoginScreen());
     },
-    redirect: (BuildContext context, GoRouterState state) {
-      final skip = state.uri.queryParameters["skip"];
-
-      if (onboardingState.isLoading) {
-        return SplashPage.path;
-      } else if (onboardingState.unwrapPrevious().valueOrNull == false) {
-        if (skip != null && skip == "true") {
-          return null;
-        } else {
-          return "${LoginScreen.path}/${IntroductionPage.path}";
-        }
-      } else {
-        if (loginState.unwrapPrevious().valueOrNull != null) {
-          return ValutPage.path;
-        }
-        return null;
-      }
-    },
+    // redirect: (BuildContext context, GoRouterState state) {
+    //   print("-----> login redirect");
+    //   if (loginState.unwrapPrevious().valueOrNull != null) {
+    //     return ValutPage.path;
+    //   } else {
+    //     return null;
+    //   }
+    // },
     routes: <RouteBase>[
-      GoRoute(
-        name: IntroductionPage.name,
-        path: IntroductionPage.path,
-        pageBuilder: (BuildContext context, GoRouterState state) {
-          return const MaterialPage<void>(
-            child: IntroductionPage(),
-          );
-        },
-      ),
       GoRoute(
         name: OnboardingPage.name,
         path: OnboardingPage.path,
@@ -203,16 +184,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         );
       },
     ),
+    GoRoute(
+      name: IntroductionPage.name,
+      path: IntroductionPage.path,
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return const MaterialPage<void>(
+          child: IntroductionPage(),
+        );
+      },
+    ),
   ];
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: false,
-    redirect: (context, state) {
-      if (state.uri.path == '/') {
-        return ValutPage.path;
+    initialLocation: ValutPage.path,
+    redirect: (BuildContext context, GoRouterState state) {
+      print("-----> root redirect $state");
+      final skip = state.uri.queryParameters["skip"];
+
+      if (onboardingState.isLoading) {
+        return SplashPage.path;
+      } else if (onboardingState.unwrapPrevious().valueOrNull == false) {
+        if (skip == "true") {
+          return null;
+        } else {
+          return IntroductionPage.path;
+        }
+      } else {
+        return null;
       }
-      return null;
     },
     routes: <RouteBase>[
       unauthenticatedRoutes,

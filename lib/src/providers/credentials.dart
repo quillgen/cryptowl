@@ -43,13 +43,12 @@ class AsyncLoginNotifier extends AsyncNotifier<Session?> {
   Future<void> login(ProtectedValue password) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final session = ref.read(appServiceProvider).login(password);
+      final session = await ref.read(appServiceProvider).login(password);
 
-      // final db = SqliteDb.open("${meta.dbInstance}.enc", meta.dbEncryptionKey);
-      // ref.onDispose(() {
-      //   logger.fine("Disposing db...");
-      //   db.close();
-      // });
+      ref.onDispose(() {
+        logger.fine("Disposing db...");
+        session.sqliteDb.close();
+      });
       return session;
     });
   }
