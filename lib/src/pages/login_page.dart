@@ -8,17 +8,17 @@ import 'package:vector_graphics/vector_graphics.dart';
 import '../common/exceptions.dart';
 import '../providers/providers.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
 
   static const String path = '/login';
   static const String name = 'Login';
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginPage> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginPage> {
   final _inputController = TextEditingController();
 
   @override

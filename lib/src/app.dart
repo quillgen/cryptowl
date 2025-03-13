@@ -7,15 +7,15 @@ import 'package:go_router/go_router.dart';
 
 import '../main.dart';
 import 'pages/generator_page.dart';
-import 'pages/introduction.dart';
-import 'pages/login.dart';
+import 'pages/introduction_page.dart';
+import 'pages/login_page.dart';
 import 'pages/more_page.dart';
-import 'pages/onboarding.dart';
+import 'pages/onboarding_page.dart';
 import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
 import 'pages/send_page.dart';
-import 'pages/splash.dart';
+import 'pages/splash_page.dart';
 import 'pages/valut_page.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
@@ -39,10 +39,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       "Router rebuilding ---> onboardingState=$onboardingState loginState=$loginState");
 
   final GoRoute unauthenticatedRoutes = GoRoute(
-    name: LoginScreen.name,
-    path: LoginScreen.path,
+    name: LoginPage.name,
+    path: LoginPage.path,
     pageBuilder: (BuildContext context, GoRouterState state) {
-      return const MaterialPage<void>(child: LoginScreen());
+      return const MaterialPage<void>(child: LoginPage());
     },
     // redirect: (BuildContext context, GoRouterState state) {
     //   print("-----> login redirect");
@@ -77,7 +77,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     redirect: (BuildContext context, GoRouterState state) {
       if (loginState.unwrapPrevious().valueOrNull == null) {
-        return LoginScreen.path;
+        return LoginPage.path;
       }
       return null;
     },
@@ -200,7 +200,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: false,
     initialLocation: ValutPage.path,
     redirect: (BuildContext context, GoRouterState state) {
-      print("-----> root redirect $state");
+      print("-----> root redirect");
       final skip = state.uri.queryParameters["skip"];
 
       if (onboardingState.isLoading) {

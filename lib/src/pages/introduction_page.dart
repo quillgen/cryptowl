@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import 'onboarding.dart';
+import 'onboarding_page.dart';
 
 const pageDecoration = PageDecoration(
   imagePadding: EdgeInsets.only(top: 24, bottom: 24),
@@ -69,7 +69,7 @@ final introductionPages = [
 class IntroductionPage extends StatelessWidget {
   const IntroductionPage({super.key});
 
-  static const String path = 'introduction';
+  static const String path = '/introduction';
   static const String name = 'Introduction';
 
   @override
@@ -80,6 +80,10 @@ class IntroductionPage extends StatelessWidget {
         showSkipButton: true,
         showNextButton: true,
         showDoneButton: true,
+        globalFooter: SizedBox(
+          height: 40,
+          child: const Text("Created by quillgen.com"),
+        ),
         skip: const Text("Skip"),
         next: const Icon(Icons.arrow_right_alt),
         done: const Text("Start"),
