@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../components/password_list.dart';
-import '../providers.dart';
 import 'filter_drawer.dart';
 import 'menu_drawer.dart';
 import 'password_create_page.dart';
@@ -37,12 +36,12 @@ class _ValutPageState extends ConsumerState<ValutPage>
 
   @override
   Widget build(BuildContext context) {
-    final filterState = ref.watch(classificationFiltersProvider);
+    //final filterState = ref.watch(classificationFiltersProvider);
     int filterCount = 0;
-    if (filterState.topSecret) filterCount++;
-    if (filterState.secret) filterCount++;
-    if (filterState.confidential) filterCount++;
-    if (filterState.includeDeleted) filterCount++;
+    // if (filterState.topSecret) filterCount++;
+    // if (filterState.secret) filterCount++;
+    // if (filterState.confidential) filterCount++;
+    // if (filterState.includeDeleted) filterCount++;
 
     return Scaffold(
       key: _scaffoldKey,

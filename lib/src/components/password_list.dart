@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,8 +8,19 @@ import 'package:go_router/go_router.dart';
 import '../../main.dart';
 import '../domain/password.dart';
 import '../pages/password_detail_page.dart';
-import '../providers.dart';
 import 'empty.dart';
+
+class AsyncPasswordsNotifier extends AsyncNotifier<List<PasswordBasic>> {
+  @override
+  FutureOr<List<PasswordBasic>> build() {
+    return ref.read(passwordRepositoryProvider).list();
+  }
+}
+
+final passwordsProvider =
+    AsyncNotifierProvider<AsyncPasswordsNotifier, List<PasswordBasic>>(() {
+  return AsyncPasswordsNotifier();
+});
 
 enum FilterMenu {
   all,

@@ -2,16 +2,16 @@ import 'package:drift/drift.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:uuid/uuid.dart';
 
-import '../database/database.dart';
 import '../domain/password.dart';
+import 'base_repository.dart';
 
-class PasswordRepository {
-  final SqliteDb db;
+class PasswordRepository extends SqlcipherRepository {
   final uuid = Uuid();
 
-  PasswordRepository(this.db);
+  PasswordRepository(super.ref);
 
   Future<List<PasswordBasic>> list() async {
+    final db = await requireDb();
     final items = await db.activePasswords().get();
     return items.map((item) {
       return PasswordBasic(
@@ -28,6 +28,7 @@ class PasswordRepository {
   }
 
   Future<List<PasswordBasic>> listByCategory(int category) async {
+    final db = await requireDb();
     final items = await db.passwordsByCategory(category).get();
     return items.map((item) {
       return PasswordBasic(
@@ -44,6 +45,7 @@ class PasswordRepository {
   }
 
   Future<List<PasswordBasic>> listByType(int type) async {
+    final db = await requireDb();
     final items = await db.passwordsByType(type).get();
     return items.map((item) {
       return PasswordBasic(
@@ -60,6 +62,7 @@ class PasswordRepository {
   }
 
   Future<List<PasswordBasic>> listFavorite() async {
+    final db = await requireDb();
     final items = await db.favoritePasswords().get();
     return items.map((item) {
       return PasswordBasic(
@@ -76,6 +79,7 @@ class PasswordRepository {
   }
 
   Future<List<PasswordBasic>> listDeleted() async {
+    final db = await requireDb();
     final items = await db.deletedPasswords().get();
     return items.map((item) {
       return PasswordBasic(
@@ -92,6 +96,7 @@ class PasswordRepository {
   }
 
   Future<Password> findById(String id) async {
+    final db = await requireDb();
     final item = await (db.passwords.select()
           ..where((tbl) => tbl.id.equals(id)))
         .getSingle();
@@ -100,6 +105,7 @@ class PasswordRepository {
   }
 
   Future<Password> insert(Password item) async {
+    final db = await requireDb();
     await db.into(db.passwords).insert(item.toCompanion());
     return item;
   }

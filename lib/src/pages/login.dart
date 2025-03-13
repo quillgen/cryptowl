@@ -2,42 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kdbx/kdbx.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../../main.dart';
 import '../common/exceptions.dart';
-import '../providers.dart';
-
-part 'login.g.dart';
-
-@riverpod
-class LoginState extends _$LoginState {
-  @override
-  AsyncValue<bool> build() {
-    return AsyncValue.data(false);
-  }
-
-  Future<void> login(ProtectedValue password) async {
-    state = const AsyncLoading();
-    await Future.delayed(const Duration(seconds: 1));
-    state = await AsyncValue.guard(() async {
-      final user = await ref.read(appServiceProvider).login(password);
-      ref.read(currentUserProvider.notifier).setUser(user);
-      return true;
-    });
-  }
-
-  Future<void> logout() async {
-    logger.fine("Logging out...");
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      ref.read(currentUserProvider.notifier).setUser(null);
-      return false;
-    });
-  }
-}
+import '../providers/providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -68,7 +37,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     ref
-        .read(loginStateProvider.notifier)
+        .read(asyncLoginProvider.notifier)
         .login(ProtectedValue.fromString(_inputController.text));
   }
 
@@ -85,13 +54,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } else if (error is IncorrectPasswordException) {
       return "Password incorrect, please try again";
     } else {
-      return "Unknown error";
+      return "Unknown error: $error";
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final loginState = ref.watch(loginStateProvider);
+    final loginState = ref.watch(asyncLoginProvider);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(32.0),
@@ -120,8 +89,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             loginState.when(
               loading: () => const CircularProgressIndicator(),
               error: (error, stack) => _loginButton(),
-              data: (success) =>
-                  success ? const Text('Already logged in') : _loginButton(),
+              data: (kdbx) => kdbx != null
+                  ? const Text('Already logged in')
+                  : _loginButton(),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cryptowl/src/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +9,6 @@ import 'package:kdbx/kdbx.dart';
 import '../components/dropdown_formfield.dart';
 import '../components/form_input.dart';
 import '../domain/password.dart';
-import '../providers.dart';
 
 class PasswordCreatePage extends ConsumerStatefulWidget {
   const PasswordCreatePage({super.key});
@@ -90,7 +90,7 @@ class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
                       username: _usernameController.text,
                       url: _uriController.text,
                       remark: _remarkController.text);
-                  ref.invalidate(passwordsProvider);
+                  //ref.invalidate(passwordsProvider);
                   if (context.mounted) {
                     context.pop();
                   }

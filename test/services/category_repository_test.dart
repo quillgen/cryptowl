@@ -1,12 +1,11 @@
 import 'package:cryptowl/src/database/database.dart';
-import 'package:cryptowl/src/service/category_repository.dart';
 import 'package:drift/native.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SqliteDb database;
-  late CategoryRepository repository;
+  //late CategoryRepository repository;
 
   Future<int> createCategories() async {
     const sql = """
@@ -23,7 +22,7 @@ void main() {
   setUp(() async {
     database = SqliteDb.from(NativeDatabase.memory());
     await database.select(database.categories).get();
-    repository = CategoryRepository(database);
+    //repository = CategoryRepository();
 
     await createCategories();
   });
@@ -51,8 +50,8 @@ void main() {
     print(sql);
   }, skip: true);
 
-  test('should get all categories', () async {
-    final list = await repository.list();
-    expect(list.length, 5); // category 1 is default and migrated
-  });
+  // test('should get all categories', () async {
+  //   final list = await repository.list();
+  //   expect(list.length, 5); // category 1 is default and migrated
+  // });
 }

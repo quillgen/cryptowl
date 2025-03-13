@@ -6,10 +6,10 @@
 import 'dart:async' as _i6;
 import 'dart:io' as _i2;
 
-import 'package:cryptowl/src/config/meta.dart' as _i4;
+import 'package:cryptowl/src/config/sqlite.dart' as _i4;
 import 'package:cryptowl/src/service/file_service.dart' as _i5;
+import 'package:cryptowl/src/service/kdbx_repository.dart' as _i3;
 import 'package:cryptowl/src/service/kdbx_service.dart' as _i7;
-import 'package:kdbx/kdbx.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -31,13 +31,14 @@ class _FakeFile_0 extends _i1.SmartFake implements _i2.File {
     : super(parent, parentInvocation);
 }
 
-class _FakeKdbxFile_1 extends _i1.SmartFake implements _i3.KdbxFile {
-  _FakeKdbxFile_1(Object parent, Invocation parentInvocation)
+class _FakeKdbxRepository_1 extends _i1.SmartFake
+    implements _i3.KdbxRepository {
+  _FakeKdbxRepository_1(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
-class _FakeMeta_2 extends _i1.SmartFake implements _i4.Meta {
-  _FakeMeta_2(Object parent, Invocation parentInvocation)
+class _FakeSqliteConfig_2 extends _i1.SmartFake implements _i4.SqliteConfig {
+  _FakeSqliteConfig_2(Object parent, Invocation parentInvocation)
     : super(parent, parentInvocation);
 }
 
@@ -73,34 +74,30 @@ class MockFileService extends _i1.Mock implements _i5.FileService {
 /// See the documentation for Mockito's code generation for more information.
 class MockKdbxService extends _i1.Mock implements _i7.KdbxService {
   @override
-  _i6.Future<_i3.KdbxFile> create(_i3.ProtectedValue? masterPassword) =>
+  _i3.KdbxRepository get repository =>
       (super.noSuchMethod(
-            Invocation.method(#create, [masterPassword]),
-            returnValue: _i6.Future<_i3.KdbxFile>.value(
-              _FakeKdbxFile_1(
-                this,
-                Invocation.method(#create, [masterPassword]),
-              ),
+            Invocation.getter(#repository),
+            returnValue: _FakeKdbxRepository_1(
+              this,
+              Invocation.getter(#repository),
             ),
-            returnValueForMissingStub: _i6.Future<_i3.KdbxFile>.value(
-              _FakeKdbxFile_1(
-                this,
-                Invocation.method(#create, [masterPassword]),
-              ),
+            returnValueForMissingStub: _FakeKdbxRepository_1(
+              this,
+              Invocation.getter(#repository),
             ),
           )
-          as _i6.Future<_i3.KdbxFile>);
+          as _i3.KdbxRepository);
 
   @override
-  _i6.Future<_i4.Meta> loadMeta(_i3.KdbxFile? kdbx) =>
+  _i6.Future<_i4.SqliteConfig> loadConfig() =>
       (super.noSuchMethod(
-            Invocation.method(#loadMeta, [kdbx]),
-            returnValue: _i6.Future<_i4.Meta>.value(
-              _FakeMeta_2(this, Invocation.method(#loadMeta, [kdbx])),
+            Invocation.method(#loadConfig, []),
+            returnValue: _i6.Future<_i4.SqliteConfig>.value(
+              _FakeSqliteConfig_2(this, Invocation.method(#loadConfig, [])),
             ),
-            returnValueForMissingStub: _i6.Future<_i4.Meta>.value(
-              _FakeMeta_2(this, Invocation.method(#loadMeta, [kdbx])),
+            returnValueForMissingStub: _i6.Future<_i4.SqliteConfig>.value(
+              _FakeSqliteConfig_2(this, Invocation.method(#loadConfig, [])),
             ),
           )
-          as _i6.Future<_i4.Meta>);
+          as _i6.Future<_i4.SqliteConfig>);
 }

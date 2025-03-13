@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../pages/login.dart';
+import '../providers/providers.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginNotifier = ref.watch(loginStateProvider.notifier);
+    final loginNotifier = ref.watch(asyncLoginProvider.notifier);
 
     return Drawer(
       child: ListView(

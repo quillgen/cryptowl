@@ -1,9 +1,9 @@
+import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../main.dart';
 import 'pages/generator_page.dart';
@@ -17,11 +17,8 @@ import 'pages/password_edit_page.dart';
 import 'pages/send_page.dart';
 import 'pages/splash.dart';
 import 'pages/valut_page.dart';
-import 'providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
-
-part 'app.g.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -35,11 +32,11 @@ final GlobalKey<NavigatorState> sendNavigatorKey =
 final GlobalKey<NavigatorState> settingsNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'settings');
 
-@riverpod
-GoRouter goRouter(Ref ref) {
-  final initState = ref.watch(initStateProvider);
-  final credentials = ref.watch(currentUserProvider);
-  logger.fine("Router rebuiding...");
+final routerProvider = Provider<GoRouter>((ref) {
+  final onboardingState = ref.watch(onboardingProvider);
+  final loginState = ref.watch(asyncLoginProvider);
+  logger.fine(
+      "Router rebuilding...onboardingState=$onboardingState loginState=$loginState");
 
   final GoRoute unauthenticatedRoutes = GoRoute(
     name: LoginScreen.name,
@@ -49,17 +46,17 @@ GoRouter goRouter(Ref ref) {
     },
     redirect: (BuildContext context, GoRouterState state) {
       final skip = state.uri.queryParameters["skip"];
-      logger.fine("-> ${state.fullPath}");
-      if (initState == null) {
+
+      if (onboardingState.isLoading) {
         return SplashPage.path;
-      } else if (initState == false) {
+      } else if (onboardingState.unwrapPrevious().valueOrNull == false) {
         if (skip != null && skip == "true") {
           return null;
         } else {
           return "${LoginScreen.path}/${IntroductionPage.path}";
         }
       } else {
-        if (credentials != null) {
+        if (loginState.unwrapPrevious().valueOrNull != null) {
           return ValutPage.path;
         }
         return null;
@@ -98,7 +95,7 @@ GoRouter goRouter(Ref ref) {
       return ScaffoldShell(navigationShell: navigationShell);
     },
     redirect: (BuildContext context, GoRouterState state) {
-      if (credentials == null) {
+      if (loginState.unwrapPrevious().valueOrNull == null) {
         return LoginScreen.path;
       }
       return null;
@@ -210,7 +207,7 @@ GoRouter goRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     redirect: (context, state) {
       if (state.uri.path == '/') {
         return ValutPage.path;
@@ -223,7 +220,7 @@ GoRouter goRouter(Ref ref) {
       ...openRoutes,
     ],
   );
-}
+});
 
 class CryptowlApp extends ConsumerWidget {
   const CryptowlApp({
@@ -232,7 +229,7 @@ class CryptowlApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(goRouterProvider);
+    final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       routerConfig: router,

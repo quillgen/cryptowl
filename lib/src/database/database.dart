@@ -18,8 +18,8 @@ part 'database.g.dart';
 @DriftDatabase(include: {'tables.drift'})
 class SqliteDb extends _$SqliteDb {
   SqliteDb.from(QueryExecutor e) : super(e);
-  SqliteDb.open(String file, ProtectedValue password)
-      : super(_openDatabase(file, password));
+  SqliteDb.open(String file, ProtectedValue key)
+      : super(_openDatabase(file, key));
 
   @override
   int get schemaVersion => 1;

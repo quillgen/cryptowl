@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../providers.dart';
-import 'login.dart';
+import '../providers/providers.dart';
 
 const infoTextStyle = TextStyle(fontSize: 10, color: Colors.white);
+
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
+  return PackageInfo.fromPlatform();
+});
 
 class VersionInfo extends ConsumerWidget {
   const VersionInfo({super.key});
@@ -28,7 +32,7 @@ class MenuDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginNotifier = ref.read(loginStateProvider.notifier);
+    final loginNotifier = ref.read(asyncLoginProvider.notifier);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
