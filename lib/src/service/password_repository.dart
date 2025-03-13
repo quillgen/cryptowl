@@ -110,6 +110,12 @@ class PasswordRepository extends SqlcipherRepository {
     return item;
   }
 
+  Future<Password> replace(Password item) async {
+    final db = await requireDb();
+    await db.passwords.replaceOne(item.toCompanion());
+    return item;
+  }
+
   Future<Password> create(
       int classification, String title, ProtectedValue value,
       {String? url, String? username, String? remark}) async {
@@ -127,5 +133,29 @@ class PasswordRepository extends SqlcipherRepository {
       lastUpdateTime: now,
     );
     return insert(item);
+  }
+
+  Future<Password> update(String id,
+      {int? classification,
+      String? title,
+      ProtectedValue? value,
+      String? url,
+      String? username,
+      String? remark}) async {
+    final now = DateTime.now();
+    final existing = await findById(id);
+    final item = Password(
+      id: id,
+      type: existing.type,
+      categoryId: existing.categoryId,
+      title: title ?? existing.title,
+      username: username ?? existing.username,
+      uri: url ?? existing.uri,
+      value: value ?? existing.value,
+      remark: remark ?? existing.remark,
+      createTime: existing.createTime,
+      lastUpdateTime: now,
+    );
+    return replace(item);
   }
 }

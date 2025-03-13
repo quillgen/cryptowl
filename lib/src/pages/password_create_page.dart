@@ -14,8 +14,8 @@ import '../domain/password.dart';
 class PasswordCreatePage extends ConsumerStatefulWidget {
   const PasswordCreatePage({super.key});
 
-  static const String path = 'create';
-  static const String name = 'Create';
+  static const String path = '/create';
+  static const String name = 'Password Create';
 
   @override
   ConsumerState<PasswordCreatePage> createState() => _PasswordCreatePageState();

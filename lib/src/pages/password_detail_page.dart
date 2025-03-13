@@ -1,21 +1,19 @@
+import 'package:cryptowl/src/pages/password_edit_page.dart';
 import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../main.dart';
 import '../components/form_input.dart';
 import '../domain/password.dart';
 
-part 'password_detail_page.g.dart';
-
-@riverpod
-Future<Password> passwordDetail(Ref ref, String id) async {
+final passwordDetailProvider =
+    FutureProvider.autoDispose.family<Password, String>((ref, id) async {
   logger.fine("Fetching password detail for $id");
   return ref.read(passwordRepositoryProvider).findById(id);
-}
+});
 
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
@@ -24,8 +22,8 @@ enum Menu { copy, show, generate }
 class PasswordDetailPage extends ConsumerWidget {
   const PasswordDetailPage({super.key});
 
-  static const String path = 'detail/:id';
-  static const String name = 'Detail';
+  static const String path = '/detail/:id';
+  static const String name = 'Password Detail';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,6 +32,17 @@ class PasswordDetailPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Password detail'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                context.replaceNamed(
+                  PasswordEditPage.name,
+                  pathParameters: <String, String>{'id': id},
+                );
+              },
+              icon: Icon(Icons.edit_note)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.delete_outline)),
+        ],
       ),
       body: detailFuture.when(
         data: (password) => Padding(
