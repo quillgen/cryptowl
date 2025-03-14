@@ -1,4 +1,3 @@
-import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,14 +8,15 @@ import '../main.dart';
 import 'pages/generator_page.dart';
 import 'pages/introduction_page.dart';
 import 'pages/login_page.dart';
-import 'pages/more_page.dart';
 import 'pages/onboarding_page.dart';
 import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
 import 'pages/send_page.dart';
+import 'pages/settings_page.dart';
 import 'pages/splash_page.dart';
 import 'pages/valut_page.dart';
+import 'providers/providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
 
@@ -159,12 +159,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         navigatorKey: settingsNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
-            name: MorePage.name,
-            path: MorePage.path,
+            name: SettingsPage.name,
+            path: SettingsPage.path,
             pageBuilder: (BuildContext context, GoRouterState state) {
               return const NoTransitionPage<void>(
-                key: ValueKey<String>(MorePage.name),
-                child: MorePage(),
+                key: ValueKey<String>(SettingsPage.name),
+                child: SettingsPage(),
               );
             },
             routes: <RouteBase>[],
@@ -231,6 +231,7 @@ class CryptowlApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final theme = ref.watch(themeProvider);
 
     return MaterialApp.router(
       routerConfig: router,
@@ -249,7 +250,7 @@ class CryptowlApp extends ConsumerWidget {
           AppLocalizations.of(context)!.appTitle,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      //themeMode:  ThemeMo,
+      themeMode: theme,
     );
   }
 }

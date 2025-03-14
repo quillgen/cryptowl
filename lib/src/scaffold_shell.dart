@@ -7,8 +7,8 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
 import 'pages/generator_page.dart';
-import 'pages/more_page.dart';
 import 'pages/send_page.dart';
+import 'pages/settings_page.dart';
 import 'pages/valut_page.dart';
 
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
@@ -45,7 +45,7 @@ class ScaffoldShell extends StatelessWidget {
                 icon: Icon(Icons.photo), label: 'Photos'),
             GeneratorPage.name => const NavigationDestination(
                 icon: Icon(Icons.mail_lock), label: 'Send'),
-            MorePage.name => const NavigationDestination(
+            SettingsPage.name => const NavigationDestination(
                 icon: Icon(Icons.settings), label: 'Settings'),
             _ => throw UnimplementedError(
                 'The route ${e.defaultRoute?.name} is not implemented.',
