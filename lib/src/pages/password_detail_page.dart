@@ -26,6 +26,36 @@ class PasswordDetailPage extends ConsumerWidget {
   static const String path = '/detail/:id';
   static const String name = 'Password Detail';
 
+  Future<bool?> _confirmDeletion(BuildContext context) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete password'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Password will be removed'),
+                Text('Are you sure you want to delete it?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final id = GoRouterState.of(context).pathParameters["id"]!;
@@ -46,11 +76,14 @@ class PasswordDetailPage extends ConsumerWidget {
               icon: Icon(Icons.edit_note)),
           IconButton(
               onPressed: () async {
-                final success = await passwordRepository.delete(id);
-                if (success) {
-                  ref.invalidate(passwordsProvider);
-                  if (context.mounted) {
-                    context.pop();
+                bool? confirm = await _confirmDeletion(context);
+                if (confirm == true) {
+                  final success = await passwordRepository.delete(id);
+                  if (success) {
+                    ref.invalidate(passwordsProvider);
+                    if (context.mounted) {
+                      context.pop();
+                    }
                   }
                 }
               },
