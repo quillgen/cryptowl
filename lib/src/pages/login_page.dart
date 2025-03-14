@@ -89,9 +89,8 @@ class _LoginScreenState extends ConsumerState<LoginPage> {
             loginState.when(
               loading: () => const CircularProgressIndicator(),
               error: (error, stack) => _loginButton(),
-              data: (kdbx) => kdbx != null
-                  ? const Text('Already logged in')
-                  : _loginButton(),
+              data: (kdbx) =>
+                  kdbx != null ? const Text('Login success') : _loginButton(),
             ),
           ],
         ),

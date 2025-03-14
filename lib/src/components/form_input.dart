@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const formTextStyle = TextStyle();
 
@@ -46,52 +47,57 @@ class _FormInputState extends State<FormInput> {
         prefixIcon: Icon(widget.protected ? Icons.shield : Icons.abc),
         labelText: widget.name,
         labelStyle: formTextStyle,
-        suffixIcon: widget.protected
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          obscureText = !obscureText;
-                        });
-                      },
-                      icon: Icon(obscureText
-                          ? Icons.visibility_off
-                          : Icons.visibility)),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.lock_reset)),
-                  PopupMenuButton<Menu>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (Menu item) {},
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<Menu>>[
-                      const PopupMenuItem<Menu>(
-                        value: Menu.copy,
-                        child: ListTile(
-                          leading: Icon(Icons.copy),
-                          title: Text('Copy'),
-                        ),
-                      ),
-                      const PopupMenuItem<Menu>(
-                        value: Menu.show,
-                        child: ListTile(
-                          leading: Icon(Icons.remove_red_eye),
-                          title: Text('Show'),
-                        ),
-                      ),
-                      const PopupMenuItem<Menu>(
-                        value: Menu.generate,
-                        child: ListTile(
-                          leading: Icon(Icons.change_circle),
-                          title: Text('Generate'),
-                        ),
-                      ),
-                    ],
-                  )
+        suffixIcon: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.protected)
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    obscureText = !obscureText;
+                  });
+                },
+                icon:
+                    Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+              ),
+            if (widget.readonly && widget.value != null)
+              IconButton(
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: widget.value!));
+                },
+                icon: Icon(Icons.copy),
+              ),
+            if (!widget.readonly)
+              PopupMenuButton<Menu>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (Menu item) {},
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+                  const PopupMenuItem<Menu>(
+                    value: Menu.copy,
+                    child: ListTile(
+                      leading: Icon(Icons.copy),
+                      title: Text('Copy'),
+                    ),
+                  ),
+                  const PopupMenuItem<Menu>(
+                    value: Menu.show,
+                    child: ListTile(
+                      leading: Icon(Icons.remove_red_eye),
+                      title: Text('Show'),
+                    ),
+                  ),
+                  const PopupMenuItem<Menu>(
+                    value: Menu.generate,
+                    child: ListTile(
+                      leading: Icon(Icons.change_circle),
+                      title: Text('Generate'),
+                    ),
+                  ),
                 ],
               )
-            : null,
+          ],
+        ),
       ),
       validator: (value) {
         if (widget.required && (value == null || value.isEmpty)) {

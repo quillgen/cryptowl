@@ -1,26 +1,13 @@
-import 'dart:async';
-
-import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../main.dart';
 import '../domain/password.dart';
+import '../pages/password_create_page.dart';
 import '../pages/password_detail_page.dart';
+import '../providers/providers.dart';
 import 'empty.dart';
-
-class AsyncPasswordsNotifier extends AsyncNotifier<List<PasswordBasic>> {
-  @override
-  FutureOr<List<PasswordBasic>> build() {
-    return ref.read(passwordRepositoryProvider).list();
-  }
-}
-
-final passwordsProvider =
-    AsyncNotifierProvider<AsyncPasswordsNotifier, List<PasswordBasic>>(() {
-  return AsyncPasswordsNotifier();
-});
 
 enum FilterMenu {
   all,
@@ -42,9 +29,7 @@ class PasswordListPage extends ConsumerWidget {
         return ListTile(
           dense: true,
           contentPadding: EdgeInsets.only(left: 10, right: 10),
-          leading: const Icon(
-            Icons.admin_panel_settings,
-          ),
+          leading: ClassificationLabel.from(item.classification).icon,
           title: Text(item.title),
           onTap: () {
             context.goNamed(
@@ -74,7 +59,13 @@ class PasswordListPage extends ConsumerWidget {
         logger.severe(e);
         return ErrorWidget(e);
       },
-      data: (items) => items.isEmpty ? Empty() : _buildList(context, items),
+      data: (items) => items.isEmpty
+          ? Empty()
+          : RefreshIndicator(
+              child: _buildList(context, items),
+              onRefresh: () async {
+                ref.invalidate(passwordsProvider);
+              }),
     );
   }
 }

@@ -29,6 +29,11 @@ activePasswords:
     FROM passwords
     WHERE is_deleted=0; 
 
+passwordsByClassification:
+    SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
+    FROM passwords
+    WHERE is_deleted=0 and classification=?; 
+
 passwordsByCategory:
     SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time
     FROM passwords

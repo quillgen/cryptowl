@@ -1421,6 +1421,27 @@ abstract class _$SqliteDb extends GeneratedDatabase {
         ));
   }
 
+  Selectable<PasswordsByClassificationResult> passwordsByClassification(
+      int var1) {
+    return customSelect(
+        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND classification = ?1',
+        variables: [
+          Variable<int>(var1)
+        ],
+        readsFrom: {
+          passwords,
+        }).map((QueryRow row) => PasswordsByClassificationResult(
+          id: row.read<String>('id'),
+          type: row.read<int>('type'),
+          classification: row.read<int>('classification'),
+          title: row.read<String>('title'),
+          expireTime: row.readNullable<String>('expire_time'),
+          categoryId: row.read<int>('category_id'),
+          createTime: row.read<String>('create_time'),
+          lastUpdateTime: row.read<String>('last_update_time'),
+        ));
+  }
+
   Selectable<PasswordsByCategoryResult> passwordsByCategory(int var1) {
     return customSelect(
         'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND category_id = ?1',
@@ -2174,6 +2195,27 @@ class ActivePasswordsResult {
   final String createTime;
   final String lastUpdateTime;
   ActivePasswordsResult({
+    required this.id,
+    required this.type,
+    required this.classification,
+    required this.title,
+    this.expireTime,
+    required this.categoryId,
+    required this.createTime,
+    required this.lastUpdateTime,
+  });
+}
+
+class PasswordsByClassificationResult {
+  final String id;
+  final int type;
+  final int classification;
+  final String title;
+  final String? expireTime;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  PasswordsByClassificationResult({
     required this.id,
     required this.type,
     required this.classification,

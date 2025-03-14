@@ -1,41 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum PasswordFilter { topSecret, secret, confidential, deleted }
-
-const defaultFilters = [
-  PasswordFilter.topSecret,
-  PasswordFilter.secret,
-  PasswordFilter.confidential
-];
-
-class PasswordFilterNotifier extends StateNotifier<List<PasswordFilter>> {
-  PasswordFilterNotifier() : super(defaultFilters);
-
-  Future<void> select(PasswordFilter option) async {
-    state = check(state, option);
-  }
-
-  Future<void> clear() async {
-    state = [...defaultFilters];
-  }
-
-  List<PasswordFilter> check(
-      List<PasswordFilter> selected, PasswordFilter option) {
-    if (selected.contains(option)) {
-      final tmp = List<PasswordFilter>.from(selected);
-      tmp.remove(option);
-      return [...tmp];
-    } else {
-      return [option, ...selected];
-    }
-  }
-}
-
-final passwordFilterProvider =
-    StateNotifierProvider<PasswordFilterNotifier, List<PasswordFilter>>((ref) {
-  return PasswordFilterNotifier();
-});
+import '../providers/providers.dart';
 
 class FilterDrawer extends ConsumerWidget {
   const FilterDrawer({super.key});

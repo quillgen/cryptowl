@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:cryptowl/src/components/password_list.dart';
 import 'package:cryptowl/src/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +48,17 @@ enum ClassificationLabel {
           IconEntry(value: icon, label: icon.label, leadingIcon: icon.icon),
     ),
   );
+
+  static ClassificationLabel from(int level) {
+    switch (level) {
+      case TOP_SECRET:
+        return ClassificationLabel.topSecret;
+      case CONFIDENTIAL:
+        return ClassificationLabel.confidential;
+      default:
+        return ClassificationLabel.secret;
+    }
+  }
 }
 
 class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {

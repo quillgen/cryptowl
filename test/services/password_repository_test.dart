@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
+import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/service/password_repository.dart';
@@ -25,18 +26,18 @@ void main() {
 
   Future<int> createPasswords() async {
     const sql = """
-    insert into passwords(id, type, category_id, is_favorite, is_deleted, create_time, last_update_time, title, value) 
+    insert into passwords(id, classification, type, category_id, is_favorite, is_deleted, create_time, last_update_time, title, value) 
     values 
-    ('13538618-5e6c-40e6-9863-6f2c98178bab', '1', 3, 0, 0, '2025-02-21T23:51:25.994362', '2025-02-21T23:51:25.994362', 'Dickinson and Sons', 'Est pellentesque elit ullamcorper dignissim cras.'),
-    ('d4d50caa-c11d-4f36-82a4-51d953f609a6', '1', 4, 1, 0, '2025-02-21T23:51:25.998281', '2025-02-21T23:51:25.998281', 'Huels-Metz', 'Mus mauris vitae ultricies leo integer.'),
-    ('81b9d308-c769-4259-b260-7c9bf2084080', '1', 4, 1, 0, '2025-02-21T23:51:25.998434', '2025-02-21T23:51:25.998434', 'Gottlieb Inc', 'Tempus imperdiet nulla malesuada pellentesque.'),
-    ('8e884ba2-6890-4056-abdf-edaf8ccba434', '2', 5, 1, 0, '2025-02-21T23:51:25.998586', '2025-02-21T23:51:25.998586', 'Reichel, Pouros and Konopelski', 'Tincidunt id aliquet risus feugiat in ante.'),
-    ('e7078810-3a17-4dc0-ac75-a29d96454c3f', '3', 5, 0, 0, '2025-02-21T23:51:25.998723', '2025-02-21T23:51:25.998723', 'Stiedemann-Stoltenberg', 'Sit amet facilisis magna etiam tempor.'),
-    ('77ab6c98-b8dc-40dd-a693-f59ef405f246', '3', 1, 1, 0, '2025-02-21T23:51:25.998879', '2025-02-21T23:51:25.998879', 'Bradtke, Considine and Conroy', 'Massa tincidunt dui ut ornare lectus sit amet est.'),
-    ('5a35316b-c2d3-455b-967d-d2fc38ab8279', '1', 5, 0, 0, '2025-02-21T23:51:25.999106', '2025-02-21T23:51:25.999106', 'McCullough Inc', 'Donec massa sapien faucibus et molestie.'),
-    ('7d30b11f-ebe8-4bcc-8d9a-fac1af317800', '4', 4, 1, 0, '2025-02-21T23:51:25.999517', '2025-02-21T23:51:25.999517', 'Schneider, Cassin and Klocko', 'Erat pellentesque adipiscing commodo elit at imperdiet dui accumsan sit.'),
-    ('2cfafca9-dbba-4ac1-a137-dff315a69a13', '1', 5, 0, 1, '2025-02-21T23:51:25.999807', '2025-02-21T23:51:25.999807', 'Wiegand and Sons', 'Eu augue ut lectus arcu bibendum at.'),
-    ('e4bc42d3-e206-4b0b-b27f-ccdb6d633fc4', '2', 1, 1, 1, '2025-02-21T23:51:26.000254', '2025-02-21T23:51:26.000254', 'Powlowski, Strosin and Roob', 'Vel elit scelerisque mauris pellentesque.');
+    ('13538618-5e6c-40e6-9863-6f2c98178bab', -1, '1', 3, 0, 0, '2025-02-21T23:51:25.994362', '2025-02-21T23:51:25.994362', 'Dickinson and Sons', 'Est pellentesque elit ullamcorper dignissim cras.'),
+    ('d4d50caa-c11d-4f36-82a4-51d953f609a6', 99, '1', 4, 1, 0, '2025-02-21T23:51:25.998281', '2025-02-21T23:51:25.998281', 'Huels-Metz', 'Mus mauris vitae ultricies leo integer.'),
+    ('81b9d308-c769-4259-b260-7c9bf2084080', 99, '1', 4, 1, 0, '2025-02-21T23:51:25.998434', '2025-02-21T23:51:25.998434', 'Gottlieb Inc', 'Tempus imperdiet nulla malesuada pellentesque.'),
+    ('8e884ba2-6890-4056-abdf-edaf8ccba434', 0, '2', 5, 1, 0, '2025-02-21T23:51:25.998586', '2025-02-21T23:51:25.998586', 'Reichel, Pouros and Konopelski', 'Tincidunt id aliquet risus feugiat in ante.'),
+    ('e7078810-3a17-4dc0-ac75-a29d96454c3f', 0, '3', 5, 0, 0, '2025-02-21T23:51:25.998723', '2025-02-21T23:51:25.998723', 'Stiedemann-Stoltenberg', 'Sit amet facilisis magna etiam tempor.'),
+    ('77ab6c98-b8dc-40dd-a693-f59ef405f246', 0, '3', 1, 1, 0, '2025-02-21T23:51:25.998879', '2025-02-21T23:51:25.998879', 'Bradtke, Considine and Conroy', 'Massa tincidunt dui ut ornare lectus sit amet est.'),
+    ('5a35316b-c2d3-455b-967d-d2fc38ab8279', 0, '1', 5, 0, 0, '2025-02-21T23:51:25.999106', '2025-02-21T23:51:25.999106', 'McCullough Inc', 'Donec massa sapien faucibus et molestie.'),
+    ('7d30b11f-ebe8-4bcc-8d9a-fac1af317800', 0, '4', 4, 1, 0, '2025-02-21T23:51:25.999517', '2025-02-21T23:51:25.999517', 'Schneider, Cassin and Klocko', 'Erat pellentesque adipiscing commodo elit at imperdiet dui accumsan sit.'),
+    ('2cfafca9-dbba-4ac1-a137-dff315a69a13', 0, '1', 5, 0, 1, '2025-02-21T23:51:25.999807', '2025-02-21T23:51:25.999807', 'Wiegand and Sons', 'Eu augue ut lectus arcu bibendum at.'),
+    ('e4bc42d3-e206-4b0b-b27f-ccdb6d633fc4', 0, '2', 1, 1, 1, '2025-02-21T23:51:26.000254', '2025-02-21T23:51:26.000254', 'Powlowski, Strosin and Roob', 'Vel elit scelerisque mauris pellentesque.');
     """;
     return database.executor.runInsert(sql, []);
   }
@@ -85,6 +86,24 @@ void main() {
   test('should get all undeleted passwords', () async {
     final list = await repository.list();
     expect(list.length, 8);
+  });
+
+  group("select by filters", () {
+    test('should get passwords by classifications', () async {
+      final list = await repository.listByFilters([TOP_SECRET], false);
+      expect(list.length, 2);
+    });
+
+    test('should get passwords by classifications', () async {
+      final list =
+          await repository.listByFilters([TOP_SECRET, CONFIDENTIAL], false);
+      expect(list.length, 3);
+    });
+
+    test('should get passwords including deleted', () async {
+      final list = await repository.listByFilters([SECRET], true);
+      expect(list.length, 7);
+    });
   });
 
   test('should get deleted passwords', () async {

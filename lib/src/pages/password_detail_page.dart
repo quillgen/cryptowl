@@ -1,20 +1,11 @@
 import 'package:cryptowl/src/pages/password_edit_page.dart';
-import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../main.dart';
 import '../components/form_input.dart';
-import '../components/password_list.dart';
-import '../domain/password.dart';
-
-final passwordDetailProvider =
-    FutureProvider.autoDispose.family<Password, String>((ref, id) async {
-  logger.fine("Fetching password detail for $id");
-  return ref.read(passwordRepositoryProvider).findById(id);
-});
+import '../providers/providers.dart';
 
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
@@ -68,7 +59,7 @@ class PasswordDetailPage extends ConsumerWidget {
         actions: [
           IconButton(
               onPressed: () {
-                context.replaceNamed(
+                context.pushNamed(
                   PasswordEditPage.name,
                   pathParameters: <String, String>{'id': id},
                 );
