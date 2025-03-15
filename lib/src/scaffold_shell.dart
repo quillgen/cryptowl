@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
-import 'pages/generator_page.dart';
-import 'pages/send_page.dart';
+import 'pages/notes_page.dart';
+import 'pages/photos_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/valut_page.dart';
 
@@ -39,12 +39,12 @@ class ScaffoldShell extends StatelessWidget {
       destinations: navigationShell.route.branches.map(
         (StatefulShellBranch e) {
           return switch (e.defaultRoute?.name) {
+            NotesPage.name => const NavigationDestination(
+                icon: Icon(Icons.mail_lock), label: 'Notes'),
+            PhotosPage.name => const NavigationDestination(
+                icon: Icon(Icons.photo), label: 'Photos'),
             ValutPage.name => const NavigationDestination(
                 icon: Icon(Icons.password), label: 'My vault'),
-            SendPage.name => const NavigationDestination(
-                icon: Icon(Icons.photo), label: 'Photos'),
-            GeneratorPage.name => const NavigationDestination(
-                icon: Icon(Icons.mail_lock), label: 'Send'),
             SettingsPage.name => const NavigationDestination(
                 icon: Icon(Icons.settings), label: 'Settings'),
             _ => throw UnimplementedError(

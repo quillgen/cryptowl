@@ -5,14 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../main.dart';
-import 'pages/generator_page.dart';
 import 'pages/introduction_page.dart';
 import 'pages/login_page.dart';
+import 'pages/notes_page.dart';
 import 'pages/onboarding_page.dart';
 import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
-import 'pages/send_page.dart';
+import 'pages/photos_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/splash_page.dart';
 import 'pages/valut_page.dart';
@@ -25,10 +25,10 @@ final GlobalKey<NavigatorState> rootNavigatorKey =
 
 final GlobalKey<NavigatorState> passwordsNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'passwords');
-final GlobalKey<NavigatorState> generatorNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'generator');
-final GlobalKey<NavigatorState> sendNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'send');
+final GlobalKey<NavigatorState> photosNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'photos');
+final GlobalKey<NavigatorState> notesNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'notes');
 final GlobalKey<NavigatorState> settingsNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'settings');
 
@@ -44,14 +44,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     pageBuilder: (BuildContext context, GoRouterState state) {
       return const MaterialPage<void>(child: LoginPage());
     },
-    // redirect: (BuildContext context, GoRouterState state) {
-    //   print("-----> login redirect");
-    //   if (loginState.unwrapPrevious().valueOrNull != null) {
-    //     return ValutPage.path;
-    //   } else {
-    //     return null;
-    //   }
-    // },
     routes: <RouteBase>[
       GoRoute(
         name: OnboardingPage.name,
@@ -82,6 +74,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     branches: <StatefulShellBranch>[
+      StatefulShellBranch(
+        navigatorKey: notesNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: NotesPage.name,
+            path: NotesPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: NotesPage());
+            },
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: photosNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: PhotosPage.name,
+            path: PhotosPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: PhotosPage());
+            },
+          ),
+        ],
+      ),
       StatefulShellBranch(
         navigatorKey: passwordsNavigatorKey,
         routes: <RouteBase>[
@@ -132,30 +148,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: sendNavigatorKey,
-        routes: <RouteBase>[
-          GoRoute(
-            name: SendPage.name,
-            path: SendPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(child: SendPage());
-            },
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        navigatorKey: generatorNavigatorKey,
-        routes: <RouteBase>[
-          GoRoute(
-            name: GeneratorPage.name,
-            path: GeneratorPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(child: GeneratorPage());
-            },
-          ),
-        ],
-      ),
-      StatefulShellBranch(
         navigatorKey: settingsNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
@@ -198,7 +190,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: false,
-    initialLocation: ValutPage.path,
+    initialLocation: NotesPage.path,
     redirect: (BuildContext context, GoRouterState state) {
       print("-----> root redirect");
       final skip = state.uri.queryParameters["skip"];
