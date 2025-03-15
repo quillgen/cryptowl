@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/repositories/base_repository.dart';
 import 'package:drift/drift.dart';
 
@@ -42,5 +43,11 @@ class NoteRepository extends SqlcipherRepository {
 
   DateTime? _parseDatetime(String? dt) {
     return dt == null ? null : DateTime.parse(dt);
+  }
+
+  Future<NoteEntity> insert(NoteEntity item) async {
+    final db = await requireDb();
+    await db.into(db.notes).insert(item);
+    return item;
   }
 }
