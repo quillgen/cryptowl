@@ -4,8 +4,8 @@ import 'package:cryptowl/src/common/argon2_util.dart';
 import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
+import 'package:cryptowl/src/repositories/kdbx_repository.dart';
 import 'package:cryptowl/src/service/file_service.dart';
-import 'package:cryptowl/src/service/kdbx_repository.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:logging/logging.dart';
 

@@ -1,8 +1,8 @@
+import 'package:cryptowl/src/repositories/category_repository.dart';
+import 'package:cryptowl/src/repositories/kdbx_repository.dart';
+import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:cryptowl/src/service/app_service.dart';
-import 'package:cryptowl/src/service/category_repository.dart';
 import 'package:cryptowl/src/service/file_service.dart';
-import 'package:cryptowl/src/service/kdbx_repository.dart';
-import 'package:cryptowl/src/service/password_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final kdbxRepositoryProvider = Provider((ref) {

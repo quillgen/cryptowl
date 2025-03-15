@@ -48,7 +48,6 @@ class PasswordRepository extends SqlcipherRepository {
             db.passwords.categoryId,
             db.passwords.title,
             db.passwords.expireTime,
-            db.passwords.expireTime,
             db.passwords.createTime,
             db.passwords.lastUpdateTime,
             db.passwords.isDeleted

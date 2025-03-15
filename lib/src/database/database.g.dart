@@ -1397,12 +1397,502 @@ class AttributesCompanion extends UpdateCompanion<Attribute> {
   }
 }
 
+class Notes extends Table with TableInfo<Notes, NoteEntity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Notes(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _isFavoriteMeta =
+      const VerificationMeta('isFavorite');
+  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
+      'is_favorite', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+      'category_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 1',
+      defaultValue: const CustomExpression('1'));
+  static const VerificationMeta _createTimeMeta =
+      const VerificationMeta('createTime');
+  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
+      'create_time', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _lastUpdateTimeMeta =
+      const VerificationMeta('lastUpdateTime');
+  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
+      'last_update_time', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
+  late final GeneratedColumn<int> isDeleted = GeneratedColumn<int>(
+      'is_deleted', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        classification,
+        title,
+        content,
+        isFavorite,
+        categoryId,
+        createTime,
+        lastUpdateTime,
+        isDeleted
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notes';
+  @override
+  VerificationContext validateIntegrity(Insertable<NoteEntity> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('classification')) {
+      context.handle(
+          _classificationMeta,
+          classification.isAcceptableOrUnknown(
+              data['classification']!, _classificationMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+          _isFavoriteMeta,
+          isFavorite.isAcceptableOrUnknown(
+              data['is_favorite']!, _isFavoriteMeta));
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    }
+    if (data.containsKey('create_time')) {
+      context.handle(
+          _createTimeMeta,
+          createTime.isAcceptableOrUnknown(
+              data['create_time']!, _createTimeMeta));
+    } else if (isInserting) {
+      context.missing(_createTimeMeta);
+    }
+    if (data.containsKey('last_update_time')) {
+      context.handle(
+          _lastUpdateTimeMeta,
+          lastUpdateTime.isAcceptableOrUnknown(
+              data['last_update_time']!, _lastUpdateTimeMeta));
+    } else if (isInserting) {
+      context.missing(_lastUpdateTimeMeta);
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NoteEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NoteEntity(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+      isFavorite: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}is_favorite'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
+      createTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
+      lastUpdateTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}is_deleted'])!,
+    );
+  }
+
+  @override
+  Notes createAlias(String alias) {
+    return Notes(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['FOREIGN KEY(category_id)REFERENCES categories(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class NoteEntity extends DataClass implements Insertable<NoteEntity> {
+  final String id;
+  final int classification;
+  final String title;
+  final String content;
+  final int isFavorite;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  final int isDeleted;
+  const NoteEntity(
+      {required this.id,
+      required this.classification,
+      required this.title,
+      required this.content,
+      required this.isFavorite,
+      required this.categoryId,
+      required this.createTime,
+      required this.lastUpdateTime,
+      required this.isDeleted});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['classification'] = Variable<int>(classification);
+    map['title'] = Variable<String>(title);
+    map['content'] = Variable<String>(content);
+    map['is_favorite'] = Variable<int>(isFavorite);
+    map['category_id'] = Variable<int>(categoryId);
+    map['create_time'] = Variable<String>(createTime);
+    map['last_update_time'] = Variable<String>(lastUpdateTime);
+    map['is_deleted'] = Variable<int>(isDeleted);
+    return map;
+  }
+
+  NotesCompanion toCompanion(bool nullToAbsent) {
+    return NotesCompanion(
+      id: Value(id),
+      classification: Value(classification),
+      title: Value(title),
+      content: Value(content),
+      isFavorite: Value(isFavorite),
+      categoryId: Value(categoryId),
+      createTime: Value(createTime),
+      lastUpdateTime: Value(lastUpdateTime),
+      isDeleted: Value(isDeleted),
+    );
+  }
+
+  factory NoteEntity.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NoteEntity(
+      id: serializer.fromJson<String>(json['id']),
+      classification: serializer.fromJson<int>(json['classification']),
+      title: serializer.fromJson<String>(json['title']),
+      content: serializer.fromJson<String>(json['content']),
+      isFavorite: serializer.fromJson<int>(json['is_favorite']),
+      categoryId: serializer.fromJson<int>(json['category_id']),
+      createTime: serializer.fromJson<String>(json['create_time']),
+      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
+      isDeleted: serializer.fromJson<int>(json['is_deleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'classification': serializer.toJson<int>(classification),
+      'title': serializer.toJson<String>(title),
+      'content': serializer.toJson<String>(content),
+      'is_favorite': serializer.toJson<int>(isFavorite),
+      'category_id': serializer.toJson<int>(categoryId),
+      'create_time': serializer.toJson<String>(createTime),
+      'last_update_time': serializer.toJson<String>(lastUpdateTime),
+      'is_deleted': serializer.toJson<int>(isDeleted),
+    };
+  }
+
+  NoteEntity copyWith(
+          {String? id,
+          int? classification,
+          String? title,
+          String? content,
+          int? isFavorite,
+          int? categoryId,
+          String? createTime,
+          String? lastUpdateTime,
+          int? isDeleted}) =>
+      NoteEntity(
+        id: id ?? this.id,
+        classification: classification ?? this.classification,
+        title: title ?? this.title,
+        content: content ?? this.content,
+        isFavorite: isFavorite ?? this.isFavorite,
+        categoryId: categoryId ?? this.categoryId,
+        createTime: createTime ?? this.createTime,
+        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+        isDeleted: isDeleted ?? this.isDeleted,
+      );
+  NoteEntity copyWithCompanion(NotesCompanion data) {
+    return NoteEntity(
+      id: data.id.present ? data.id.value : this.id,
+      classification: data.classification.present
+          ? data.classification.value
+          : this.classification,
+      title: data.title.present ? data.title.value : this.title,
+      content: data.content.present ? data.content.value : this.content,
+      isFavorite:
+          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+      lastUpdateTime: data.lastUpdateTime.present
+          ? data.lastUpdateTime.value
+          : this.lastUpdateTime,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NoteEntity(')
+          ..write('id: $id, ')
+          ..write('classification: $classification, ')
+          ..write('title: $title, ')
+          ..write('content: $content, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('createTime: $createTime, ')
+          ..write('lastUpdateTime: $lastUpdateTime, ')
+          ..write('isDeleted: $isDeleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, classification, title, content,
+      isFavorite, categoryId, createTime, lastUpdateTime, isDeleted);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NoteEntity &&
+          other.id == this.id &&
+          other.classification == this.classification &&
+          other.title == this.title &&
+          other.content == this.content &&
+          other.isFavorite == this.isFavorite &&
+          other.categoryId == this.categoryId &&
+          other.createTime == this.createTime &&
+          other.lastUpdateTime == this.lastUpdateTime &&
+          other.isDeleted == this.isDeleted);
+}
+
+class NotesCompanion extends UpdateCompanion<NoteEntity> {
+  final Value<String> id;
+  final Value<int> classification;
+  final Value<String> title;
+  final Value<String> content;
+  final Value<int> isFavorite;
+  final Value<int> categoryId;
+  final Value<String> createTime;
+  final Value<String> lastUpdateTime;
+  final Value<int> isDeleted;
+  final Value<int> rowid;
+  const NotesCompanion({
+    this.id = const Value.absent(),
+    this.classification = const Value.absent(),
+    this.title = const Value.absent(),
+    this.content = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.createTime = const Value.absent(),
+    this.lastUpdateTime = const Value.absent(),
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotesCompanion.insert({
+    required String id,
+    this.classification = const Value.absent(),
+    required String title,
+    required String content,
+    this.isFavorite = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    required String createTime,
+    required String lastUpdateTime,
+    this.isDeleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        title = Value(title),
+        content = Value(content),
+        createTime = Value(createTime),
+        lastUpdateTime = Value(lastUpdateTime);
+  static Insertable<NoteEntity> custom({
+    Expression<String>? id,
+    Expression<int>? classification,
+    Expression<String>? title,
+    Expression<String>? content,
+    Expression<int>? isFavorite,
+    Expression<int>? categoryId,
+    Expression<String>? createTime,
+    Expression<String>? lastUpdateTime,
+    Expression<int>? isDeleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (classification != null) 'classification': classification,
+      if (title != null) 'title': title,
+      if (content != null) 'content': content,
+      if (isFavorite != null) 'is_favorite': isFavorite,
+      if (categoryId != null) 'category_id': categoryId,
+      if (createTime != null) 'create_time': createTime,
+      if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotesCompanion copyWith(
+      {Value<String>? id,
+      Value<int>? classification,
+      Value<String>? title,
+      Value<String>? content,
+      Value<int>? isFavorite,
+      Value<int>? categoryId,
+      Value<String>? createTime,
+      Value<String>? lastUpdateTime,
+      Value<int>? isDeleted,
+      Value<int>? rowid}) {
+    return NotesCompanion(
+      id: id ?? this.id,
+      classification: classification ?? this.classification,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      isFavorite: isFavorite ?? this.isFavorite,
+      categoryId: categoryId ?? this.categoryId,
+      createTime: createTime ?? this.createTime,
+      lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+      isDeleted: isDeleted ?? this.isDeleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (classification.present) {
+      map['classification'] = Variable<int>(classification.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<int>(isFavorite.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (createTime.present) {
+      map['create_time'] = Variable<String>(createTime.value);
+    }
+    if (lastUpdateTime.present) {
+      map['last_update_time'] = Variable<String>(lastUpdateTime.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<int>(isDeleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotesCompanion(')
+          ..write('id: $id, ')
+          ..write('classification: $classification, ')
+          ..write('title: $title, ')
+          ..write('content: $content, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('createTime: $createTime, ')
+          ..write('lastUpdateTime: $lastUpdateTime, ')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$SqliteDb extends GeneratedDatabase {
   _$SqliteDb(QueryExecutor e) : super(e);
   $SqliteDbManager get managers => $SqliteDbManager(this);
   late final Categories categories = Categories(this);
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
+  late final Notes notes = Notes(this);
   Selectable<ActivePasswordsResult> activePasswords() {
     return customSelect(
         'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
@@ -1523,7 +2013,7 @@ abstract class _$SqliteDb extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categories, passwords, attributes];
+      [categories, passwords, attributes, notes];
 }
 
 typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({
@@ -2173,6 +2663,232 @@ typedef $AttributesProcessedTableManager = ProcessedTableManager<
     (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
     Attribute,
     PrefetchHooks Function()>;
+typedef $NotesCreateCompanionBuilder = NotesCompanion Function({
+  required String id,
+  Value<int> classification,
+  required String title,
+  required String content,
+  Value<int> isFavorite,
+  Value<int> categoryId,
+  required String createTime,
+  required String lastUpdateTime,
+  Value<int> isDeleted,
+  Value<int> rowid,
+});
+typedef $NotesUpdateCompanionBuilder = NotesCompanion Function({
+  Value<String> id,
+  Value<int> classification,
+  Value<String> title,
+  Value<String> content,
+  Value<int> isFavorite,
+  Value<int> categoryId,
+  Value<String> createTime,
+  Value<String> lastUpdateTime,
+  Value<int> isDeleted,
+  Value<int> rowid,
+});
+
+class $NotesFilterComposer extends Composer<_$SqliteDb, Notes> {
+  $NotesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnFilters(column));
+}
+
+class $NotesOrderingComposer extends Composer<_$SqliteDb, Notes> {
+  $NotesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
+}
+
+class $NotesAnnotationComposer extends Composer<_$SqliteDb, Notes> {
+  $NotesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get classification => $composableBuilder(
+      column: $table.classification, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<int> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => column);
+
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+
+  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
+      column: $table.lastUpdateTime, builder: (column) => column);
+
+  GeneratedColumn<int> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+}
+
+class $NotesTableManager extends RootTableManager<
+    _$SqliteDb,
+    Notes,
+    NoteEntity,
+    $NotesFilterComposer,
+    $NotesOrderingComposer,
+    $NotesAnnotationComposer,
+    $NotesCreateCompanionBuilder,
+    $NotesUpdateCompanionBuilder,
+    (NoteEntity, BaseReferences<_$SqliteDb, Notes, NoteEntity>),
+    NoteEntity,
+    PrefetchHooks Function()> {
+  $NotesTableManager(_$SqliteDb db, Notes table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $NotesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $NotesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $NotesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<int> classification = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<int> isFavorite = const Value.absent(),
+            Value<int> categoryId = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<String> lastUpdateTime = const Value.absent(),
+            Value<int> isDeleted = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              NotesCompanion(
+            id: id,
+            classification: classification,
+            title: title,
+            content: content,
+            isFavorite: isFavorite,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+            isDeleted: isDeleted,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<int> classification = const Value.absent(),
+            required String title,
+            required String content,
+            Value<int> isFavorite = const Value.absent(),
+            Value<int> categoryId = const Value.absent(),
+            required String createTime,
+            required String lastUpdateTime,
+            Value<int> isDeleted = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              NotesCompanion.insert(
+            id: id,
+            classification: classification,
+            title: title,
+            content: content,
+            isFavorite: isFavorite,
+            categoryId: categoryId,
+            createTime: createTime,
+            lastUpdateTime: lastUpdateTime,
+            isDeleted: isDeleted,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $NotesProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    Notes,
+    NoteEntity,
+    $NotesFilterComposer,
+    $NotesOrderingComposer,
+    $NotesAnnotationComposer,
+    $NotesCreateCompanionBuilder,
+    $NotesUpdateCompanionBuilder,
+    (NoteEntity, BaseReferences<_$SqliteDb, Notes, NoteEntity>),
+    NoteEntity,
+    PrefetchHooks Function()>;
 
 class $SqliteDbManager {
   final _$SqliteDb _db;
@@ -2183,6 +2899,7 @@ class $SqliteDbManager {
       $PasswordsTableManager(_db, _db.passwords);
   $AttributesTableManager get attributes =>
       $AttributesTableManager(_db, _db.attributes);
+  $NotesTableManager get notes => $NotesTableManager(_db, _db.notes);
 }
 
 class ActivePasswordsResult {

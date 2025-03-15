@@ -2,7 +2,7 @@ import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
-import 'package:cryptowl/src/service/category_repository.dart';
+import 'package:cryptowl/src/repositories/category_repository.dart';
 import 'package:drift/native.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

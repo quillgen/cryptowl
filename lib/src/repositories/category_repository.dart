@@ -1,4 +1,4 @@
-import 'package:cryptowl/src/service/base_repository.dart';
+import 'package:cryptowl/src/repositories/base_repository.dart';
 import 'package:drift/drift.dart';
 
 import '../domain/category.dart';
