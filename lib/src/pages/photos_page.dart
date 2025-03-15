@@ -12,6 +12,34 @@ class PhotosPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Photos'),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              tooltip: "Menu",
+            );
+          },
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search),
+            tooltip: "Search",
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.more_vert),
+            tooltip: "More operations",
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "photo_add",
+        onPressed: () {},
+        child: const Icon(Icons.add),
       ),
       body: GridView.count(
         primary: false,

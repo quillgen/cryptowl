@@ -44,6 +44,7 @@ dependencies:
   radio_group_v2: ^3.3.1
   flutter_hooks: ^0.21.2
   hooks_riverpod: ^2.6.1
+  flutter_quill: ^11.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

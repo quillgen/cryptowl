@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../main.dart';
 import 'pages/introduction_page.dart';
 import 'pages/login_page.dart';
+import 'pages/note_create_page.dart';
 import 'pages/notes_page.dart';
 import 'pages/onboarding_page.dart';
 import 'pages/password_create_page.dart';
@@ -78,12 +79,24 @@ final routerProvider = Provider<GoRouter>((ref) {
         navigatorKey: notesNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
-            name: NotesPage.name,
-            path: NotesPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(child: NotesPage());
-            },
-          ),
+              name: NotesPage.name,
+              path: NotesPage.path,
+              pageBuilder: (BuildContext context, GoRouterState state) {
+                return const NoTransitionPage<void>(child: NotesPage());
+              },
+              routes: <RouteBase>[
+                GoRoute(
+                  name: NoteCreatePage.name,
+                  path: NoteCreatePage.path,
+                  parentNavigatorKey: rootNavigatorKey,
+                  pageBuilder: (BuildContext context, GoRouterState state) {
+                    return const MaterialPage<void>(
+                      //fullscreenDialog: true,
+                      child: NoteCreatePage(),
+                    );
+                  },
+                ),
+              ]),
         ],
       ),
       StatefulShellBranch(

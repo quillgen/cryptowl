@@ -94,6 +94,7 @@ class _ValutPageState extends ConsumerState<ValutPage>
       drawer: MenuDrawer(),
       endDrawer: FilterDrawer(),
       floatingActionButton: FloatingActionButton(
+        heroTag: "vault_add",
         onPressed: () {
           context.goNamed(
             PasswordCreatePage.name,
@@ -104,7 +105,7 @@ class _ValutPageState extends ConsumerState<ValutPage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          PasswordListPage(),
+          PasswordList(),
           Icon(Icons.directions_transit),
           Icon(Icons.directions_bike),
           Icon(Icons.directions_bike),

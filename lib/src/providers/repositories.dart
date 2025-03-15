@@ -1,5 +1,6 @@
 import 'package:cryptowl/src/repositories/category_repository.dart';
 import 'package:cryptowl/src/repositories/kdbx_repository.dart';
+import 'package:cryptowl/src/repositories/note_repository.dart';
 import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:cryptowl/src/service/app_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
@@ -15,6 +16,10 @@ final categoryRepositoryProvider = Provider((ref) {
 
 final passwordRepositoryProvider = Provider((ref) {
   return PasswordRepository(ref);
+});
+
+final noteRepositoryProvider = Provider((ref) {
+  return NoteRepository(ref);
 });
 
 final fileServiceProvider = Provider((ref) {

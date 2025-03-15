@@ -1,9 +1,9 @@
+import 'package:cryptowl/src/domain/note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../main.dart';
-import '../domain/password.dart';
 import '../pages/password_create_page.dart';
 import '../pages/password_detail_page.dart';
 import '../providers/providers.dart';
@@ -15,10 +15,10 @@ enum FilterMenu {
   deleted,
 }
 
-class PasswordList extends ConsumerWidget {
-  const PasswordList({super.key});
+class NoteList extends ConsumerWidget {
+  const NoteList({super.key});
 
-  Widget _buildList(BuildContext context, List<PasswordBasic> items) {
+  Widget _buildList(BuildContext context, List<NoteBasic> items) {
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (_, index) {
@@ -30,6 +30,7 @@ class PasswordList extends ConsumerWidget {
           title: Text(item.title),
           onTap: () {
             context.goNamed(
+              // fixme:
               PasswordDetailPage.name,
               pathParameters: <String, String>{'id': item.id},
             );
@@ -46,9 +47,9 @@ class PasswordList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final passwords = ref.watch(passwordsProvider);
+    final notes = ref.watch(notesProvider);
 
-    return passwords.when(
+    return notes.when(
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
@@ -61,7 +62,7 @@ class PasswordList extends ConsumerWidget {
           : RefreshIndicator(
               child: _buildList(context, items),
               onRefresh: () async {
-                ref.invalidate(passwordsProvider);
+                ref.invalidate(notesProvider);
               }),
     );
   }
