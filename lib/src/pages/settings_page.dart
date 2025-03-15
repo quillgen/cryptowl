@@ -1,8 +1,11 @@
+import 'package:cryptowl/src/components/setting_dialog.dart';
+import 'package:cryptowl/src/providers/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum ThemeOptions { system, dark, light }
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends HookConsumerWidget {
   const SettingsPage({super.key});
 
   static const String path = '/settings';
@@ -14,72 +17,32 @@ class SettingsPage extends StatelessWidget {
     ),
   );
 
-  Widget _renderMenu(BuildContext context, String title, {Widget? trailing}) {
+  Widget _renderMenu(BuildContext context, String title,
+      {void Function()? onTap, Widget? trailing}) {
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.only(left: 10, right: 10),
       title: Text(title),
       trailing: trailing ?? Icon(Icons.navigate_next),
-      onTap: () async {
-        await _showSelection(context, "Theme");
-      },
+      onTap: onTap,
       shape: borderStyle,
     );
   }
 
-  Future<bool?> _showSelection(BuildContext context, String title) async {
-    return showDialog<bool>(
+  Future<ThemeMode?> _showThemeSelection(BuildContext context) async {
+    return showDialog<ThemeMode>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                ListTile(
-                  dense: true,
-                  title: Text('System(Default)'),
-                  leading: Radio<ThemeOptions>(
-                    value: ThemeOptions.system,
-                    onChanged: (ThemeOptions? value) {},
-                    groupValue: ThemeOptions.system,
-                  ),
-                ),
-                ListTile(
-                  dense: true,
-                  title: Text('Light'),
-                  leading: Radio<ThemeOptions>(
-                    value: ThemeOptions.light,
-                    onChanged: (ThemeOptions? value) {},
-                    groupValue: ThemeOptions.light,
-                  ),
-                ),
-                ListTile(
-                  dense: true,
-                  title: Text('Dark'),
-                  leading: Radio<ThemeOptions>(
-                    value: ThemeOptions.dark,
-                    onChanged: (ThemeOptions? value) {},
-                    groupValue: ThemeOptions.dark,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
+        return SettingDialog<ThemeMode>(
+            "Theme", ThemeMode.values, ThemeMode.system);
       },
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeNotifier = ref.watch(themeProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -89,7 +52,13 @@ class SettingsPage extends StatelessWidget {
         children: <Widget>[
           _renderMenu(context, "Storage"),
           _renderMenu(context, "Language", trailing: Text("English")),
-          _renderMenu(context, "Theme", trailing: Text("Default(System)")),
+          _renderMenu(context, "Theme", trailing: Text("Default(System)"),
+              onTap: () async {
+            final mode = await _showThemeSelection(context);
+            if (mode != null) {
+              themeNotifier.setTheme(mode);
+            }
+          }),
           _renderMenu(context, "Change master password"),
           _renderMenu(context, "Unlock with Biometrics"),
           _renderMenu(context, "Session timeout"),
