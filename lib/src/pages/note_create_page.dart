@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:cryptowl/src/common/random_util.dart';
-import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/providers/notes.dart';
 import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,7 @@ class NoteCreatePage extends ConsumerStatefulWidget {
 }
 
 class _NoteCreatePageState extends ConsumerState<NoteCreatePage> {
-  QuillController _controller = QuillController.basic();
+  final QuillController _controller = QuillController.basic();
 
   @override
   void dispose() {
@@ -37,21 +35,9 @@ class _NoteCreatePageState extends ConsumerState<NoteCreatePage> {
         actions: [
           TextButton(
               onPressed: () async {
-                final String json =
-                    jsonEncode(_controller.document.toDelta().toJson());
-                final now = DateTime.now().toIso8601String();
-                final item = NoteEntity(
-                  id: RandomUtil.generateUUID(),
-                  classification: 0,
-                  title: "note",
-                  content: json,
-                  isFavorite: 0,
-                  categoryId: 0,
-                  createTime: now,
-                  lastUpdateTime: now,
-                  isDeleted: 0,
-                );
-                await ref.read(noteRepositoryProvider).insert(item);
+                await ref.read(noteServiceProvider).createNote(
+                    jsonEncode(_controller.document.toDelta().toJson()),
+                    _controller.document.toPlainText());
                 ref.invalidate(notesProvider);
                 if (context.mounted) {
                   context.pop();
@@ -64,7 +50,16 @@ class _NoteCreatePageState extends ConsumerState<NoteCreatePage> {
         children: [
           QuillSimpleToolbar(
             controller: _controller,
-            config: const QuillSimpleToolbarConfig(),
+            config: const QuillSimpleToolbarConfig(
+              showFontFamily: false,
+              showFontSize: false,
+              showIndent: false,
+              showInlineCode: false,
+              showLink: false,
+              showSearchButton: false,
+              showSubscript: false,
+              showSuperscript: false,
+            ),
           ),
           Expanded(
             child: QuillEditor.basic(

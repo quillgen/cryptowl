@@ -6,6 +6,8 @@ import 'package:cryptowl/src/service/app_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../service/note_service.dart';
+
 final kdbxRepositoryProvider = Provider((ref) {
   return KdbxRepository(ref);
 });
@@ -24,6 +26,12 @@ final noteRepositoryProvider = Provider((ref) {
 
 final fileServiceProvider = Provider((ref) {
   return FileService();
+});
+
+final noteServiceProvider = Provider((ref) {
+  return NoteService(
+    ref.read(noteRepositoryProvider),
+  );
 });
 
 final appServiceProvider = Provider((ref) {

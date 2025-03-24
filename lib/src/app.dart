@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/pages/note_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -94,6 +95,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                     return const MaterialPage<void>(
                       //fullscreenDialog: true,
                       child: NoteCreatePage(),
+                    );
+                  },
+                ),
+                GoRoute(
+                  name: NodeDetailPage.name,
+                  path: NodeDetailPage.path,
+                  parentNavigatorKey: rootNavigatorKey,
+                  pageBuilder: (BuildContext context, GoRouterState state) {
+                    return const MaterialPage<void>(
+                      //fullscreenDialog: true,
+                      child: NodeDetailPage(),
                     );
                   },
                 ),

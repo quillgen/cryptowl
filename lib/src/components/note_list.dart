@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../main.dart';
+import '../pages/note_detail_page.dart';
 import '../pages/password_create_page.dart';
-import '../pages/password_detail_page.dart';
 import '../providers/providers.dart';
 import 'empty.dart';
 
@@ -31,7 +31,7 @@ class NoteList extends ConsumerWidget {
           onTap: () {
             context.goNamed(
               // fixme:
-              PasswordDetailPage.name,
+              NodeDetailPage.name,
               pathParameters: <String, String>{'id': item.id},
             );
           },

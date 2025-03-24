@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../components/error.dart';
 import '../components/form_input.dart';
 import '../providers/providers.dart';
 
@@ -137,7 +138,7 @@ class PasswordDetailPage extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
-        error: (e, _) => ErrorWidget(e),
+        error: (e, _) => ErrorInfo(e.toString()),
       ),
     );
   }

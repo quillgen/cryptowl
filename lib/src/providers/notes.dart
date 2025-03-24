@@ -35,3 +35,9 @@ final notesProvider =
     AsyncNotifierProvider<AsyncNotesNotifier, List<NoteBasic>>(() {
   return AsyncNotesNotifier();
 });
+
+final noteDetailProvider =
+    FutureProvider.autoDispose.family<Note, String>((ref, id) async {
+  _logger.fine("Fetching note detail for $id");
+  return ref.read(noteRepositoryProvider).findById(id);
+});

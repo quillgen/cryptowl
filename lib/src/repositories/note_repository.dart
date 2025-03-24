@@ -50,4 +50,12 @@ class NoteRepository extends SqlcipherRepository {
     await db.into(db.notes).insert(item);
     return item;
   }
+
+  Future<Note> findById(String id) async {
+    final db = await requireDb();
+    final item = await (db.notes.select()..where((tbl) => tbl.id.equals(id)))
+        .getSingle();
+
+    return Note.fromEntity(item);
+  }
 }
