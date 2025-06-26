@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../main.dart';
+import 'app_scaffold.dart';
 import 'localization/app_localizations.dart';
 import 'pages/introduction_page.dart';
 import 'pages/login_page.dart';
@@ -84,30 +85,35 @@ final routerProvider = Provider<GoRouter>((ref) {
               name: NotesPage.name,
               path: NotesPage.path,
               pageBuilder: (BuildContext context, GoRouterState state) {
-                return const NoTransitionPage<void>(child: NotesPage());
+                return const NoTransitionPage<void>(
+                    child: AppScaffold(
+                  body: NotesPage(),
+                ));
               },
               routes: <RouteBase>[
                 GoRoute(
                   name: NoteCreatePage.name,
                   path: NoteCreatePage.path,
-                  parentNavigatorKey: rootNavigatorKey,
-                  pageBuilder: (BuildContext context, GoRouterState state) {
-                    return const MaterialPage<void>(
-                      //fullscreenDialog: true,
-                      child: NoteCreatePage(),
-                    );
-                  },
+                  parentNavigatorKey: notesNavigatorKey,
+                  pageBuilder: (BuildContext context, GoRouterState state) =>
+                      NoTransitionPage(
+                    child: AppScaffold(
+                      body: NotesPage(),
+                      secondaryBody: NoteCreatePage(),
+                    ),
+                  ),
                 ),
                 GoRoute(
                   name: NodeDetailPage.name,
                   path: NodeDetailPage.path,
-                  parentNavigatorKey: rootNavigatorKey,
-                  pageBuilder: (BuildContext context, GoRouterState state) {
-                    return const MaterialPage<void>(
-                      //fullscreenDialog: true,
-                      child: NodeDetailPage(),
-                    );
-                  },
+                  parentNavigatorKey: notesNavigatorKey,
+                  pageBuilder: (BuildContext context, GoRouterState state) =>
+                      NoTransitionPage(
+                    child: AppScaffold(
+                      body: NotesPage(),
+                      secondaryBody: NodeDetailPage(),
+                    ),
+                  ),
                 ),
               ]),
         ],
