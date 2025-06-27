@@ -44,7 +44,9 @@ dependencies:
   radio_group_v2: ^3.3.1
   flutter_hooks: ^0.21.2
   hooks_riverpod: ^2.6.1
-  flutter_quill: ^11.1.0
+  fleather: ^1.23.0
+  url_launcher: ^6.3.1
+  image_picker: ^1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

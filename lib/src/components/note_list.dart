@@ -27,7 +27,11 @@ class NoteList extends ConsumerWidget {
           dense: true,
           contentPadding: EdgeInsets.only(left: 10, right: 10),
           leading: ClassificationLabel.from(item.classification).icon,
-          title: Text(item.title),
+          title: Text(
+            item.title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
           onTap: () {
             context.goNamed(
               // fixme:

@@ -1,5 +1,6 @@
 import 'package:cryptowl/src/components/note_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -40,15 +41,17 @@ class NotesPage extends HookConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "note_add",
-        onPressed: () {
-          context.goNamed(
-            NoteCreatePage.name,
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: Breakpoints.medium.isActive(context)
+          ? null
+          : FloatingActionButton(
+              heroTag: "note_add",
+              onPressed: () {
+                context.goNamed(
+                  NoteCreatePage.name,
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
       body: NoteList(),
     );
   }

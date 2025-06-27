@@ -28,6 +28,21 @@ class ScaffoldShell extends StatelessWidget {
     return AdaptiveScaffold(
       useDrawer: false,
       internalAnimations: false,
+      leadingExtendedNavRail: IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.search),
+        tooltip: "Search",
+      ),
+      leadingUnextendedNavRail: IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.login),
+        tooltip: "Haha",
+      ),
+      trailingNavRail: IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.category),
+        tooltip: "Category",
+      ),
       body: (BuildContext context) => navigationShell,
       selectedIndex: navigationShell.currentIndex,
       onSelectedIndexChange: (int index) {
