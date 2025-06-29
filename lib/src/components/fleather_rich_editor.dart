@@ -24,8 +24,8 @@ class FleatherRichEditor extends StatelessWidget {
             controller: controller,
             focusNode: focusNode,
             padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
+              left: 8,
+              right: 8,
               bottom: MediaQuery.of(context).padding.bottom,
             ),
             onLaunchUrl: _launchUrl,
