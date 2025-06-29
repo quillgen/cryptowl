@@ -13,6 +13,10 @@ class FleatherText extends StatelessWidget {
     final document = ParchmentDocument.fromJson(jsonDecode(content));
     final controller = FleatherController(document: document);
 
-    return FleatherField(controller: controller);
+    return FleatherField(
+      controller: controller,
+      expands: true,
+      readOnly: true,
+    );
   }
 }

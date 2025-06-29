@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The defined light theme.
   static ThemeData light = FlexThemeData.light(
+    fontFamily: "Inter",
+    fontFamilyFallback: ["LxgwWenKai"],
     scheme: FlexScheme.shark,
     subThemesData: const FlexSubThemesData(
       inputDecoratorIsFilled: true,
@@ -41,6 +43,8 @@ abstract final class AppTheme {
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
+    fontFamily: "Inter",
+    fontFamilyFallback: ["LxgwWenKai"],
     scheme: FlexScheme.shark,
     subThemesData: const FlexSubThemesData(
       blendOnColors: true,

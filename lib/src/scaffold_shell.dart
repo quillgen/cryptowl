@@ -28,15 +28,23 @@ class ScaffoldShell extends StatelessWidget {
     return AdaptiveScaffold(
       useDrawer: false,
       internalAnimations: false,
-      leadingExtendedNavRail: IconButton(
-        onPressed: () {},
-        icon: Icon(Icons.search),
-        tooltip: "Search",
+      leadingExtendedNavRail: Padding(
+        padding: EdgeInsetsGeometry.all(8),
+        child: Row(
+          children: [
+            Expanded(child: Text("123")),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.menu),
+              tooltip: "Menu",
+            )
+          ],
+        ),
       ),
       leadingUnextendedNavRail: IconButton(
         onPressed: () {},
-        icon: Icon(Icons.login),
-        tooltip: "Haha",
+        icon: Icon(Icons.menu),
+        tooltip: "Menu",
       ),
       trailingNavRail: IconButton(
         onPressed: () {},
