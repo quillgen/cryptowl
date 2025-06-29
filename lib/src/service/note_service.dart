@@ -31,4 +31,18 @@ class NoteService {
     );
     return repository.insert(item);
   }
+
+  Future<NoteEntity> updateNote(
+      String id, String delta, String plainText) async {
+    var title = plainText;
+    if (title.length > 100) {
+      title = title.substring(0, 100);
+    }
+    final re = RegExp(r'\\n');
+    final lines = title.split(re);
+    title = lines[0].trim();
+
+    return repository.update(id,
+        title: title, content: delta, plainText: plainText);
+  }
 }

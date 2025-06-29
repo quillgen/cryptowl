@@ -47,7 +47,8 @@ class NoteEditPage extends HookConsumerWidget {
           actions: [
             IconButton(
               onPressed: () async {
-                await ref.read(noteServiceProvider).createNote(
+                await ref.read(noteServiceProvider).updateNote(
+                    id,
                     jsonEncode(controller.value!.document.toDelta().toJson()),
                     controller.value!.document.toPlainText());
                 ref.invalidate(notesProvider);

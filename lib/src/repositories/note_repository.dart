@@ -41,6 +41,32 @@ class NoteRepository extends SqlcipherRepository {
     return item;
   }
 
+  Future<NoteEntity> update(String id,
+      {int? classification,
+      String? title,
+      String? content,
+      String? plainText}) async {
+    final db = await requireDb();
+    final now = DateTime.now();
+    final existing = await (db.notes.select()
+          ..where((tbl) => tbl.id.equals(id)))
+        .getSingle();
+    final item = NoteEntity(
+      id: id,
+      categoryId: existing.categoryId,
+      title: title ?? existing.title,
+      createTime: existing.createTime,
+      lastUpdateTime: now.toIso8601String(),
+      classification: classification ?? existing.classification,
+      content: content ?? existing.content,
+      plainText: plainText ?? existing.plainText,
+      isFavorite: existing.isFavorite,
+      isDeleted: existing.isDeleted,
+    );
+    await db.notes.replaceOne(item.toCompanion(true));
+    return item;
+  }
+
   Future<Note> findById(String id) async {
     final db = await requireDb();
     final item = await (db.notes.select()..where((tbl) => tbl.id.equals(id)))
