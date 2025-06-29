@@ -1,0 +1,10 @@
+{
+  "appTitle": "密鸮",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "moments": "时刻",
+  "photos": "照片",
+  "notes": "记事",
+  "passwords": "密码"
+}

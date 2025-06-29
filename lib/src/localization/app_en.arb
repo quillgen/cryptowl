@@ -2,5 +2,9 @@
   "appTitle": "Cryptowl",
   "@appTitle": {
     "description": "The title of the application"
-  }
+  },
+  "moments": "Moments",
+  "photos": "Photos",
+  "notes": "Notes",
+  "passwords": "Passwords"
 }

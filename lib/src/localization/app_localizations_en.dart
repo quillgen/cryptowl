@@ -10,4 +10,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTitle => 'Cryptowl';
+
+  @override
+  String get moments => 'Moments';
+
+  @override
+  String get photos => 'Photos';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get passwords => 'Passwords';
 }

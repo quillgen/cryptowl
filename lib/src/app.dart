@@ -271,9 +271,8 @@ class CryptowlApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en', ''),
-      ],
+      locale: Locale('zh', 'CN'),
+      supportedLocales: const [Locale("en"), Locale('zh', 'CN')],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
       theme: AppTheme.apply(theme.light()),
