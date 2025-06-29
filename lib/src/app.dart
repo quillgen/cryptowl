@@ -80,6 +80,34 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     branches: <StatefulShellBranch>[
       StatefulShellBranch(
+        navigatorKey: diaryNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: SettingsPage.name,
+            path: SettingsPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(
+                key: ValueKey<String>(SettingsPage.name),
+                child: SettingsPage(),
+              );
+            },
+            routes: <RouteBase>[],
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: photosNavigatorKey,
+        routes: <RouteBase>[
+          GoRoute(
+            name: PhotosPage.name,
+            path: PhotosPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              return const NoTransitionPage<void>(child: PhotosPage());
+            },
+          ),
+        ],
+      ),
+      StatefulShellBranch(
         navigatorKey: notesNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
@@ -117,18 +145,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                 ),
               ]),
-        ],
-      ),
-      StatefulShellBranch(
-        navigatorKey: photosNavigatorKey,
-        routes: <RouteBase>[
-          GoRoute(
-            name: PhotosPage.name,
-            path: PhotosPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(child: PhotosPage());
-            },
-          ),
         ],
       ),
       StatefulShellBranch(
@@ -177,22 +193,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
               ),
             ],
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        navigatorKey: diaryNavigatorKey,
-        routes: <RouteBase>[
-          GoRoute(
-            name: SettingsPage.name,
-            path: SettingsPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(
-                key: ValueKey<String>(SettingsPage.name),
-                child: SettingsPage(),
-              );
-            },
-            routes: <RouteBase>[],
           ),
         ],
       ),

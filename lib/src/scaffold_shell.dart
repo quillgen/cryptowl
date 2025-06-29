@@ -62,14 +62,14 @@ class ScaffoldShell extends StatelessWidget {
       destinations: navigationShell.route.branches.map(
         (StatefulShellBranch e) {
           return switch (e.defaultRoute?.name) {
-            NotesPage.name => const NavigationDestination(
-                icon: Icon(Icons.mail_lock), label: 'Notes'),
+            SettingsPage.name => const NavigationDestination(
+                icon: Icon(Icons.album), label: 'Diary'),
             PhotosPage.name => const NavigationDestination(
                 icon: Icon(Icons.photo), label: 'Photos'),
+            NotesPage.name => const NavigationDestination(
+                icon: Icon(Icons.mail_lock), label: 'Notes'),
             ValutPage.name => const NavigationDestination(
                 icon: Icon(Icons.password), label: 'My vault'),
-            SettingsPage.name => const NavigationDestination(
-                icon: Icon(Icons.settings), label: 'Settings'),
             _ => throw UnimplementedError(
                 'The route ${e.defaultRoute?.name} is not implemented.',
               ),
