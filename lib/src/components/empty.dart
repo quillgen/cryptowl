@@ -3,6 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 class Empty extends StatelessWidget {
+  final String? tip;
+
+  const Empty({super.key, this.tip});
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -14,7 +17,7 @@ class Empty extends StatelessWidget {
             AssetBytesLoader("assets/images/cryptowl-full.svg.vec"),
             height: 50,
           ),
-          Text("There are no items in your valut.")
+          Text(tip ?? "There are no items here.")
         ],
       ),
     );

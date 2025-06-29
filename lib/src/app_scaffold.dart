@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 
+import 'components/empty.dart';
+
 /**
  * ref: https://stackoverflow.com/questions/76584957/using-adaptivescaffold-from-flutter-adaptive-scaffold-with-go-router-to-show-a-l
  */
@@ -38,9 +40,8 @@ class AppScaffold extends StatelessWidget {
           ),
           Breakpoints.mediumAndUp: SlotLayout.from(
             key: const Key('Body Medium'),
-            builder: secondaryBody != null
-                ? (_) => secondaryBody!
-                : AdaptiveScaffold.emptyBuilder,
+            builder:
+                secondaryBody != null ? (_) => secondaryBody! : (_) => Empty(),
           )
         },
       ),
