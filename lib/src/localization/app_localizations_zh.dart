@@ -18,7 +18,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get photos => '照片';
 
   @override
-  String get notes => '记事';
+  String get notes => '笔记';
+
+  @override
+  String get createNote => '创建笔记';
+
+  @override
+  String get noteDetail => '查看笔记';
 
   @override
   String get passwords => '密码';

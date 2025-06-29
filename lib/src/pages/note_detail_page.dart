@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../components/custom_leading.dart';
 import '../components/error.dart';
 import '../components/fleather_text.dart';
+import '../localization/app_localizations.dart';
 
 class NodeDetailPage extends ConsumerStatefulWidget {
   const NodeDetailPage({super.key});
@@ -25,7 +27,8 @@ class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text('View Note'),
+        title: Text(AppLocalizations.of(context)!.noteDetail),
+        leading: CustomLeading(),
         actions: [
           IconButton(
             onPressed: () {},

@@ -6,5 +6,7 @@
   "moments": "Moments",
   "photos": "Photos",
   "notes": "Notes",
+  "createNote": "Create note",
+  "noteDetail": "View note",
   "passwords": "Passwords"
 }

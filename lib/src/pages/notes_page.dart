@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:remixicon/remixicon.dart';
 
+import '../localization/app_localizations.dart';
 import 'note_create_page.dart';
 
 class NotesPage extends HookConsumerWidget {
@@ -18,18 +20,18 @@ class NotesPage extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Notes'),
+        title: Text(AppLocalizations.of(context)!.notes),
         leading: isLarge
             ? null
             : IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.menu),
+                icon: Icon(RemixIcons.menu_line),
                 tooltip: "Menu",
               ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.search),
+            icon: Icon(RemixIcons.search_line),
             tooltip: "Search",
           ),
           if (isLarge)
@@ -39,7 +41,7 @@ class NotesPage extends HookConsumerWidget {
                   NoteCreatePage.name,
                 );
               },
-              icon: Icon(Icons.add),
+              icon: Icon(RemixIcons.add_line),
               tooltip: "Add note",
             ),
         ],
@@ -53,7 +55,7 @@ class NotesPage extends HookConsumerWidget {
                   NoteCreatePage.name,
                 );
               },
-              child: const Icon(Icons.add),
+              child: const Icon(RemixIcons.add_line),
             ),
       body: NoteList(),
     );

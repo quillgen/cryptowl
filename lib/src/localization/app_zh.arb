@@ -5,6 +5,8 @@
   },
   "moments": "时刻",
   "photos": "照片",
-  "notes": "记事",
+  "notes": "笔记",
+  "createNote": "创建笔记",
+  "noteDetail": "查看笔记",
   "passwords": "密码"
 }

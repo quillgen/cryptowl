@@ -21,5 +21,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notes => 'Notes';
 
   @override
+  String get createNote => 'Create note';
+
+  @override
+  String get noteDetail => 'View note';
+
+  @override
   String get passwords => 'Passwords';
 }

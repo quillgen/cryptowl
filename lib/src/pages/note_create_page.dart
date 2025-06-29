@@ -8,7 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:remixicon/remixicon.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../components/custom_leading.dart';
+import '../localization/app_localizations.dart';
 
 class NoteCreatePage extends ConsumerStatefulWidget {
   const NoteCreatePage({super.key});
@@ -43,19 +47,21 @@ class _NoteCreatePageState extends ConsumerState<NoteCreatePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Add item'),
+        title: Text(AppLocalizations.of(context)!.createNote),
+        leading: CustomLeading(),
         actions: [
-          TextButton(
-              onPressed: () async {
-                await ref.read(noteServiceProvider).createNote(
-                    jsonEncode(_controller.document.toDelta().toJson()),
-                    _controller.document.toPlainText());
-                ref.invalidate(notesProvider);
-                if (context.mounted) {
-                  context.pop();
-                }
-              },
-              child: Text("Save"))
+          IconButton(
+            onPressed: () async {
+              await ref.read(noteServiceProvider).createNote(
+                  jsonEncode(_controller.document.toDelta().toJson()),
+                  _controller.document.toPlainText());
+              ref.invalidate(notesProvider);
+              if (context.mounted) {
+                context.pop();
+              }
+            },
+            icon: Icon(RemixIcons.check_line),
+          )
         ],
       ),
       body: Column(

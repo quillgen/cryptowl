@@ -122,6 +122,18 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get notes;
 
+  /// No description provided for @createNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Create note'**
+  String get createNote;
+
+  /// No description provided for @noteDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View note'**
+  String get noteDetail;
+
   /// No description provided for @passwords.
   ///
   /// In en, this message translates to:

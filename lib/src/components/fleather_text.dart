@@ -14,7 +14,7 @@ class FleatherText extends StatelessWidget {
     final controller = FleatherController(document: document);
 
     return DefaultTextStyle.merge(
-      style: TextStyle(fontFamilyFallback: ["LXGWWenKaiTC"]),
+      //style: TextStyle(fontFamilyFallback: ["LXGWWenKaiTC"], fontSize: 14),
       child: FleatherField(
         controller: controller,
         expands: true,
