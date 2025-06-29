@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/pages/note_edit_page.dart';
 import 'package:cryptowl/src/providers/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,20 +7,20 @@ import 'package:remixicon/remixicon.dart';
 
 import '../components/custom_leading.dart';
 import '../components/error.dart';
-import '../components/fleather_text.dart';
+import '../components/fleather_rich_text.dart';
 import '../localization/app_localizations.dart';
 
-class NodeDetailPage extends ConsumerStatefulWidget {
-  const NodeDetailPage({super.key});
+class NoteDetailPage extends ConsumerStatefulWidget {
+  const NoteDetailPage({super.key});
 
   static const String path = '/detail/:id';
   static const String name = 'Note Detail';
 
   @override
-  ConsumerState<NodeDetailPage> createState() => _NodeDetailPageState();
+  ConsumerState<NoteDetailPage> createState() => _NodeDetailPageState();
 }
 
-class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
+class _NodeDetailPageState extends ConsumerState<NoteDetailPage> {
   @override
   Widget build(BuildContext context) {
     final id = GoRouterState.of(context).pathParameters["id"]!;
@@ -32,7 +33,12 @@ class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
         leading: CustomLeading(),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.goNamed(
+                NoteEditPage.name,
+                pathParameters: <String, String>{'id': id},
+              );
+            },
             icon: Icon(RemixIcons.edit_line),
             tooltip: AppLocalizations.of(context)!.edit,
           ),
@@ -44,16 +50,7 @@ class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
         ],
       ),
       body: detailFuture.when(
-        data: (note) => Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsetsGeometry.all(4),
-                child: FleatherText(content: note.content),
-              ),
-            ),
-          ],
-        ),
+        data: (note) => FleatherRichText(content: note.content),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),

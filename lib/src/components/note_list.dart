@@ -49,7 +49,7 @@ class NoteList extends ConsumerWidget {
           ),
           onTap: () {
             context.goNamed(
-              NodeDetailPage.name,
+              NoteDetailPage.name,
               pathParameters: <String, String>{'id': item.id},
             );
           },

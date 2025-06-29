@@ -13,29 +13,43 @@ import 'package:remixicon/remixicon.dart';
 import '../components/custom_leading.dart';
 import '../localization/app_localizations.dart';
 
-class NoteCreatePage extends HookConsumerWidget {
-  const NoteCreatePage({super.key});
+class NoteEditPage extends HookConsumerWidget {
+  const NoteEditPage({super.key});
 
-  static const String path = '/create';
-  static const String name = 'Note create';
+  static const String path = '/edit/:id';
+  static const String name = 'Note Edit';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final doc = ParchmentDocument();
-    final controller = FleatherController(document: doc);
+    final id = GoRouterState.of(context).pathParameters["id"]!;
+    final detailAsync = ref.watch(noteDetailProvider(id));
+    final controller = useState<FleatherController?>(null);
     final focusNode = useFocusNode();
+
+    useEffect(() {
+      if (detailAsync is AsyncData && detailAsync.value != null) {
+        final jsonContent = detailAsync.value!.content;
+        final doc = ParchmentDocument.fromJson(jsonDecode(jsonContent));
+        controller.value = FleatherController(document: doc);
+      }
+      return () => controller.value?.dispose();
+    }, [detailAsync]);
+
+    if (controller.value == null || detailAsync.value == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text(AppLocalizations.of(context)!.createNote),
+          title: Text(AppLocalizations.of(context)!.editNote),
           leading: CustomLeading(),
           actions: [
             IconButton(
               onPressed: () async {
                 await ref.read(noteServiceProvider).createNote(
-                    jsonEncode(controller.document.toDelta().toJson()),
-                    controller.document.toPlainText());
+                    jsonEncode(controller.value!.document.toDelta().toJson()),
+                    controller.value!.document.toPlainText());
                 ref.invalidate(notesProvider);
                 if (context.mounted) {
                   context.pop();
@@ -46,7 +60,7 @@ class NoteCreatePage extends HookConsumerWidget {
           ],
         ),
         body: FleatherRichEditor(
-          controller: controller,
+          controller: controller.value!,
           focusNode: focusNode,
         ));
   }

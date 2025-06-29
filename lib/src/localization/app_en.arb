@@ -8,6 +8,8 @@
   "notes": "Notes",
   "createNote": "Create note",
   "noteDetail": "View note",
+  "editNote": "Edit note",
+  "deleteNote": "Delete note",
   "passwords": "Passwords",
   "edit": "Edit",
   "delete": "Delete",

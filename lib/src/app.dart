@@ -1,4 +1,5 @@
 import 'package:cryptowl/src/pages/note_detail_page.dart';
+import 'package:cryptowl/src/pages/note_edit_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,14 +134,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                 ),
                 GoRoute(
-                  name: NodeDetailPage.name,
-                  path: NodeDetailPage.path,
+                  name: NoteDetailPage.name,
+                  path: NoteDetailPage.path,
                   parentNavigatorKey: notesNavigatorKey,
                   pageBuilder: (BuildContext context, GoRouterState state) =>
                       NoTransitionPage(
                     child: AppScaffold(
                       body: NotesPage(),
-                      secondaryBody: NodeDetailPage(),
+                      secondaryBody: NoteDetailPage(),
+                    ),
+                  ),
+                ),
+                GoRoute(
+                  name: NoteEditPage.name,
+                  path: NoteEditPage.path,
+                  parentNavigatorKey: notesNavigatorKey,
+                  pageBuilder: (BuildContext context, GoRouterState state) =>
+                      NoTransitionPage(
+                    child: AppScaffold(
+                      body: NotesPage(),
+                      secondaryBody: NoteEditPage(),
                     ),
                   ),
                 ),

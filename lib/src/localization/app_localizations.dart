@@ -134,6 +134,18 @@ abstract class AppLocalizations {
   /// **'View note'**
   String get noteDetail;
 
+  /// No description provided for @editNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editNote;
+
+  /// No description provided for @deleteNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete note'**
+  String get deleteNote;
+
   /// No description provided for @passwords.
   ///
   /// In en, this message translates to:

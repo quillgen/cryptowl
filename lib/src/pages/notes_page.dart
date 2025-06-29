@@ -31,6 +31,11 @@ class NotesPage extends HookConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {},
+            icon: Icon(RemixIcons.filter_line),
+            tooltip: "Filter",
+          ),
+          IconButton(
+            onPressed: () {},
             icon: Icon(RemixIcons.search_line),
             tooltip: "Search",
           ),
@@ -41,8 +46,8 @@ class NotesPage extends HookConsumerWidget {
                   NoteCreatePage.name,
                 );
               },
-              icon: Icon(RemixIcons.add_line),
-              tooltip: "Add note",
+              icon: Icon(RemixIcons.add_circle_line),
+              tooltip: AppLocalizations.of(context)!.createNote,
             ),
         ],
       ),

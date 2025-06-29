@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:fleather/fleather.dart';
 import 'package:flutter/widgets.dart';
 
-class FleatherText extends StatelessWidget {
+class FleatherRichText extends StatelessWidget {
   final String content;
 
-  const FleatherText({super.key, required this.content});
+  const FleatherRichText({super.key, required this.content});
 
   @override
   Widget build(BuildContext context) {

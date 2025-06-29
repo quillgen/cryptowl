@@ -27,6 +27,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noteDetail => '查看笔记';
 
   @override
+  String get editNote => '编辑笔记';
+
+  @override
+  String get deleteNote => '删除笔记';
+
+  @override
   String get passwords => '密码';
 
   @override
