@@ -13,10 +13,13 @@ class FleatherText extends StatelessWidget {
     final document = ParchmentDocument.fromJson(jsonDecode(content));
     final controller = FleatherController(document: document);
 
-    return FleatherField(
-      controller: controller,
-      expands: true,
-      readOnly: true,
+    return DefaultTextStyle.merge(
+      style: TextStyle(fontFamilyFallback: ["LXGWWenKaiTC"]),
+      child: FleatherField(
+        controller: controller,
+        expands: true,
+        readOnly: true,
+      ),
     );
   }
 }
