@@ -28,4 +28,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwords => 'Passwords';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get more => 'More operations';
+
+  @override
+  String get add => 'Create';
 }

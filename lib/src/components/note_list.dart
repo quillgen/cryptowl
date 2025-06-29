@@ -26,8 +26,8 @@ class NoteList extends ConsumerWidget {
         return ListTile(
           dense: true,
           contentPadding: EdgeInsets.only(left: 10, right: 10),
-          trailing:
-              IconButton(onPressed: () {}, icon: Icon(RemixIcons.more_line)),
+          leading: Icon(RemixIcons.list_check_2,
+              color: Theme.of(context).colorScheme.primary),
           titleAlignment: ListTileTitleAlignment.top,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

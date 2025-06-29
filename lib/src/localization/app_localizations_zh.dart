@@ -28,4 +28,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get passwords => '密码';
+
+  @override
+  String get edit => '编辑';
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get more => '更多操作';
+
+  @override
+  String get add => '创建';
 }

@@ -8,5 +8,9 @@
   "notes": "Notes",
   "createNote": "Create note",
   "noteDetail": "View note",
-  "passwords": "Passwords"
+  "passwords": "Passwords",
+  "edit": "Edit",
+  "delete": "Delete",
+  "more": "More operations",
+  "add": "Create"
 }

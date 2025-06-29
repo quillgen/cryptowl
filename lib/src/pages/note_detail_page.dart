@@ -2,6 +2,7 @@ import 'package:cryptowl/src/providers/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:remixicon/remixicon.dart';
 
 import '../components/custom_leading.dart';
 import '../components/error.dart';
@@ -32,8 +33,13 @@ class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.more_vert),
-            tooltip: "More operations",
+            icon: Icon(RemixIcons.edit_line),
+            tooltip: AppLocalizations.of(context)!.edit,
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(RemixIcons.more_line),
+            tooltip: AppLocalizations.of(context)!.more,
           )
         ],
       ),

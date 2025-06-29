@@ -139,6 +139,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords'**
   String get passwords;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More operations'**
+  String get more;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get add;
 }
 
 class _AppLocalizationsDelegate
