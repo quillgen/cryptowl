@@ -32,12 +32,19 @@ class NoteList extends ConsumerWidget {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.abstract,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+              Padding(
+                padding: EdgeInsetsGeometry.only(bottom: 5),
+                child: Text(
+                  item.abstract,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
               ),
-              Text("6月18日")
+              Text(
+                MaterialLocalizations.of(context)
+                    .formatShortDate(item.lastUpdateTime),
+                style: Theme.of(context).textTheme.labelSmall,
+              )
             ],
           ),
           onTap: () {
