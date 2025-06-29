@@ -4,6 +4,7 @@ class NoteBasic {
   String id;
   int categoryId;
   String title;
+  String abstract;
   int classification;
   DateTime createTime;
   DateTime lastUpdateTime;
@@ -12,6 +13,7 @@ class NoteBasic {
     required this.id,
     required this.categoryId,
     required this.title,
+    required this.abstract,
     required this.classification,
     required this.createTime,
     required this.lastUpdateTime,

@@ -60,12 +60,12 @@ class _NoteCreatePageState extends ConsumerState<NoteCreatePage> {
       ),
       body: Column(
         children: [
-          FleatherToolbar.basic(
-              controller: _controller!, editorKey: _editorKey),
+          FleatherToolbar.basic(controller: _controller, editorKey: _editorKey),
           Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
           Expanded(
             child: FleatherEditor(
-              controller: _controller!,
+              autofocus: true,
+              controller: _controller,
               focusNode: _focusNode,
               editorKey: _editorKey,
               padding: EdgeInsets.only(

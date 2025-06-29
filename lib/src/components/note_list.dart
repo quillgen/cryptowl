@@ -2,10 +2,10 @@ import 'package:cryptowl/src/domain/note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:remixicon/remixicon.dart';
 
 import '../../main.dart';
 import '../pages/note_detail_page.dart';
-import '../pages/password_create_page.dart';
 import '../providers/providers.dart';
 import 'empty.dart';
 
@@ -26,15 +26,22 @@ class NoteList extends ConsumerWidget {
         return ListTile(
           dense: true,
           contentPadding: EdgeInsets.only(left: 10, right: 10),
-          leading: ClassificationLabel.from(item.classification).icon,
-          title: Text(
-            item.title,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
+          trailing:
+              IconButton(onPressed: () {}, icon: Icon(RemixIcons.more_line)),
+          titleAlignment: ListTileTitleAlignment.top,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.abstract,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+              Text("6月18日")
+            ],
           ),
           onTap: () {
             context.goNamed(
-              // fixme:
               NodeDetailPage.name,
               pathParameters: <String, String>{'id': item.id},
             );

@@ -25,16 +25,11 @@ const formTextStyle = TextStyle(fontSize: 14);
 typedef IconEntry = DropdownMenuEntry<ClassificationLabel>;
 
 enum ClassificationLabel {
-  confidential(
-      'Confidential',
-      Icon(
-        Icons.remove_moderator,
-        color: Colors.green,
-      ),
+  confidential('Confidential', Icon(Icons.notes, color: Colors.green, size: 18),
       CONFIDENTIAL),
-  secret('Secret', Icon(Icons.verified_user, color: Colors.orange), SECRET),
+  secret('Secret', Icon(Icons.notes, color: Colors.orange, size: 18), SECRET),
   topSecret(
-      'Top Secret', Icon(Icons.verified_user, color: Colors.red), TOP_SECRET);
+      'Top Secret', Icon(Icons.notes, color: Colors.red, size: 18), TOP_SECRET);
 
   const ClassificationLabel(this.label, this.icon, this.level);
 

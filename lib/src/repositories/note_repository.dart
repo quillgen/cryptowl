@@ -16,27 +16,17 @@ class NoteRepository extends SqlcipherRepository {
       query = query & db.notes.isDeleted.isValue(0);
     }
 
-    final items = await (db.notes.selectOnly()
-          ..where(query)
-          ..addColumns([
-            db.notes.id,
-            db.notes.classification,
-            db.notes.categoryId,
-            db.notes.title,
-            db.notes.createTime,
-            db.notes.lastUpdateTime,
-            db.notes.isDeleted
-          ]))
-        .get();
+    final items = await db.noteList().get();
 
     return items.map((item) {
       return NoteBasic(
-        id: item.read(db.notes.id)!,
-        classification: item.read(db.notes.classification)!,
-        categoryId: item.read(db.notes.categoryId)!,
-        title: item.read(db.notes.title)!,
-        createTime: _parseDatetime(item.read(db.notes.createTime))!,
-        lastUpdateTime: _parseDatetime(item.read(db.notes.lastUpdateTime))!,
+        id: item.id,
+        classification: item.classification,
+        categoryId: item.categoryId,
+        title: item.title,
+        abstract: item.abstract,
+        createTime: _parseDatetime(item.createTime)!,
+        lastUpdateTime: _parseDatetime(item.lastUpdateTime)!,
       );
     }).toList();
   }

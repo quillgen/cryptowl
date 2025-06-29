@@ -21,6 +21,7 @@ class NoteService {
       id: RandomUtil.generateUUID(),
       classification: 0,
       title: title,
+      plainText: plainText,
       content: delta,
       isFavorite: 0,
       categoryId: 0,

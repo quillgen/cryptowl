@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
+import 'package:remixicon/remixicon.dart';
 
 import 'pages/notes_page.dart';
 import 'pages/photos_page.dart';
@@ -63,13 +64,13 @@ class ScaffoldShell extends StatelessWidget {
         (StatefulShellBranch e) {
           return switch (e.defaultRoute?.name) {
             SettingsPage.name => const NavigationDestination(
-                icon: Icon(Icons.album), label: 'Diary'),
+                icon: Icon(RemixIcons.camera_lens_ai_line), label: 'Moments'),
             PhotosPage.name => const NavigationDestination(
-                icon: Icon(Icons.photo), label: 'Photos'),
+                icon: Icon(RemixIcons.camera_ai_line), label: 'Photos'),
             NotesPage.name => const NavigationDestination(
-                icon: Icon(Icons.mail_lock), label: 'Notes'),
+                icon: Icon(RemixIcons.list_check_3), label: 'Notes'),
             ValutPage.name => const NavigationDestination(
-                icon: Icon(Icons.password), label: 'My vault'),
+                icon: Icon(RemixIcons.shield_keyhole_line), label: 'Passwords'),
             _ => throw UnimplementedError(
                 'The route ${e.defaultRoute?.name} is not implemented.',
               ),

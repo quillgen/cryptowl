@@ -47,6 +47,7 @@ dependencies:
   url_launcher: ^6.3.1
   image_picker: ^1.1.2
   google_fonts: ^6.2.1
+  remixicon: ^1.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,9 +72,6 @@ flutter:
     - assets/images/
     - assets/fonts/google_fonts/
   fonts:
-    - family:  MyIcons
-      fonts:
-        - asset: assets/fonts/MyIcons.ttf
     - family: LXGWWenKaiTC
       fonts:
         - asset: assets/fonts/google_fonts/LXGWWenKaiTC-Bold.ttf
