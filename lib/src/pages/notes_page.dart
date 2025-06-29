@@ -14,18 +14,25 @@ class NotesPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isLarge = Breakpoints.mediumAndUp.isActive(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Notes'),
-        leading: null,
+        leading: isLarge
+            ? null
+            : IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.menu),
+                tooltip: "Menu",
+              ),
         actions: [
           IconButton(
             onPressed: () {},
             icon: Icon(Icons.search),
             tooltip: "Search",
           ),
-          if (Breakpoints.mediumAndUp.isActive(context))
+          if (isLarge)
             IconButton(
               onPressed: () {
                 context.goNamed(

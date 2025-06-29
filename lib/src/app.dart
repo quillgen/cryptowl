@@ -28,14 +28,14 @@ import 'util.dart';
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
-final GlobalKey<NavigatorState> passwordsNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'passwords');
+final GlobalKey<NavigatorState> diaryNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'diary');
 final GlobalKey<NavigatorState> photosNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'photos');
 final GlobalKey<NavigatorState> notesNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'notes');
-final GlobalKey<NavigatorState> settingsNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'settings');
+final GlobalKey<NavigatorState> valutNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'valut');
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onboardingState = ref.watch(onboardingProvider);
@@ -132,7 +132,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: passwordsNavigatorKey,
+        navigatorKey: valutNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
             name: ValutPage.name,
@@ -181,7 +181,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: settingsNavigatorKey,
+        navigatorKey: diaryNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
             name: SettingsPage.name,

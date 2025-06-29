@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
@@ -14,6 +15,8 @@ void main() async {
     // ignore: avoid_print
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
+  GoogleFonts.config.allowRuntimeFetching = false;
+
   WidgetsFlutterBinding.ensureInitialized();
   open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
 

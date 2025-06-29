@@ -26,13 +26,22 @@ class _NodeDetailPageState extends ConsumerState<NodeDetailPage> {
       appBar: AppBar(
         centerTitle: false,
         title: Text('View Note'),
-        actions: [TextButton(onPressed: () async {}, child: Text("Save"))],
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.more_vert),
+            tooltip: "More operations",
+          )
+        ],
       ),
       body: detailFuture.when(
         data: (note) => Column(
           children: [
             Expanded(
-              child: FleatherText(content: note.content),
+              child: Padding(
+                padding: EdgeInsetsGeometry.all(4),
+                child: FleatherText(content: note.content),
+              ),
             ),
           ],
         ),

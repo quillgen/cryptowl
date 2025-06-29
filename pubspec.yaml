@@ -69,7 +69,7 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/google_fonts/
+    - assets/fonts/google_fonts/
   fonts:
     - family:  MyIcons
       fonts:
