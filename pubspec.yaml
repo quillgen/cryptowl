@@ -46,6 +46,7 @@ dependencies:
   fleather: ^1.23.0
   url_launcher: ^6.3.1
   image_picker: ^1.1.2
+  google_fonts: ^6.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,34 +69,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/google_fonts/
   fonts:
     - family:  MyIcons
       fonts:
         - asset: assets/fonts/MyIcons.ttf
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-4.1/InterVariable-Italic.ttf
-          style: italic
-        - asset: assets/fonts/Inter-4.1/InterVariable.ttf
-    - family: SourceHanSansSC
-      fonts:
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Bold.otf
-          weight: 700
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Regular.otf
-    - family: LxgwWenKai
-      fonts:
-        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Light.ttf
-          weight: 300
-        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Regular.ttf
-    - family: CascadiaCode
-      fonts:
-        - asset: assets/fonts/CascadiaCode-2407.24/CascadiaCode-Bold.otf
-          weight: 700
-        - asset: assets/fonts/CascadiaCode-2407.24/CascadiaCode-BoldItalic.otf
-          weight: 700
-          style: italic
-        - asset: assets/fonts/CascadiaCode-2407.24/CascadiaCode-Italic.otf
-          style: italic
-        - asset: assets/fonts/CascadiaCode-2407.24/CascadiaCode-Regular.otf

@@ -15,33 +15,27 @@ class NotesPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50.0), // here the desired height
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text(
-            'Notes',
-            style: TextStyle(fontSize: 16),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Notes'),
+        leading: null,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search),
+            tooltip: "Search",
           ),
-          leading: null,
-          actions: [
+          if (Breakpoints.mediumAndUp.isActive(context))
             IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.search),
-              tooltip: "Search",
+              onPressed: () {
+                context.goNamed(
+                  NoteCreatePage.name,
+                );
+              },
+              icon: Icon(Icons.add),
+              tooltip: "Add note",
             ),
-            if (Breakpoints.mediumAndUp.isActive(context))
-              IconButton(
-                onPressed: () {
-                  context.goNamed(
-                    NoteCreatePage.name,
-                  );
-                },
-                icon: Icon(Icons.add),
-                tooltip: "Add note",
-              ),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: Breakpoints.mediumAndUp.isActive(context)
           ? null
