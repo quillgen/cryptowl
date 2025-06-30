@@ -42,11 +42,42 @@ class _NodeDetailPageState extends ConsumerState<NoteDetailPage> {
             icon: Icon(RemixIcons.edit_line),
             tooltip: AppLocalizations.of(context)!.edit,
           ),
-          IconButton(
-            onPressed: () {},
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              // 处理菜单选择
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('选择了: $value')),
+              );
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  value: 'info',
+                  child: Text(AppLocalizations.of(context)!.info)),
+              PopupMenuItem(
+                  value: 'history',
+                  child: Text(AppLocalizations.of(context)!.history)),
+              PopupMenuItem(
+                  value: 'export',
+                  child: Text(AppLocalizations.of(context)!.export)),
+              PopupMenuItem(
+                  value: 'duplicate',
+                  child: Text(AppLocalizations.of(context)!.duplicate)),
+              PopupMenuItem(
+                  value: 'archive',
+                  child: Text(AppLocalizations.of(context)!.archive)),
+              PopupMenuItem(
+                  value: 'pin', child: Text(AppLocalizations.of(context)!.pin)),
+              PopupMenuItem(
+                  value: 'star',
+                  child: Text(AppLocalizations.of(context)!.favourite)),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                  value: 'delete',
+                  child: Text(AppLocalizations.of(context)!.delete)),
+            ],
             icon: Icon(RemixIcons.more_line),
             tooltip: AppLocalizations.of(context)!.more,
-          )
+          ),
         ],
       ),
       body: detailFuture.when(

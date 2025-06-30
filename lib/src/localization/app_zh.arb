@@ -14,5 +14,12 @@
   "edit": "编辑",
   "delete": "删除",
   "more": "更多操作",
-  "add": "创建"
+  "add": "创建",
+  "duplicate": "创建副本",
+  "archive": "归档",
+  "pin": "置顶",
+  "favourite": "收藏",
+  "export": "导出",
+  "info": "文档信息",
+  "history": "版本记录"
 }

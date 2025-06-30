@@ -175,6 +175,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create'**
   String get add;
+
+  /// No description provided for @duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
+
+  /// No description provided for @archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archive;
+
+  /// No description provided for @pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get pin;
+
+  /// No description provided for @favourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Star'**
+  String get favourite;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
 }
 
 class _AppLocalizationsDelegate

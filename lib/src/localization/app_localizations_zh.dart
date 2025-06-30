@@ -46,4 +46,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get add => '创建';
+
+  @override
+  String get duplicate => '创建副本';
+
+  @override
+  String get archive => '归档';
+
+  @override
+  String get pin => '置顶';
+
+  @override
+  String get favourite => '收藏';
+
+  @override
+  String get export => '导出';
+
+  @override
+  String get info => '文档信息';
+
+  @override
+  String get history => '版本记录';
 }

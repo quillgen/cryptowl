@@ -14,5 +14,12 @@
   "edit": "Edit",
   "delete": "Delete",
   "more": "More operations",
-  "add": "Create"
+  "add": "Create",
+  "duplicate": "Duplicate",
+  "archive": "Archive",
+  "pin": "Pin",
+  "favourite": "Star",
+  "export": "Export",
+  "info": "Info",
+  "history": "History"
 }

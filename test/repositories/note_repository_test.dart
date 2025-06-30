@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
-import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/repositories/note_repository.dart';
@@ -24,15 +23,15 @@ void main() {
 
   final mockRef = MockRef();
 
-  Future<int> createPasswords() async {
+  Future<int> createNotes() async {
     const sql = """
-    insert into notes(id, classification, category_id, is_favorite, is_deleted, create_time, last_update_time, title, content) 
+    insert into notes(id, classification, category_id, is_favorite, is_deleted, create_time, last_update_time, title, content, plain_text) 
     values 
-    ('c5d26f69-7088-487e-87eb-497c51728bc2',  0, 2, 1, 0, '2025-03-15T10:05:24.832721', '2025-03-15T10:05:24.832721', 'Lehner, Nicolas and Christiansen', 'Pellentesque eu tincidunt tortor aliquam nulla.'),
-    ('1eda2fd8-07d6-463e-8994-74538310a10c', 99, 4, 1, 0, '2025-03-15T10:05:24.833188', '2025-03-15T10:05:24.833188', 'Daniel-Yost', 'Dolor sed viverra ipsum nunc aliquet bibendum enim facilisis.'),
-    ('19960ced-bc14-45a6-a90f-d7811b42aa67', -1, 3, 1, 0, '2025-03-15T10:05:24.833499', '2025-03-15T10:05:24.833499', 'Jones Group', 'Aliquet porttitor lacus luctus accumsan tortor posuere ac.'),
-    ('6b803d24-46e9-4559-bef1-ad592ac2bae5',  0, 2, 1, 0, '2025-03-15T10:05:24.833656', '2025-03-15T10:05:24.833656', 'Schimmel, Abernathy and Auer', 'Nunc id cursus metus aliquam.'),
-    ('fac93fcf-5630-42b0-9c8d-7d1168506f1a',  0, 3, 1, 1, '2025-03-15T10:05:24.833871', '2025-03-15T10:05:24.833871', 'Block-Quigley', 'Mattis rhoncus urna neque viverra justo.');
+    ('c5d26f69-7088-487e-87eb-497c51728bc2',  0, 2, 1, 0, '2025-03-15T10:05:24.832721', '2025-03-15T10:05:24.832721', 'Lehner, Nicolas and Christiansen', 'Pellentesque eu tincidunt tortor aliquam nulla.', 'Pellentesque eu tincidunt tortor aliquam nulla.'),
+    ('1eda2fd8-07d6-463e-8994-74538310a10c',  1, 4, 1, 0, '2025-03-15T10:05:24.833188', '2025-03-15T10:05:24.833188', 'Daniel-Yost', 'Dolor sed viverra ipsum nunc aliquet bibendum enim facilisis.', 'Dolor sed viverra ipsum nunc aliquet bibendum enim facilisis.'),
+    ('19960ced-bc14-45a6-a90f-d7811b42aa67',  2, 3, 1, 0, '2025-03-15T10:05:24.833499', '2025-03-15T10:05:24.833499', 'Jones Group', 'Aliquet porttitor lacus luctus accumsan tortor posuere ac.', 'Aliquet porttitor lacus luctus accumsan tortor posuere ac.'),
+    ('6b803d24-46e9-4559-bef1-ad592ac2bae5',  0, 2, 1, 0, '2025-03-15T10:05:24.833656', '2025-03-15T10:05:24.833656', 'Schimmel, Abernathy and Auer', 'Nunc id cursus metus aliquam.', 'Nunc id cursus metus aliquam.'),
+    ('fac93fcf-5630-42b0-9c8d-7d1168506f1a',  0, 3, 1, 1, '2025-03-15T10:05:24.833871', '2025-03-15T10:05:24.833871', 'Block-Quigley', 'Mattis rhoncus urna neque viverra justo.', 'Mattis rhoncus urna neque viverra justo.');
     """;
     return database.executor.runInsert(sql, []);
   }
@@ -42,7 +41,7 @@ void main() {
     await database.select(database.categories).get();
     repository = NoteRepository(mockRef);
 
-    await createPasswords();
+    await createNotes();
     provideDummy<Future<Session?>>(Future.value(null));
 
     when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
@@ -79,20 +78,9 @@ void main() {
   }, skip: true);
 
   group("select by filters", () {
-    test('should get notes by classifications', () async {
-      final list = await repository.listByFilters([TOP_SECRET], false);
-      expect(list.length, 1);
-    });
-
-    test('should get notes by classifications', () async {
-      final list =
-          await repository.listByFilters([TOP_SECRET, CONFIDENTIAL], false);
-      expect(list.length, 2);
-    });
-
-    test('should get notes3v neewsuk,x  including deleted', () async {
-      final list = await repository.listByFilters([SECRET], true);
-      expect(list.length, 3);
+    test('should get all undeleted notes', () async {
+      final list = await repository.list();
+      expect(list.length, 4);
     });
   });
 }

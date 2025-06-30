@@ -7,15 +7,8 @@ import '../domain/note.dart';
 class NoteRepository extends SqlcipherRepository {
   NoteRepository(super.ref);
 
-  Future<List<NoteBasic>> listByFilters(
-      List<int> classifications, bool includeDeleted) async {
+  Future<List<NoteBasic>> list() async {
     final db = await requireDb();
-
-    var query = db.notes.classification.isIn(classifications);
-    if (!includeDeleted) {
-      query = query & db.notes.isDeleted.isValue(0);
-    }
-
     final items = await db.noteList().get();
 
     return items.map((item) {

@@ -25,9 +25,7 @@ class AsyncNotesNotifier extends AsyncNotifier<List<NoteBasic>> {
     if (filters.contains(PasswordFilter.confidential)) {
       classifications.add(CONFIDENTIAL);
     }
-    return ref
-        .read(noteRepositoryProvider)
-        .listByFilters(classifications, includeDeleted);
+    return ref.read(noteRepositoryProvider).list();
   }
 }
 

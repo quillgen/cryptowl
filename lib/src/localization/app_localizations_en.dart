@@ -46,4 +46,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add => 'Create';
+
+  @override
+  String get duplicate => 'Duplicate';
+
+  @override
+  String get archive => 'Archive';
+
+  @override
+  String get pin => 'Pin';
+
+  @override
+  String get favourite => 'Star';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get history => 'History';
 }

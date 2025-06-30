@@ -1925,6 +1925,328 @@ class NotesCompanion extends UpdateCompanion<NoteEntity> {
   }
 }
 
+class Snapshots extends Table with TableInfo<Snapshots, SnapshotEntity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Snapshots(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  static const VerificationMeta _entityIdMeta =
+      const VerificationMeta('entityId');
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+      'entity_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const CustomExpression('0'));
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+      'content', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _createTimeMeta =
+      const VerificationMeta('createTime');
+  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
+      'create_time', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, entityId, classification, content, createTime];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'snapshots';
+  @override
+  VerificationContext validateIntegrity(Insertable<SnapshotEntity> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(_entityIdMeta,
+          entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta));
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('classification')) {
+      context.handle(
+          _classificationMeta,
+          classification.isAcceptableOrUnknown(
+              data['classification']!, _classificationMeta));
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('create_time')) {
+      context.handle(
+          _createTimeMeta,
+          createTime.isAcceptableOrUnknown(
+              data['create_time']!, _createTimeMeta));
+    } else if (isInserting) {
+      context.missing(_createTimeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SnapshotEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SnapshotEntity(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      entityId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}entity_id'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
+      createTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
+    );
+  }
+
+  @override
+  Snapshots createAlias(String alias) {
+    return Snapshots(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SnapshotEntity extends DataClass implements Insertable<SnapshotEntity> {
+  final String id;
+  final String entityId;
+  final int classification;
+  final String content;
+  final String createTime;
+  const SnapshotEntity(
+      {required this.id,
+      required this.entityId,
+      required this.classification,
+      required this.content,
+      required this.createTime});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['entity_id'] = Variable<String>(entityId);
+    map['classification'] = Variable<int>(classification);
+    map['content'] = Variable<String>(content);
+    map['create_time'] = Variable<String>(createTime);
+    return map;
+  }
+
+  SnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return SnapshotsCompanion(
+      id: Value(id),
+      entityId: Value(entityId),
+      classification: Value(classification),
+      content: Value(content),
+      createTime: Value(createTime),
+    );
+  }
+
+  factory SnapshotEntity.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SnapshotEntity(
+      id: serializer.fromJson<String>(json['id']),
+      entityId: serializer.fromJson<String>(json['entity_id']),
+      classification: serializer.fromJson<int>(json['classification']),
+      content: serializer.fromJson<String>(json['content']),
+      createTime: serializer.fromJson<String>(json['create_time']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'entity_id': serializer.toJson<String>(entityId),
+      'classification': serializer.toJson<int>(classification),
+      'content': serializer.toJson<String>(content),
+      'create_time': serializer.toJson<String>(createTime),
+    };
+  }
+
+  SnapshotEntity copyWith(
+          {String? id,
+          String? entityId,
+          int? classification,
+          String? content,
+          String? createTime}) =>
+      SnapshotEntity(
+        id: id ?? this.id,
+        entityId: entityId ?? this.entityId,
+        classification: classification ?? this.classification,
+        content: content ?? this.content,
+        createTime: createTime ?? this.createTime,
+      );
+  SnapshotEntity copyWithCompanion(SnapshotsCompanion data) {
+    return SnapshotEntity(
+      id: data.id.present ? data.id.value : this.id,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      classification: data.classification.present
+          ? data.classification.value
+          : this.classification,
+      content: data.content.present ? data.content.value : this.content,
+      createTime:
+          data.createTime.present ? data.createTime.value : this.createTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnapshotEntity(')
+          ..write('id: $id, ')
+          ..write('entityId: $entityId, ')
+          ..write('classification: $classification, ')
+          ..write('content: $content, ')
+          ..write('createTime: $createTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, entityId, classification, content, createTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SnapshotEntity &&
+          other.id == this.id &&
+          other.entityId == this.entityId &&
+          other.classification == this.classification &&
+          other.content == this.content &&
+          other.createTime == this.createTime);
+}
+
+class SnapshotsCompanion extends UpdateCompanion<SnapshotEntity> {
+  final Value<String> id;
+  final Value<String> entityId;
+  final Value<int> classification;
+  final Value<String> content;
+  final Value<String> createTime;
+  final Value<int> rowid;
+  const SnapshotsCompanion({
+    this.id = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.classification = const Value.absent(),
+    this.content = const Value.absent(),
+    this.createTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SnapshotsCompanion.insert({
+    required String id,
+    required String entityId,
+    this.classification = const Value.absent(),
+    required String content,
+    required String createTime,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        entityId = Value(entityId),
+        content = Value(content),
+        createTime = Value(createTime);
+  static Insertable<SnapshotEntity> custom({
+    Expression<String>? id,
+    Expression<String>? entityId,
+    Expression<int>? classification,
+    Expression<String>? content,
+    Expression<String>? createTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entityId != null) 'entity_id': entityId,
+      if (classification != null) 'classification': classification,
+      if (content != null) 'content': content,
+      if (createTime != null) 'create_time': createTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SnapshotsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? entityId,
+      Value<int>? classification,
+      Value<String>? content,
+      Value<String>? createTime,
+      Value<int>? rowid}) {
+    return SnapshotsCompanion(
+      id: id ?? this.id,
+      entityId: entityId ?? this.entityId,
+      classification: classification ?? this.classification,
+      content: content ?? this.content,
+      createTime: createTime ?? this.createTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (classification.present) {
+      map['classification'] = Variable<int>(classification.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (createTime.present) {
+      map['create_time'] = Variable<String>(createTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnapshotsCompanion(')
+          ..write('id: $id, ')
+          ..write('entityId: $entityId, ')
+          ..write('classification: $classification, ')
+          ..write('content: $content, ')
+          ..write('createTime: $createTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$SqliteDb extends GeneratedDatabase {
   _$SqliteDb(QueryExecutor e) : super(e);
   $SqliteDbManager get managers => $SqliteDbManager(this);
@@ -1932,6 +2254,7 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
   late final Notes notes = Notes(this);
+  late final Snapshots snapshots = Snapshots(this);
   Selectable<ActivePasswordsResult> activePasswords() {
     return customSelect(
         'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
@@ -2069,7 +2392,7 @@ abstract class _$SqliteDb extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categories, passwords, attributes, notes];
+      [categories, passwords, attributes, notes, snapshots];
 }
 
 typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({
@@ -2960,6 +3283,170 @@ typedef $NotesProcessedTableManager = ProcessedTableManager<
     (NoteEntity, BaseReferences<_$SqliteDb, Notes, NoteEntity>),
     NoteEntity,
     PrefetchHooks Function()>;
+typedef $SnapshotsCreateCompanionBuilder = SnapshotsCompanion Function({
+  required String id,
+  required String entityId,
+  Value<int> classification,
+  required String content,
+  required String createTime,
+  Value<int> rowid,
+});
+typedef $SnapshotsUpdateCompanionBuilder = SnapshotsCompanion Function({
+  Value<String> id,
+  Value<String> entityId,
+  Value<int> classification,
+  Value<String> content,
+  Value<String> createTime,
+  Value<int> rowid,
+});
+
+class $SnapshotsFilterComposer extends Composer<_$SqliteDb, Snapshots> {
+  $SnapshotsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+      column: $table.entityId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnFilters(column));
+}
+
+class $SnapshotsOrderingComposer extends Composer<_$SqliteDb, Snapshots> {
+  $SnapshotsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+      column: $table.entityId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => ColumnOrderings(column));
+}
+
+class $SnapshotsAnnotationComposer extends Composer<_$SqliteDb, Snapshots> {
+  $SnapshotsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<int> get classification => $composableBuilder(
+      column: $table.classification, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get createTime => $composableBuilder(
+      column: $table.createTime, builder: (column) => column);
+}
+
+class $SnapshotsTableManager extends RootTableManager<
+    _$SqliteDb,
+    Snapshots,
+    SnapshotEntity,
+    $SnapshotsFilterComposer,
+    $SnapshotsOrderingComposer,
+    $SnapshotsAnnotationComposer,
+    $SnapshotsCreateCompanionBuilder,
+    $SnapshotsUpdateCompanionBuilder,
+    (SnapshotEntity, BaseReferences<_$SqliteDb, Snapshots, SnapshotEntity>),
+    SnapshotEntity,
+    PrefetchHooks Function()> {
+  $SnapshotsTableManager(_$SqliteDb db, Snapshots table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $SnapshotsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $SnapshotsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $SnapshotsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> entityId = const Value.absent(),
+            Value<int> classification = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<String> createTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SnapshotsCompanion(
+            id: id,
+            entityId: entityId,
+            classification: classification,
+            content: content,
+            createTime: createTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String entityId,
+            Value<int> classification = const Value.absent(),
+            required String content,
+            required String createTime,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SnapshotsCompanion.insert(
+            id: id,
+            entityId: entityId,
+            classification: classification,
+            content: content,
+            createTime: createTime,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $SnapshotsProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    Snapshots,
+    SnapshotEntity,
+    $SnapshotsFilterComposer,
+    $SnapshotsOrderingComposer,
+    $SnapshotsAnnotationComposer,
+    $SnapshotsCreateCompanionBuilder,
+    $SnapshotsUpdateCompanionBuilder,
+    (SnapshotEntity, BaseReferences<_$SqliteDb, Snapshots, SnapshotEntity>),
+    SnapshotEntity,
+    PrefetchHooks Function()>;
 
 class $SqliteDbManager {
   final _$SqliteDb _db;
@@ -2971,6 +3458,8 @@ class $SqliteDbManager {
   $AttributesTableManager get attributes =>
       $AttributesTableManager(_db, _db.attributes);
   $NotesTableManager get notes => $NotesTableManager(_db, _db.notes);
+  $SnapshotsTableManager get snapshots =>
+      $SnapshotsTableManager(_db, _db.snapshots);
 }
 
 class ActivePasswordsResult {
