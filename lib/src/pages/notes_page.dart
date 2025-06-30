@@ -31,6 +31,11 @@ class NotesPage extends HookConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {},
+            icon: Icon(RemixIcons.sort_alphabet_asc),
+            tooltip: "Sort",
+          ),
+          IconButton(
+            onPressed: () {},
             icon: Icon(RemixIcons.filter_line),
             tooltip: "Filter",
           ),
@@ -41,6 +46,7 @@ class NotesPage extends HookConsumerWidget {
           ),
           if (isLarge)
             IconButton(
+              color: Theme.of(context).colorScheme.primary,
               onPressed: () {
                 context.goNamed(
                   NoteCreatePage.name,

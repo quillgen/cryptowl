@@ -4,18 +4,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:vector_graphics/vector_graphics.dart';
 
 import 'localization/app_localizations.dart';
 import 'pages/notes_page.dart';
 import 'pages/photos_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/valut_page.dart';
+import 'providers/providers.dart';
 
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
 /// to create a shell for the application.
-class ScaffoldShell extends StatelessWidget {
+class ScaffoldShell extends ConsumerWidget {
   /// Create a new instance of [AppScaffoldShell]
   const ScaffoldShell({
     required this.navigationShell,
@@ -26,32 +30,57 @@ class ScaffoldShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginNotifier = ref.watch(asyncLoginProvider.notifier);
+
     return AdaptiveScaffold(
       useDrawer: false,
       internalAnimations: false,
       leadingExtendedNavRail: Padding(
-        padding: EdgeInsetsGeometry.all(8),
-        child: Row(
+        padding: EdgeInsetsGeometry.all(16),
+        child: Column(
           children: [
-            Expanded(child: Text("123")),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.menu),
-              tooltip: "Menu",
-            )
+            Padding(
+              padding: EdgeInsetsGeometry.only(bottom: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Row(
+                    children: [
+                      SvgPicture(
+                        AssetBytesLoader("assets/images/cryptowl.svg.vec"),
+                        height: 40,
+                      ),
+                      Text(AppLocalizations.of(context)!.appTitle),
+                    ],
+                  )),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(RemixIcons.user_settings_line),
+                    tooltip: "User settings",
+                  )
+                ],
+              ),
+            ),
+            Divider(
+                height: 1,
+                thickness: 1,
+                color: Theme.of(context).colorScheme.outlineVariant),
           ],
         ),
       ),
       leadingUnextendedNavRail: IconButton(
         onPressed: () {},
-        icon: Icon(Icons.menu),
-        tooltip: "Menu",
+        icon: Icon(RemixIcons.user_settings_line),
+        tooltip: "User settings",
       ),
       trailingNavRail: IconButton(
-        onPressed: () {},
-        icon: Icon(Icons.category),
-        tooltip: "Category",
+        onPressed: () async {
+          await loginNotifier.logout();
+        },
+        icon: Icon(RemixIcons.logout_circle_r_line,
+            color: Theme.of(context).colorScheme.error),
+        tooltip: "Logout",
       ),
       body: (BuildContext context) => navigationShell,
       selectedIndex: navigationShell.currentIndex,

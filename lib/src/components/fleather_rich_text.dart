@@ -17,7 +17,7 @@ class FleatherRichText extends StatelessWidget {
       //style: TextStyle(fontFamilyFallback: ["LXGWWenKaiTC"], fontSize: 14),
       child: FleatherField(
         controller: controller,
-        expands: true,
+        expands: false,
         readOnly: true,
         padding: EdgeInsets.only(
           left: 8,
