@@ -7,7 +7,8 @@ import '../domain/note.dart';
 class NoteRepository extends SqlcipherRepository {
   NoteRepository(super.ref);
 
-  Future<List<NoteBasic>> list({NoteSortType? sortType}) async {
+  Future<List<NoteBasic>> list(
+      {NoteSortType? sortType, String? keyword}) async {
     final db = await requireDb();
     final query = db.noteView.select();
     if (sortType != null) {
@@ -18,6 +19,9 @@ class NoteRepository extends SqlcipherRepository {
         (u) => OrderingTerm(expression: u.lastUpdateTime, mode: mode),
         (u) => OrderingTerm(expression: u.createTime, mode: mode)
       ]);
+    }
+    if (keyword != null) {
+      query.where((u) => u.plainText.like("%$keyword%"));
     }
     final records = await query.get();
     return records.map((item) {

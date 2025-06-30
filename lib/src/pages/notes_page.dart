@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remixicon/remixicon.dart';
 
+import '../components/note_search_list.dart';
 import '../localization/app_localizations.dart';
 import 'note_create_page.dart';
 
@@ -103,7 +104,6 @@ class NotesPage extends HookConsumerWidget {
 class DataSearch extends SearchDelegate<String> {
   @override
   List<Widget> buildActions(BuildContext context) {
-    //Actions for app bar
     return [
       IconButton(
           icon: Icon(Icons.clear),
@@ -128,7 +128,8 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return NoteList();
+    print('xxxx' + query);
+    return NoteSearchList(query);
   }
 
   @override

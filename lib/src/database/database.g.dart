@@ -1929,6 +1929,7 @@ class NoteViewData extends DataClass {
   final String id;
   final int classification;
   final String title;
+  final String plainText;
   final String abstract;
   final int categoryId;
   final String createTime;
@@ -1937,6 +1938,7 @@ class NoteViewData extends DataClass {
       {required this.id,
       required this.classification,
       required this.title,
+      required this.plainText,
       required this.abstract,
       required this.categoryId,
       required this.createTime,
@@ -1948,6 +1950,7 @@ class NoteViewData extends DataClass {
       id: serializer.fromJson<String>(json['id']),
       classification: serializer.fromJson<int>(json['classification']),
       title: serializer.fromJson<String>(json['title']),
+      plainText: serializer.fromJson<String>(json['plain_text']),
       abstract: serializer.fromJson<String>(json['abstract']),
       categoryId: serializer.fromJson<int>(json['category_id']),
       createTime: serializer.fromJson<String>(json['create_time']),
@@ -1961,6 +1964,7 @@ class NoteViewData extends DataClass {
       'id': serializer.toJson<String>(id),
       'classification': serializer.toJson<int>(classification),
       'title': serializer.toJson<String>(title),
+      'plain_text': serializer.toJson<String>(plainText),
       'abstract': serializer.toJson<String>(abstract),
       'category_id': serializer.toJson<int>(categoryId),
       'create_time': serializer.toJson<String>(createTime),
@@ -1972,6 +1976,7 @@ class NoteViewData extends DataClass {
           {String? id,
           int? classification,
           String? title,
+          String? plainText,
           String? abstract,
           int? categoryId,
           String? createTime,
@@ -1980,6 +1985,7 @@ class NoteViewData extends DataClass {
         id: id ?? this.id,
         classification: classification ?? this.classification,
         title: title ?? this.title,
+        plainText: plainText ?? this.plainText,
         abstract: abstract ?? this.abstract,
         categoryId: categoryId ?? this.categoryId,
         createTime: createTime ?? this.createTime,
@@ -1991,6 +1997,7 @@ class NoteViewData extends DataClass {
           ..write('id: $id, ')
           ..write('classification: $classification, ')
           ..write('title: $title, ')
+          ..write('plainText: $plainText, ')
           ..write('abstract: $abstract, ')
           ..write('categoryId: $categoryId, ')
           ..write('createTime: $createTime, ')
@@ -2000,8 +2007,8 @@ class NoteViewData extends DataClass {
   }
 
   @override
-  int get hashCode => Object.hash(id, classification, title, abstract,
-      categoryId, createTime, lastUpdateTime);
+  int get hashCode => Object.hash(id, classification, title, plainText,
+      abstract, categoryId, createTime, lastUpdateTime);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2009,6 +2016,7 @@ class NoteViewData extends DataClass {
           other.id == this.id &&
           other.classification == this.classification &&
           other.title == this.title &&
+          other.plainText == this.plainText &&
           other.abstract == this.abstract &&
           other.categoryId == this.categoryId &&
           other.createTime == this.createTime &&
@@ -2026,6 +2034,7 @@ class NoteView extends ViewInfo<NoteView, NoteViewData>
         id,
         classification,
         title,
+        plainText,
         abstract,
         categoryId,
         createTime,
@@ -2038,7 +2047,7 @@ class NoteView extends ViewInfo<NoteView, NoteViewData>
   @override
   Map<SqlDialect, String> get createViewStatements => {
         SqlDialect.sqlite:
-            'CREATE VIEW note_view AS SELECT id, classification, title, SUBSTR(plain_text, 1, 100) AS abstract, category_id, create_time, last_update_time FROM notes WHERE is_deleted = 0',
+            'CREATE VIEW note_view AS SELECT id, classification, title, plain_text, SUBSTR(plain_text, 1, 100) AS abstract, category_id, create_time, last_update_time FROM notes WHERE is_deleted = 0',
       };
   @override
   NoteView get asDslTable => this;
@@ -2052,6 +2061,8 @@ class NoteView extends ViewInfo<NoteView, NoteViewData>
           .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      plainText: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}plain_text'])!,
       abstract: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}abstract'])!,
       categoryId: attachedDatabase.typeMapping
@@ -2071,6 +2082,9 @@ class NoteView extends ViewInfo<NoteView, NoteViewData>
       type: DriftSqlType.int);
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> plainText = GeneratedColumn<String>(
+      'plain_text', aliasedName, false,
       type: DriftSqlType.string);
   late final GeneratedColumn<String> abstract = GeneratedColumn<String>(
       'abstract', aliasedName, false,

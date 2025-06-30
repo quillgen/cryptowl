@@ -19,6 +19,7 @@ SELECT
   id,
   classification,
   title,
+  plain_text,
   SUBSTR(plain_text, 1, 100) AS abstract,
   category_id,
   create_time,

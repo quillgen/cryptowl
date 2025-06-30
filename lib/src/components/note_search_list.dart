@@ -9,14 +9,9 @@ import '../pages/note_detail_page.dart';
 import '../providers/providers.dart';
 import 'empty.dart';
 
-enum FilterMenu {
-  all,
-  favorite,
-  deleted,
-}
-
-class NoteList extends ConsumerWidget {
-  const NoteList({super.key});
+class NoteSearchList extends ConsumerWidget {
+  final String keyword;
+  const NoteSearchList(this.keyword, {super.key});
 
   Widget _buildList(BuildContext context, List<NoteBasic> items) {
     return ListView.builder(
@@ -65,14 +60,14 @@ class NoteList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notes = ref.watch(notesProvider);
+    final notes = ref.watch(noteSearchProvider(keyword));
 
     return notes.when(
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
-      error: (e, trace) {
-        logger.severe(e, trace);
+      error: (e, _) {
+        logger.severe(e);
         return ErrorWidget(e);
       },
       data: (items) => items.isEmpty

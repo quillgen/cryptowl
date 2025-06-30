@@ -15,6 +15,15 @@ final notesProvider = FutureProvider<List<NoteBasic>>((ref) async {
   return repo.list(sortType: sortType);
 });
 
+final noteSearchProvider = FutureProvider.autoDispose
+    .family<List<NoteBasic>, String>((ref, keyword) async {
+  final repo = ref.watch(noteRepositoryProvider);
+  if (keyword.isEmpty) {
+    return [];
+  }
+  return repo.list(keyword: keyword);
+});
+
 final noteDetailProvider =
     FutureProvider.autoDispose.family<Note, String>((ref, id) async {
   _logger.fine("Fetching note detail for $id");
