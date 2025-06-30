@@ -40,7 +40,9 @@ class NotesPage extends HookConsumerWidget {
             tooltip: "Filter",
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showSearch(context: context, delegate: DataSearch());
+            },
             icon: Icon(RemixIcons.search_line),
             tooltip: "Search",
           ),
@@ -69,6 +71,65 @@ class NotesPage extends HookConsumerWidget {
               child: const Icon(RemixIcons.add_line),
             ),
       body: NoteList(),
+    );
+  }
+}
+
+class DataSearch extends SearchDelegate<String> {
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    //Actions for app bar
+    return [
+      IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+          })
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    //leading icon on the left of the app bar
+    return IconButton(
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
+        ),
+        onPressed: () {
+          close(context, "");
+        });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return NoteList();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // show when someone searches for something
+    final suggestionList = [];
+
+    return ListView.builder(
+      itemBuilder: (context, index) => ListTile(
+        onTap: () {
+          showResults(context);
+        },
+        trailing: Icon(Icons.remove_red_eye),
+        title: RichText(
+          text: TextSpan(
+              text: suggestionList[index].titlelist.substring(0, query.length),
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              children: [
+                TextSpan(
+                    text:
+                        suggestionList[index].titlelist.substring(query.length),
+                    style: TextStyle(color: Colors.grey))
+              ]),
+        ),
+      ),
+      itemCount: suggestionList.length,
     );
   }
 }
