@@ -11,7 +11,8 @@ final noteSortTypeProvider =
 
 final notesProvider = FutureProvider<List<NoteBasic>>((ref) async {
   final repo = ref.watch(noteRepositoryProvider);
-  return repo.list();
+  final sortType = ref.watch(noteSortTypeProvider);
+  return repo.list(sortType: sortType);
 });
 
 final noteDetailProvider =
