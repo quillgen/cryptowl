@@ -1,4 +1,6 @@
 import 'package:cryptowl/src/components/note_list.dart';
+import 'package:cryptowl/src/domain/note.dart';
+import 'package:cryptowl/src/providers/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,8 @@ class NotesPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sortType = ref.watch(noteSortTypeProvider);
+
     final isLarge = Breakpoints.mediumAndUp.isActive(context);
     return Scaffold(
       appBar: AppBar(
@@ -30,8 +34,11 @@ class NotesPage extends HookConsumerWidget {
               ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(RemixIcons.sort_alphabet_asc),
+            onPressed: () {
+              ref.read(noteSortTypeProvider.notifier).state =
+                  _toggleSortType(sortType);
+            },
+            icon: Icon(_sortType(sortType)),
             tooltip: "Sort",
           ),
           IconButton(
@@ -72,6 +79,24 @@ class NotesPage extends HookConsumerWidget {
             ),
       body: NoteList(),
     );
+  }
+
+  NoteSortType _toggleSortType(NoteSortType type) {
+    switch (type) {
+      case NoteSortType.dateAsc:
+        return NoteSortType.dateDesc;
+      case NoteSortType.dateDesc:
+        return NoteSortType.dateAsc;
+    }
+  }
+
+  IconData _sortType(NoteSortType type) {
+    switch (type) {
+      case NoteSortType.dateAsc:
+        return RemixIcons.sort_number_asc;
+      case NoteSortType.dateDesc:
+        return RemixIcons.sort_number_desc;
+    }
   }
 }
 

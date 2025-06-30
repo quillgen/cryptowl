@@ -6,6 +6,9 @@ import 'repositories.dart';
 
 final _logger = Logger("NotesNotifier");
 
+final noteSortTypeProvider =
+    StateProvider<NoteSortType>((ref) => NoteSortType.dateDesc);
+
 final notesProvider = FutureProvider<List<NoteBasic>>((ref) async {
   final repo = ref.watch(noteRepositoryProvider);
   return repo.list();

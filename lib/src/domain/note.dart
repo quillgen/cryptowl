@@ -20,6 +20,8 @@ class NoteBasic {
   });
 }
 
+enum NoteSortType { dateAsc, dateDesc }
+
 class Note {
   String id;
   int categoryId;

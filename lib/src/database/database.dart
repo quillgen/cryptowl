@@ -15,7 +15,7 @@ import '../config/version.dart';
 // run `dart run build_runner build` to generate
 part 'database.g.dart';
 
-@DriftDatabase(include: {'tables.drift'})
+@DriftDatabase(include: {'common.drift', 'note.drift', 'tables.drift'})
 class SqliteDb extends _$SqliteDb {
   SqliteDb.from(QueryExecutor e) : super(e);
   SqliteDb.open(String file, ProtectedValue key)

@@ -7,11 +7,11 @@ import '../domain/note.dart';
 class NoteRepository extends SqlcipherRepository {
   NoteRepository(super.ref);
 
-  Future<List<NoteBasic>> list() async {
+  Future<List<NoteBasic>> list({NoteSortType? sortType}) async {
     final db = await requireDb();
-    final items = await db.noteList().get();
-
-    return items.map((item) {
+    final query = db.noteView.select();
+    final records = await query.get();
+    return records.map((item) {
       return NoteBasic(
         id: item.id,
         classification: item.classification,

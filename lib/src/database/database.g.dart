@@ -1925,6 +1925,176 @@ class NotesCompanion extends UpdateCompanion<NoteEntity> {
   }
 }
 
+class NoteViewData extends DataClass {
+  final String id;
+  final int classification;
+  final String title;
+  final String abstract;
+  final int categoryId;
+  final String createTime;
+  final String lastUpdateTime;
+  const NoteViewData(
+      {required this.id,
+      required this.classification,
+      required this.title,
+      required this.abstract,
+      required this.categoryId,
+      required this.createTime,
+      required this.lastUpdateTime});
+  factory NoteViewData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NoteViewData(
+      id: serializer.fromJson<String>(json['id']),
+      classification: serializer.fromJson<int>(json['classification']),
+      title: serializer.fromJson<String>(json['title']),
+      abstract: serializer.fromJson<String>(json['abstract']),
+      categoryId: serializer.fromJson<int>(json['category_id']),
+      createTime: serializer.fromJson<String>(json['create_time']),
+      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'classification': serializer.toJson<int>(classification),
+      'title': serializer.toJson<String>(title),
+      'abstract': serializer.toJson<String>(abstract),
+      'category_id': serializer.toJson<int>(categoryId),
+      'create_time': serializer.toJson<String>(createTime),
+      'last_update_time': serializer.toJson<String>(lastUpdateTime),
+    };
+  }
+
+  NoteViewData copyWith(
+          {String? id,
+          int? classification,
+          String? title,
+          String? abstract,
+          int? categoryId,
+          String? createTime,
+          String? lastUpdateTime}) =>
+      NoteViewData(
+        id: id ?? this.id,
+        classification: classification ?? this.classification,
+        title: title ?? this.title,
+        abstract: abstract ?? this.abstract,
+        categoryId: categoryId ?? this.categoryId,
+        createTime: createTime ?? this.createTime,
+        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NoteViewData(')
+          ..write('id: $id, ')
+          ..write('classification: $classification, ')
+          ..write('title: $title, ')
+          ..write('abstract: $abstract, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('createTime: $createTime, ')
+          ..write('lastUpdateTime: $lastUpdateTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, classification, title, abstract,
+      categoryId, createTime, lastUpdateTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NoteViewData &&
+          other.id == this.id &&
+          other.classification == this.classification &&
+          other.title == this.title &&
+          other.abstract == this.abstract &&
+          other.categoryId == this.categoryId &&
+          other.createTime == this.createTime &&
+          other.lastUpdateTime == this.lastUpdateTime);
+}
+
+class NoteView extends ViewInfo<NoteView, NoteViewData>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final _$SqliteDb attachedDatabase;
+  NoteView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        classification,
+        title,
+        abstract,
+        categoryId,
+        createTime,
+        lastUpdateTime
+      ];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'note_view';
+  @override
+  Map<SqlDialect, String> get createViewStatements => {
+        SqlDialect.sqlite:
+            'CREATE VIEW note_view AS SELECT id, classification, title, SUBSTR(plain_text, 1, 100) AS abstract, category_id, create_time, last_update_time FROM notes WHERE is_deleted = 0',
+      };
+  @override
+  NoteView get asDslTable => this;
+  @override
+  NoteViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NoteViewData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      abstract: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}abstract'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
+      createTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
+      lastUpdateTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
+    );
+  }
+
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> abstract = GeneratedColumn<String>(
+      'abstract', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+      'category_id', aliasedName, false,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
+      'create_time', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
+      'last_update_time', aliasedName, false,
+      type: DriftSqlType.string);
+  @override
+  NoteView createAlias(String alias) {
+    return NoteView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {'notes'};
+}
+
 class Snapshots extends Table with TableInfo<Snapshots, SnapshotEntity> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -2254,6 +2424,7 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
   late final Notes notes = Notes(this);
+  late final NoteView noteView = NoteView(this);
   late final Snapshots snapshots = Snapshots(this);
   Selectable<ActivePasswordsResult> activePasswords() {
     return customSelect(
@@ -2370,29 +2541,12 @@ abstract class _$SqliteDb extends GeneratedDatabase {
         ));
   }
 
-  Selectable<NoteListResult> noteList() {
-    return customSelect(
-        'SELECT id, classification, title, SUBSTR(plain_text, 1, 100) AS abstract, category_id, create_time, last_update_time FROM notes WHERE is_deleted = 0',
-        variables: [],
-        readsFrom: {
-          notes,
-        }).map((QueryRow row) => NoteListResult(
-          id: row.read<String>('id'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          abstract: row.read<String>('abstract'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categories, passwords, attributes, notes, snapshots];
+      [categories, passwords, attributes, notes, noteView, snapshots];
 }
 
 typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({
@@ -3582,25 +3736,6 @@ class DeletedPasswordsResult {
     required this.classification,
     required this.title,
     this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
-
-class NoteListResult {
-  final String id;
-  final int classification;
-  final String title;
-  final String abstract;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  NoteListResult({
-    required this.id,
-    required this.classification,
-    required this.title,
-    required this.abstract,
     required this.categoryId,
     required this.createTime,
     required this.lastUpdateTime,
