@@ -46,7 +46,6 @@ dependencies:
   fleather: ^1.23.0
   url_launcher: ^6.3.1
   image_picker: ^1.1.2
-  google_fonts: ^6.2.1
   remixicon: ^1.4.1
 dev_dependencies:
   flutter_test:
@@ -70,12 +69,59 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/fonts/google_fonts/
   fonts:
-    - family: LXGWWenKaiTC
+    - family: LXGWWenKai
       fonts:
-        - asset: assets/fonts/google_fonts/LXGWWenKaiTC-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/google_fonts/LXGWWenKaiTC-Light.ttf
+        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Light.ttf
           weight: 300
-        - asset: assets/fonts/google_fonts/LXGWWenKaiTC-Regular.ttf
+        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/lxgw-wenkai-v1.520/LXGWWenKai-Medium.ttf
+          weight: 500
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-4.1/Inter-Thin.otf
+          weight: 100
+        - asset: assets/fonts/Inter-4.1/Inter-ThinItalic.otf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-ExtraLight.otf
+          weight: 200
+        - asset: assets/fonts/Inter-4.1/Inter-ExtraLightItalic.otf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-Light.otf
+          weight: 300
+        - asset: assets/fonts/Inter-4.1/Inter-LightItalic.otf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Inter-4.1/Inter-Italic.otf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-Medium.otf
+          weight: 500
+        - asset: assets/fonts/Inter-4.1/Inter-MediumItalic.otf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/Inter-4.1/Inter-SemiBoldItalic.otf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-Bold.otf
+          weight: 700
+        - asset: assets/fonts/Inter-4.1/Inter-BoldItalic.otf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-ExtraBold.otf
+          weight: 800
+        - asset: assets/fonts/Inter-4.1/Inter-ExtraBoldItalic.otf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Inter-4.1/Inter-Black.otf
+          weight: 900
+        - asset: assets/fonts/Inter-4.1/Inter-BlackItalic.otf
+          weight: 900
+          style: italic

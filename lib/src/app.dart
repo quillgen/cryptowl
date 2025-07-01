@@ -24,7 +24,6 @@ import 'pages/valut_page.dart';
 import 'providers/providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
-import 'util.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -271,9 +270,6 @@ class CryptowlApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeProvider);
 
-    TextTheme textTheme = createTextTheme(context, "Inter", "Inter");
-
-    MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,
@@ -288,8 +284,8 @@ class CryptowlApp extends ConsumerWidget {
       supportedLocales: const [Locale("en"), Locale('zh', 'CN')],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      theme: AppTheme.apply(theme.light()),
-      darkTheme: AppTheme.apply(theme.dark()),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       themeMode: themeMode,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,
