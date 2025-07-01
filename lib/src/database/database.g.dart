@@ -2646,7 +2646,7 @@ abstract class _$SqliteDb extends GeneratedDatabase {
 
   Selectable<SearchNotesResult> searchNotes(String var1) {
     return customSelect(
-        'SELECT n.id, n.title, n.classification, n.abstract, n.created_at, n.updated_at FROM t_note_idx AS i JOIN t_note AS n ON i."rowid" = n.id WHERE t_note_idx MATCH ?1 AND n.deleted_at IS NULL ORDER BY rank',
+        'SELECT n.id, n.title, n.classification, n.abstract, n.created_at, n.updated_at FROM t_note_idx AS i JOIN t_note AS n ON i."rowid" = n."rowid" WHERE t_note_idx MATCH ?1 AND n.deleted_at IS NULL ORDER BY rank',
         variables: [
           Variable<String>(var1)
         ],
