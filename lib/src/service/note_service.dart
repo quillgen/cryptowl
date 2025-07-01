@@ -1,4 +1,5 @@
-import 'package:cryptowl/src/database/database.dart';
+import 'package:cryptowl/src/common/classification.dart';
+import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/repositories/note_repository.dart';
 
 import '../common/random_util.dart';
@@ -8,41 +9,21 @@ class NoteService {
 
   NoteService(this.repository);
 
-  Future<NoteEntity> createNote(String delta, String plainText) async {
-    final now = DateTime.now().toIso8601String();
-    var title = plainText;
-    if (title.length > 100) {
-      title = title.substring(0, 100);
-    }
-    final re = RegExp(r'\\n');
-    final lines = title.split(re);
-    title = lines[0].trim();
-    final item = NoteEntity(
+  Future<NoteDetailDto> createNote(String delta, String plainText) async {
+    final now = DateTime.now();
+    final item = NoteDetailDto(
       id: RandomUtil.generateUUID(),
-      classification: 0,
-      title: title,
-      plainText: plainText,
-      content: delta,
-      isFavorite: 0,
-      categoryId: 0,
-      createTime: now,
-      lastUpdateTime: now,
-      isDeleted: 0,
+      classification: Classification.confidential,
+      contentPlain: plainText,
+      contentJson: delta,
+      createdAt: now,
+      updatedAt: now,
     );
     return repository.insert(item);
   }
 
-  Future<NoteEntity> updateNote(
+  Future<NoteDetailDto> updateNote(
       String id, String delta, String plainText) async {
-    var title = plainText;
-    if (title.length > 100) {
-      title = title.substring(0, 100);
-    }
-    final re = RegExp(r'\\n');
-    final lines = title.split(re);
-    title = lines[0].trim();
-
-    return repository.update(id,
-        title: title, content: delta, plainText: plainText);
+    return repository.update(id, contentJson: delta, plainText: plainText);
   }
 }

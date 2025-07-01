@@ -1,83 +1,85 @@
+import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/repositories/base_repository.dart';
 import 'package:drift/drift.dart';
 
+import '../common/note_util.dart';
 import '../domain/note.dart';
 
 class NoteRepository extends SqlcipherRepository {
   NoteRepository(super.ref);
 
-  Future<List<NoteBasic>> list(
-      {NoteSortType? sortType, String? keyword}) async {
+  Future<List<NoteListItemDto>> list(NoteSortType sortType) async {
     final db = await requireDb();
-    final query = db.noteView.select();
-    if (sortType != null) {
-      final mode = sortType == NoteSortType.dateAsc
-          ? OrderingMode.asc
-          : OrderingMode.desc;
-      query.orderBy([
-        (u) => OrderingTerm(expression: u.lastUpdateTime, mode: mode),
-        (u) => OrderingTerm(expression: u.createTime, mode: mode)
-      ]);
-    }
-    if (keyword != null) {
-      query.where((u) => u.plainText.like("%$keyword%"));
-    }
+    final mode =
+        sortType == NoteSortType.dateAsc ? OrderingMode.asc : OrderingMode.desc;
+
+    final query = db.selectNotes(
+        (u) => OrderBy([OrderingTerm(expression: u.createdAt, mode: mode)]));
+
     final records = await query.get();
     return records.map((item) {
-      return NoteBasic(
+      return NoteListItemDto(
         id: item.id,
-        classification: item.classification,
-        categoryId: item.categoryId,
+        classification: Classification.parse(item.classification),
         title: item.title,
-        abstract: item.abstract,
-        createTime: _parseDatetime(item.createTime)!,
-        lastUpdateTime: _parseDatetime(item.lastUpdateTime)!,
+        abstract: item.abstract ?? "",
+        createTime: item.createdAt,
+        lastUpdateTime: item.updatedAt,
       );
     }).toList();
   }
 
-  DateTime? _parseDatetime(String? dt) {
-    return dt == null ? null : DateTime.parse(dt);
+  Future<List<NoteListItemDto>> search(String keyword) async {
+    final db = await requireDb();
+    final query = db.searchNotes(keyword);
+
+    final records = await query.get();
+    return records.map((item) {
+      return NoteListItemDto(
+        id: item.id,
+        classification: Classification.parse(item.classification),
+        title: item.title,
+        abstract: item.abstract ?? "",
+        createTime: item.createdAt,
+        lastUpdateTime: item.updatedAt,
+      );
+    }).toList();
   }
 
-  Future<NoteEntity> insert(NoteEntity item) async {
+  Future<NoteDetailDto> insert(NoteDetailDto item) async {
     final db = await requireDb();
-    await db.into(db.notes).insert(item);
+    await db.into(db.tNote).insert(item.toEntity());
     return item;
   }
 
-  Future<NoteEntity> update(String id,
-      {int? classification,
+  Future<NoteDetailDto> update(String id,
+      {Classification? classification,
       String? title,
-      String? content,
+      String? contentJson,
       String? plainText}) async {
     final db = await requireDb();
-    final now = DateTime.now();
-    final existing = await (db.notes.select()
-          ..where((tbl) => tbl.id.equals(id)))
-        .getSingle();
-    final item = NoteEntity(
-      id: id,
-      categoryId: existing.categoryId,
-      title: title ?? existing.title,
-      createTime: existing.createTime,
-      lastUpdateTime: now.toIso8601String(),
-      classification: classification ?? existing.classification,
-      content: content ?? existing.content,
-      plainText: plainText ?? existing.plainText,
-      isFavorite: existing.isFavorite,
-      isDeleted: existing.isDeleted,
+    // TODO: support history + transaction
+    String? checksum =
+        contentJson == null ? null : NoteUtil.checksum(contentJson);
+    await (db.tNote.update()..where((r) => r.id.equals(id))).write(
+      TNoteCompanion(
+        classification: Value.absentIfNull(classification?.value),
+        title: Value.absentIfNull(title),
+        contentJson: Value.absentIfNull(contentJson),
+        contentPlain: Value.absentIfNull(plainText),
+        contentChecksum: Value.absentIfNull(checksum),
+        updatedAt: Value(DateTime.now()),
+      ),
     );
-    await db.notes.replaceOne(item.toCompanion(true));
-    return item;
+    return findById(id);
   }
 
-  Future<Note> findById(String id) async {
+  Future<NoteDetailDto> findById(String id) async {
     final db = await requireDb();
-    final item = await (db.notes.select()..where((tbl) => tbl.id.equals(id)))
+    final item = await (db.tNote.select()..where((tbl) => tbl.id.equals(id)))
         .getSingle();
 
-    return Note.fromEntity(item);
+    return NoteDetailDto.fromEntity(item);
   }
 }

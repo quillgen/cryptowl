@@ -28,7 +28,7 @@ class NoteEditPage extends HookConsumerWidget {
 
     useEffect(() {
       if (detailAsync is AsyncData && detailAsync.value != null) {
-        final jsonContent = detailAsync.value!.content;
+        final jsonContent = detailAsync.value!.contentJson;
         final doc = ParchmentDocument.fromJson(jsonDecode(jsonContent));
         controller.value = FleatherController(document: doc);
       }

@@ -1397,103 +1397,103 @@ class AttributesCompanion extends UpdateCompanion<Attribute> {
   }
 }
 
-class Notes extends Table with TableInfo<Notes, NoteEntity> {
+class TNote extends Table with TableInfo<TNote, TNoteData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Notes(this.attachedDatabase, [this._alias]);
+  TNote(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL PRIMARY KEY');
-  static const VerificationMeta _classificationMeta =
-      const VerificationMeta('classification');
-  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
-      'classification', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
+      'title', aliasedName, true,
       type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _contentMeta =
-      const VerificationMeta('content');
-  late final GeneratedColumn<String> content = GeneratedColumn<String>(
-      'content', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _plainTextMeta =
-      const VerificationMeta('plainText');
-  late final GeneratedColumn<String> plainText = GeneratedColumn<String>(
-      'plain_text', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _isFavoriteMeta =
-      const VerificationMeta('isFavorite');
-  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
-      'is_favorite', aliasedName, false,
-      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
-  static const VerificationMeta _categoryIdMeta =
-      const VerificationMeta('categoryId');
-  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
-      'category_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 1',
-      defaultValue: const CustomExpression('1'));
-  static const VerificationMeta _createTimeMeta =
-      const VerificationMeta('createTime');
-  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
-      'create_time', aliasedName, false,
+      $customConstraints: '');
+  static const VerificationMeta _contentJsonMeta =
+      const VerificationMeta('contentJson');
+  late final GeneratedColumn<String> contentJson = GeneratedColumn<String>(
+      'content_json', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _lastUpdateTimeMeta =
-      const VerificationMeta('lastUpdateTime');
-  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
-      'last_update_time', aliasedName, false,
+  static const VerificationMeta _contentChecksumMeta =
+      const VerificationMeta('contentChecksum');
+  late final GeneratedColumn<String> contentChecksum = GeneratedColumn<String>(
+      'content_checksum', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _isDeletedMeta =
-      const VerificationMeta('isDeleted');
-  late final GeneratedColumn<int> isDeleted = GeneratedColumn<int>(
-      'is_deleted', aliasedName, false,
-      type: DriftSqlType.int,
+  static const VerificationMeta _contentPlainMeta =
+      const VerificationMeta('contentPlain');
+  late final GeneratedColumn<String> contentPlain = GeneratedColumn<String>(
+      'content_plain', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _abstractMeta =
+      const VerificationMeta('abstract');
+  late final GeneratedColumn<String> abstract = GeneratedColumn<String>(
+      'abstract', aliasedName, true,
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
+      $customConstraints: '');
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<String> classification = GeneratedColumn<String>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints:
+          'NOT NULL CHECK (classification IN (\'C\', \'S\', \'T\'))');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'DEFAULT NULL',
+      defaultValue: const CustomExpression('NULL'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
-        classification,
         title,
-        content,
-        plainText,
-        isFavorite,
-        categoryId,
-        createTime,
-        lastUpdateTime,
-        isDeleted
+        contentJson,
+        contentChecksum,
+        contentPlain,
+        abstract,
+        classification,
+        createdAt,
+        updatedAt,
+        deletedAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'notes';
+  static const String $name = 't_note';
   @override
-  VerificationContext validateIntegrity(Insertable<NoteEntity> instance,
+  VerificationContext validateIntegrity(Insertable<TNoteData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1502,61 +1502,57 @@ class Notes extends Table with TableInfo<Notes, NoteEntity> {
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('content_json')) {
+      context.handle(
+          _contentJsonMeta,
+          contentJson.isAcceptableOrUnknown(
+              data['content_json']!, _contentJsonMeta));
+    } else if (isInserting) {
+      context.missing(_contentJsonMeta);
+    }
+    if (data.containsKey('content_checksum')) {
+      context.handle(
+          _contentChecksumMeta,
+          contentChecksum.isAcceptableOrUnknown(
+              data['content_checksum']!, _contentChecksumMeta));
+    } else if (isInserting) {
+      context.missing(_contentChecksumMeta);
+    }
+    if (data.containsKey('content_plain')) {
+      context.handle(
+          _contentPlainMeta,
+          contentPlain.isAcceptableOrUnknown(
+              data['content_plain']!, _contentPlainMeta));
+    } else if (isInserting) {
+      context.missing(_contentPlainMeta);
+    }
+    if (data.containsKey('abstract')) {
+      context.handle(_abstractMeta,
+          abstract.isAcceptableOrUnknown(data['abstract']!, _abstractMeta));
+    }
     if (data.containsKey('classification')) {
       context.handle(
           _classificationMeta,
           classification.isAcceptableOrUnknown(
               data['classification']!, _classificationMeta));
-    }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
     } else if (isInserting) {
-      context.missing(_titleMeta);
+      context.missing(_classificationMeta);
     }
-    if (data.containsKey('content')) {
-      context.handle(_contentMeta,
-          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
-    } else if (isInserting) {
-      context.missing(_contentMeta);
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
-    if (data.containsKey('plain_text')) {
-      context.handle(_plainTextMeta,
-          plainText.isAcceptableOrUnknown(data['plain_text']!, _plainTextMeta));
-    } else if (isInserting) {
-      context.missing(_plainTextMeta);
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
     }
-    if (data.containsKey('is_favorite')) {
-      context.handle(
-          _isFavoriteMeta,
-          isFavorite.isAcceptableOrUnknown(
-              data['is_favorite']!, _isFavoriteMeta));
-    }
-    if (data.containsKey('category_id')) {
-      context.handle(
-          _categoryIdMeta,
-          categoryId.isAcceptableOrUnknown(
-              data['category_id']!, _categoryIdMeta));
-    }
-    if (data.containsKey('create_time')) {
-      context.handle(
-          _createTimeMeta,
-          createTime.isAcceptableOrUnknown(
-              data['create_time']!, _createTimeMeta));
-    } else if (isInserting) {
-      context.missing(_createTimeMeta);
-    }
-    if (data.containsKey('last_update_time')) {
-      context.handle(
-          _lastUpdateTimeMeta,
-          lastUpdateTime.isAcceptableOrUnknown(
-              data['last_update_time']!, _lastUpdateTimeMeta));
-    } else if (isInserting) {
-      context.missing(_lastUpdateTimeMeta);
-    }
-    if (data.containsKey('is_deleted')) {
-      context.handle(_isDeletedMeta,
-          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
     }
     return context;
   }
@@ -1564,111 +1560,119 @@ class Notes extends Table with TableInfo<Notes, NoteEntity> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  NoteEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TNoteData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NoteEntity(
+    return TNoteData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      classification: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
       title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      content: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
-      plainText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}plain_text'])!,
-      isFavorite: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}is_favorite'])!,
-      categoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
-      createTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
-      lastUpdateTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
-      isDeleted: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}is_deleted'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      contentJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content_json'])!,
+      contentChecksum: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}content_checksum'])!,
+      contentPlain: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content_plain'])!,
+      abstract: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}abstract']),
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}classification'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
     );
   }
 
   @override
-  Notes createAlias(String alias) {
-    return Notes(attachedDatabase, alias);
+  TNote createAlias(String alias) {
+    return TNote(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints =>
-      const ['FOREIGN KEY(category_id)REFERENCES categories(id)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
-class NoteEntity extends DataClass implements Insertable<NoteEntity> {
+class TNoteData extends DataClass implements Insertable<TNoteData> {
   final String id;
-  final int classification;
-  final String title;
-  final String content;
-  final String plainText;
-  final int isFavorite;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  final int isDeleted;
-  const NoteEntity(
+  final String? title;
+  final String contentJson;
+  final String contentChecksum;
+  final String contentPlain;
+  final String? abstract;
+  final String classification;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const TNoteData(
       {required this.id,
+      this.title,
+      required this.contentJson,
+      required this.contentChecksum,
+      required this.contentPlain,
+      this.abstract,
       required this.classification,
-      required this.title,
-      required this.content,
-      required this.plainText,
-      required this.isFavorite,
-      required this.categoryId,
-      required this.createTime,
-      required this.lastUpdateTime,
-      required this.isDeleted});
+      required this.createdAt,
+      required this.updatedAt,
+      this.deletedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['classification'] = Variable<int>(classification);
-    map['title'] = Variable<String>(title);
-    map['content'] = Variable<String>(content);
-    map['plain_text'] = Variable<String>(plainText);
-    map['is_favorite'] = Variable<int>(isFavorite);
-    map['category_id'] = Variable<int>(categoryId);
-    map['create_time'] = Variable<String>(createTime);
-    map['last_update_time'] = Variable<String>(lastUpdateTime);
-    map['is_deleted'] = Variable<int>(isDeleted);
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    map['content_json'] = Variable<String>(contentJson);
+    map['content_checksum'] = Variable<String>(contentChecksum);
+    map['content_plain'] = Variable<String>(contentPlain);
+    if (!nullToAbsent || abstract != null) {
+      map['abstract'] = Variable<String>(abstract);
+    }
+    map['classification'] = Variable<String>(classification);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
-  NotesCompanion toCompanion(bool nullToAbsent) {
-    return NotesCompanion(
+  TNoteCompanion toCompanion(bool nullToAbsent) {
+    return TNoteCompanion(
       id: Value(id),
+      title:
+          title == null && nullToAbsent ? const Value.absent() : Value(title),
+      contentJson: Value(contentJson),
+      contentChecksum: Value(contentChecksum),
+      contentPlain: Value(contentPlain),
+      abstract: abstract == null && nullToAbsent
+          ? const Value.absent()
+          : Value(abstract),
       classification: Value(classification),
-      title: Value(title),
-      content: Value(content),
-      plainText: Value(plainText),
-      isFavorite: Value(isFavorite),
-      categoryId: Value(categoryId),
-      createTime: Value(createTime),
-      lastUpdateTime: Value(lastUpdateTime),
-      isDeleted: Value(isDeleted),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
     );
   }
 
-  factory NoteEntity.fromJson(Map<String, dynamic> json,
+  factory TNoteData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return NoteEntity(
+    return TNoteData(
       id: serializer.fromJson<String>(json['id']),
-      classification: serializer.fromJson<int>(json['classification']),
-      title: serializer.fromJson<String>(json['title']),
-      content: serializer.fromJson<String>(json['content']),
-      plainText: serializer.fromJson<String>(json['plain_text']),
-      isFavorite: serializer.fromJson<int>(json['is_favorite']),
-      categoryId: serializer.fromJson<int>(json['category_id']),
-      createTime: serializer.fromJson<String>(json['create_time']),
-      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
-      isDeleted: serializer.fromJson<int>(json['is_deleted']),
+      title: serializer.fromJson<String?>(json['title']),
+      contentJson: serializer.fromJson<String>(json['content_json']),
+      contentChecksum: serializer.fromJson<String>(json['content_checksum']),
+      contentPlain: serializer.fromJson<String>(json['content_plain']),
+      abstract: serializer.fromJson<String?>(json['abstract']),
+      classification: serializer.fromJson<String>(json['classification']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deleted_at']),
     );
   }
   @override
@@ -1676,193 +1680,192 @@ class NoteEntity extends DataClass implements Insertable<NoteEntity> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'classification': serializer.toJson<int>(classification),
-      'title': serializer.toJson<String>(title),
-      'content': serializer.toJson<String>(content),
-      'plain_text': serializer.toJson<String>(plainText),
-      'is_favorite': serializer.toJson<int>(isFavorite),
-      'category_id': serializer.toJson<int>(categoryId),
-      'create_time': serializer.toJson<String>(createTime),
-      'last_update_time': serializer.toJson<String>(lastUpdateTime),
-      'is_deleted': serializer.toJson<int>(isDeleted),
+      'title': serializer.toJson<String?>(title),
+      'content_json': serializer.toJson<String>(contentJson),
+      'content_checksum': serializer.toJson<String>(contentChecksum),
+      'content_plain': serializer.toJson<String>(contentPlain),
+      'abstract': serializer.toJson<String?>(abstract),
+      'classification': serializer.toJson<String>(classification),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
+      'deleted_at': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
-  NoteEntity copyWith(
+  TNoteData copyWith(
           {String? id,
-          int? classification,
-          String? title,
-          String? content,
-          String? plainText,
-          int? isFavorite,
-          int? categoryId,
-          String? createTime,
-          String? lastUpdateTime,
-          int? isDeleted}) =>
-      NoteEntity(
+          Value<String?> title = const Value.absent(),
+          String? contentJson,
+          String? contentChecksum,
+          String? contentPlain,
+          Value<String?> abstract = const Value.absent(),
+          String? classification,
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          Value<DateTime?> deletedAt = const Value.absent()}) =>
+      TNoteData(
         id: id ?? this.id,
+        title: title.present ? title.value : this.title,
+        contentJson: contentJson ?? this.contentJson,
+        contentChecksum: contentChecksum ?? this.contentChecksum,
+        contentPlain: contentPlain ?? this.contentPlain,
+        abstract: abstract.present ? abstract.value : this.abstract,
         classification: classification ?? this.classification,
-        title: title ?? this.title,
-        content: content ?? this.content,
-        plainText: plainText ?? this.plainText,
-        isFavorite: isFavorite ?? this.isFavorite,
-        categoryId: categoryId ?? this.categoryId,
-        createTime: createTime ?? this.createTime,
-        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-        isDeleted: isDeleted ?? this.isDeleted,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
       );
-  NoteEntity copyWithCompanion(NotesCompanion data) {
-    return NoteEntity(
+  TNoteData copyWithCompanion(TNoteCompanion data) {
+    return TNoteData(
       id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      contentJson:
+          data.contentJson.present ? data.contentJson.value : this.contentJson,
+      contentChecksum: data.contentChecksum.present
+          ? data.contentChecksum.value
+          : this.contentChecksum,
+      contentPlain: data.contentPlain.present
+          ? data.contentPlain.value
+          : this.contentPlain,
+      abstract: data.abstract.present ? data.abstract.value : this.abstract,
       classification: data.classification.present
           ? data.classification.value
           : this.classification,
-      title: data.title.present ? data.title.value : this.title,
-      content: data.content.present ? data.content.value : this.content,
-      plainText: data.plainText.present ? data.plainText.value : this.plainText,
-      isFavorite:
-          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
-      categoryId:
-          data.categoryId.present ? data.categoryId.value : this.categoryId,
-      createTime:
-          data.createTime.present ? data.createTime.value : this.createTime,
-      lastUpdateTime: data.lastUpdateTime.present
-          ? data.lastUpdateTime.value
-          : this.lastUpdateTime,
-      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('NoteEntity(')
+    return (StringBuffer('TNoteData(')
           ..write('id: $id, ')
-          ..write('classification: $classification, ')
           ..write('title: $title, ')
-          ..write('content: $content, ')
-          ..write('plainText: $plainText, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isDeleted: $isDeleted')
+          ..write('contentJson: $contentJson, ')
+          ..write('contentChecksum: $contentChecksum, ')
+          ..write('contentPlain: $contentPlain, ')
+          ..write('abstract: $abstract, ')
+          ..write('classification: $classification, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, classification, title, content, plainText,
-      isFavorite, categoryId, createTime, lastUpdateTime, isDeleted);
+  int get hashCode => Object.hash(id, title, contentJson, contentChecksum,
+      contentPlain, abstract, classification, createdAt, updatedAt, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is NoteEntity &&
+      (other is TNoteData &&
           other.id == this.id &&
-          other.classification == this.classification &&
           other.title == this.title &&
-          other.content == this.content &&
-          other.plainText == this.plainText &&
-          other.isFavorite == this.isFavorite &&
-          other.categoryId == this.categoryId &&
-          other.createTime == this.createTime &&
-          other.lastUpdateTime == this.lastUpdateTime &&
-          other.isDeleted == this.isDeleted);
+          other.contentJson == this.contentJson &&
+          other.contentChecksum == this.contentChecksum &&
+          other.contentPlain == this.contentPlain &&
+          other.abstract == this.abstract &&
+          other.classification == this.classification &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
 }
 
-class NotesCompanion extends UpdateCompanion<NoteEntity> {
+class TNoteCompanion extends UpdateCompanion<TNoteData> {
   final Value<String> id;
-  final Value<int> classification;
-  final Value<String> title;
-  final Value<String> content;
-  final Value<String> plainText;
-  final Value<int> isFavorite;
-  final Value<int> categoryId;
-  final Value<String> createTime;
-  final Value<String> lastUpdateTime;
-  final Value<int> isDeleted;
+  final Value<String?> title;
+  final Value<String> contentJson;
+  final Value<String> contentChecksum;
+  final Value<String> contentPlain;
+  final Value<String?> abstract;
+  final Value<String> classification;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
   final Value<int> rowid;
-  const NotesCompanion({
+  const TNoteCompanion({
     this.id = const Value.absent(),
-    this.classification = const Value.absent(),
     this.title = const Value.absent(),
-    this.content = const Value.absent(),
-    this.plainText = const Value.absent(),
-    this.isFavorite = const Value.absent(),
-    this.categoryId = const Value.absent(),
-    this.createTime = const Value.absent(),
-    this.lastUpdateTime = const Value.absent(),
-    this.isDeleted = const Value.absent(),
+    this.contentJson = const Value.absent(),
+    this.contentChecksum = const Value.absent(),
+    this.contentPlain = const Value.absent(),
+    this.abstract = const Value.absent(),
+    this.classification = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  NotesCompanion.insert({
+  TNoteCompanion.insert({
     required String id,
-    this.classification = const Value.absent(),
-    required String title,
-    required String content,
-    required String plainText,
-    this.isFavorite = const Value.absent(),
-    this.categoryId = const Value.absent(),
-    required String createTime,
-    required String lastUpdateTime,
-    this.isDeleted = const Value.absent(),
+    this.title = const Value.absent(),
+    required String contentJson,
+    required String contentChecksum,
+    required String contentPlain,
+    this.abstract = const Value.absent(),
+    required String classification,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        title = Value(title),
-        content = Value(content),
-        plainText = Value(plainText),
-        createTime = Value(createTime),
-        lastUpdateTime = Value(lastUpdateTime);
-  static Insertable<NoteEntity> custom({
+        contentJson = Value(contentJson),
+        contentChecksum = Value(contentChecksum),
+        contentPlain = Value(contentPlain),
+        classification = Value(classification);
+  static Insertable<TNoteData> custom({
     Expression<String>? id,
-    Expression<int>? classification,
     Expression<String>? title,
-    Expression<String>? content,
-    Expression<String>? plainText,
-    Expression<int>? isFavorite,
-    Expression<int>? categoryId,
-    Expression<String>? createTime,
-    Expression<String>? lastUpdateTime,
-    Expression<int>? isDeleted,
+    Expression<String>? contentJson,
+    Expression<String>? contentChecksum,
+    Expression<String>? contentPlain,
+    Expression<String>? abstract,
+    Expression<String>? classification,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (classification != null) 'classification': classification,
       if (title != null) 'title': title,
-      if (content != null) 'content': content,
-      if (plainText != null) 'plain_text': plainText,
-      if (isFavorite != null) 'is_favorite': isFavorite,
-      if (categoryId != null) 'category_id': categoryId,
-      if (createTime != null) 'create_time': createTime,
-      if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
-      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (contentJson != null) 'content_json': contentJson,
+      if (contentChecksum != null) 'content_checksum': contentChecksum,
+      if (contentPlain != null) 'content_plain': contentPlain,
+      if (abstract != null) 'abstract': abstract,
+      if (classification != null) 'classification': classification,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  NotesCompanion copyWith(
+  TNoteCompanion copyWith(
       {Value<String>? id,
-      Value<int>? classification,
-      Value<String>? title,
-      Value<String>? content,
-      Value<String>? plainText,
-      Value<int>? isFavorite,
-      Value<int>? categoryId,
-      Value<String>? createTime,
-      Value<String>? lastUpdateTime,
-      Value<int>? isDeleted,
+      Value<String?>? title,
+      Value<String>? contentJson,
+      Value<String>? contentChecksum,
+      Value<String>? contentPlain,
+      Value<String?>? abstract,
+      Value<String>? classification,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<DateTime?>? deletedAt,
       Value<int>? rowid}) {
-    return NotesCompanion(
+    return TNoteCompanion(
       id: id ?? this.id,
-      classification: classification ?? this.classification,
       title: title ?? this.title,
-      content: content ?? this.content,
-      plainText: plainText ?? this.plainText,
-      isFavorite: isFavorite ?? this.isFavorite,
-      categoryId: categoryId ?? this.categoryId,
-      createTime: createTime ?? this.createTime,
-      lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      isDeleted: isDeleted ?? this.isDeleted,
+      contentJson: contentJson ?? this.contentJson,
+      contentChecksum: contentChecksum ?? this.contentChecksum,
+      contentPlain: contentPlain ?? this.contentPlain,
+      abstract: abstract ?? this.abstract,
+      classification: classification ?? this.classification,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1873,32 +1876,32 @@ class NotesCompanion extends UpdateCompanion<NoteEntity> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (classification.present) {
-      map['classification'] = Variable<int>(classification.value);
-    }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (content.present) {
-      map['content'] = Variable<String>(content.value);
+    if (contentJson.present) {
+      map['content_json'] = Variable<String>(contentJson.value);
     }
-    if (plainText.present) {
-      map['plain_text'] = Variable<String>(plainText.value);
+    if (contentChecksum.present) {
+      map['content_checksum'] = Variable<String>(contentChecksum.value);
     }
-    if (isFavorite.present) {
-      map['is_favorite'] = Variable<int>(isFavorite.value);
+    if (contentPlain.present) {
+      map['content_plain'] = Variable<String>(contentPlain.value);
     }
-    if (categoryId.present) {
-      map['category_id'] = Variable<int>(categoryId.value);
+    if (abstract.present) {
+      map['abstract'] = Variable<String>(abstract.value);
     }
-    if (createTime.present) {
-      map['create_time'] = Variable<String>(createTime.value);
+    if (classification.present) {
+      map['classification'] = Variable<String>(classification.value);
     }
-    if (lastUpdateTime.present) {
-      map['last_update_time'] = Variable<String>(lastUpdateTime.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
-    if (isDeleted.present) {
-      map['is_deleted'] = Variable<int>(isDeleted.value);
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1908,290 +1911,120 @@ class NotesCompanion extends UpdateCompanion<NoteEntity> {
 
   @override
   String toString() {
-    return (StringBuffer('NotesCompanion(')
+    return (StringBuffer('TNoteCompanion(')
           ..write('id: $id, ')
-          ..write('classification: $classification, ')
           ..write('title: $title, ')
-          ..write('content: $content, ')
-          ..write('plainText: $plainText, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isDeleted: $isDeleted, ')
+          ..write('contentJson: $contentJson, ')
+          ..write('contentChecksum: $contentChecksum, ')
+          ..write('contentPlain: $contentPlain, ')
+          ..write('abstract: $abstract, ')
+          ..write('classification: $classification, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class NoteViewData extends DataClass {
-  final String id;
-  final int classification;
-  final String title;
-  final String plainText;
-  final String abstract;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  const NoteViewData(
-      {required this.id,
-      required this.classification,
-      required this.title,
-      required this.plainText,
-      required this.abstract,
-      required this.categoryId,
-      required this.createTime,
-      required this.lastUpdateTime});
-  factory NoteViewData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return NoteViewData(
-      id: serializer.fromJson<String>(json['id']),
-      classification: serializer.fromJson<int>(json['classification']),
-      title: serializer.fromJson<String>(json['title']),
-      plainText: serializer.fromJson<String>(json['plain_text']),
-      abstract: serializer.fromJson<String>(json['abstract']),
-      categoryId: serializer.fromJson<int>(json['category_id']),
-      createTime: serializer.fromJson<String>(json['create_time']),
-      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'classification': serializer.toJson<int>(classification),
-      'title': serializer.toJson<String>(title),
-      'plain_text': serializer.toJson<String>(plainText),
-      'abstract': serializer.toJson<String>(abstract),
-      'category_id': serializer.toJson<int>(categoryId),
-      'create_time': serializer.toJson<String>(createTime),
-      'last_update_time': serializer.toJson<String>(lastUpdateTime),
-    };
-  }
-
-  NoteViewData copyWith(
-          {String? id,
-          int? classification,
-          String? title,
-          String? plainText,
-          String? abstract,
-          int? categoryId,
-          String? createTime,
-          String? lastUpdateTime}) =>
-      NoteViewData(
-        id: id ?? this.id,
-        classification: classification ?? this.classification,
-        title: title ?? this.title,
-        plainText: plainText ?? this.plainText,
-        abstract: abstract ?? this.abstract,
-        categoryId: categoryId ?? this.categoryId,
-        createTime: createTime ?? this.createTime,
-        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('NoteViewData(')
-          ..write('id: $id, ')
-          ..write('classification: $classification, ')
-          ..write('title: $title, ')
-          ..write('plainText: $plainText, ')
-          ..write('abstract: $abstract, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, classification, title, plainText,
-      abstract, categoryId, createTime, lastUpdateTime);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is NoteViewData &&
-          other.id == this.id &&
-          other.classification == this.classification &&
-          other.title == this.title &&
-          other.plainText == this.plainText &&
-          other.abstract == this.abstract &&
-          other.categoryId == this.categoryId &&
-          other.createTime == this.createTime &&
-          other.lastUpdateTime == this.lastUpdateTime);
-}
-
-class NoteView extends ViewInfo<NoteView, NoteViewData>
-    implements HasResultSet {
-  final String? _alias;
-  @override
-  final _$SqliteDb attachedDatabase;
-  NoteView(this.attachedDatabase, [this._alias]);
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        classification,
-        title,
-        plainText,
-        abstract,
-        categoryId,
-        createTime,
-        lastUpdateTime
-      ];
-  @override
-  String get aliasedName => _alias ?? entityName;
-  @override
-  String get entityName => 'note_view';
-  @override
-  Map<SqlDialect, String> get createViewStatements => {
-        SqlDialect.sqlite:
-            'CREATE VIEW note_view AS SELECT id, classification, title, plain_text, SUBSTR(plain_text, 1, 100) AS abstract, category_id, create_time, last_update_time FROM notes WHERE is_deleted = 0',
-      };
-  @override
-  NoteView get asDslTable => this;
-  @override
-  NoteViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NoteViewData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      classification: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      plainText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}plain_text'])!,
-      abstract: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}abstract'])!,
-      categoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
-      createTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
-      lastUpdateTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
-    );
-  }
-
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
-      'classification', aliasedName, false,
-      type: DriftSqlType.int);
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> plainText = GeneratedColumn<String>(
-      'plain_text', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> abstract = GeneratedColumn<String>(
-      'abstract', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
-      'category_id', aliasedName, false,
-      type: DriftSqlType.int);
-  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
-      'create_time', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
-      'last_update_time', aliasedName, false,
-      type: DriftSqlType.string);
-  @override
-  NoteView createAlias(String alias) {
-    return NoteView(attachedDatabase, alias);
-  }
-
-  @override
-  Query? get query => null;
-  @override
-  Set<String> get readTables => const {'notes'};
-}
-
-class Snapshots extends Table with TableInfo<Snapshots, SnapshotEntity> {
+class TNoteHistory extends Table
+    with TableInfo<TNoteHistory, TNoteHistoryData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Snapshots(this.attachedDatabase, [this._alias]);
+  TNoteHistory(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL PRIMARY KEY');
-  static const VerificationMeta _entityIdMeta =
-      const VerificationMeta('entityId');
-  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
-      'entity_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _classificationMeta =
-      const VerificationMeta('classification');
-  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
-      'classification', aliasedName, false,
+      hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
-  static const VerificationMeta _contentMeta =
-      const VerificationMeta('content');
-  late final GeneratedColumn<String> content = GeneratedColumn<String>(
-      'content', aliasedName, false,
+      $customConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  static const VerificationMeta _noteIdMeta = const VerificationMeta('noteId');
+  late final GeneratedColumn<String> noteId = GeneratedColumn<String>(
+      'note_id', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _createTimeMeta =
-      const VerificationMeta('createTime');
-  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
-      'create_time', aliasedName, false,
+  static const VerificationMeta _contentJsonMeta =
+      const VerificationMeta('contentJson');
+  late final GeneratedColumn<String> contentJson = GeneratedColumn<String>(
+      'content_json', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
+  static const VerificationMeta _contentChecksumMeta =
+      const VerificationMeta('contentChecksum');
+  late final GeneratedColumn<String> contentChecksum = GeneratedColumn<String>(
+      'content_checksum', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _contentPlainMeta =
+      const VerificationMeta('contentPlain');
+  late final GeneratedColumn<String> contentPlain = GeneratedColumn<String>(
+      'content_plain', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _changedAtMeta =
+      const VerificationMeta('changedAt');
+  late final GeneratedColumn<DateTime> changedAt = GeneratedColumn<DateTime>(
+      'changed_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, entityId, classification, content, createTime];
+      [id, noteId, contentJson, contentChecksum, contentPlain, changedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'snapshots';
+  static const String $name = 't_note_history';
   @override
-  VerificationContext validateIntegrity(Insertable<SnapshotEntity> instance,
+  VerificationContext validateIntegrity(Insertable<TNoteHistoryData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
     }
-    if (data.containsKey('entity_id')) {
-      context.handle(_entityIdMeta,
-          entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta));
+    if (data.containsKey('note_id')) {
+      context.handle(_noteIdMeta,
+          noteId.isAcceptableOrUnknown(data['note_id']!, _noteIdMeta));
     } else if (isInserting) {
-      context.missing(_entityIdMeta);
+      context.missing(_noteIdMeta);
     }
-    if (data.containsKey('classification')) {
+    if (data.containsKey('content_json')) {
       context.handle(
-          _classificationMeta,
-          classification.isAcceptableOrUnknown(
-              data['classification']!, _classificationMeta));
-    }
-    if (data.containsKey('content')) {
-      context.handle(_contentMeta,
-          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+          _contentJsonMeta,
+          contentJson.isAcceptableOrUnknown(
+              data['content_json']!, _contentJsonMeta));
     } else if (isInserting) {
-      context.missing(_contentMeta);
+      context.missing(_contentJsonMeta);
     }
-    if (data.containsKey('create_time')) {
+    if (data.containsKey('content_checksum')) {
       context.handle(
-          _createTimeMeta,
-          createTime.isAcceptableOrUnknown(
-              data['create_time']!, _createTimeMeta));
+          _contentChecksumMeta,
+          contentChecksum.isAcceptableOrUnknown(
+              data['content_checksum']!, _contentChecksumMeta));
     } else if (isInserting) {
-      context.missing(_createTimeMeta);
+      context.missing(_contentChecksumMeta);
+    }
+    if (data.containsKey('content_plain')) {
+      context.handle(
+          _contentPlainMeta,
+          contentPlain.isAcceptableOrUnknown(
+              data['content_plain']!, _contentPlainMeta));
+    } else if (isInserting) {
+      context.missing(_contentPlainMeta);
+    }
+    if (data.containsKey('changed_at')) {
+      context.handle(_changedAtMeta,
+          changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta));
     }
     return context;
   }
@@ -2199,197 +2032,216 @@ class Snapshots extends Table with TableInfo<Snapshots, SnapshotEntity> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  SnapshotEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TNoteHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SnapshotEntity(
+    return TNoteHistoryData(
       id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      entityId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_id'])!,
-      classification: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
-      content: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}content'])!,
-      createTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      noteId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}note_id'])!,
+      contentJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content_json'])!,
+      contentChecksum: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}content_checksum'])!,
+      contentPlain: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content_plain'])!,
+      changedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}changed_at'])!,
     );
   }
 
   @override
-  Snapshots createAlias(String alias) {
-    return Snapshots(attachedDatabase, alias);
+  TNoteHistory createAlias(String alias) {
+    return TNoteHistory(attachedDatabase, alias);
   }
 
+  @override
+  List<String> get customConstraints =>
+      const ['FOREIGN KEY(note_id)REFERENCES t_note(id)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
-class SnapshotEntity extends DataClass implements Insertable<SnapshotEntity> {
-  final String id;
-  final String entityId;
-  final int classification;
-  final String content;
-  final String createTime;
-  const SnapshotEntity(
+class TNoteHistoryData extends DataClass
+    implements Insertable<TNoteHistoryData> {
+  final int id;
+  final String noteId;
+  final String contentJson;
+  final String contentChecksum;
+  final String contentPlain;
+  final DateTime changedAt;
+  const TNoteHistoryData(
       {required this.id,
-      required this.entityId,
-      required this.classification,
-      required this.content,
-      required this.createTime});
+      required this.noteId,
+      required this.contentJson,
+      required this.contentChecksum,
+      required this.contentPlain,
+      required this.changedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['entity_id'] = Variable<String>(entityId);
-    map['classification'] = Variable<int>(classification);
-    map['content'] = Variable<String>(content);
-    map['create_time'] = Variable<String>(createTime);
+    map['id'] = Variable<int>(id);
+    map['note_id'] = Variable<String>(noteId);
+    map['content_json'] = Variable<String>(contentJson);
+    map['content_checksum'] = Variable<String>(contentChecksum);
+    map['content_plain'] = Variable<String>(contentPlain);
+    map['changed_at'] = Variable<DateTime>(changedAt);
     return map;
   }
 
-  SnapshotsCompanion toCompanion(bool nullToAbsent) {
-    return SnapshotsCompanion(
+  TNoteHistoryCompanion toCompanion(bool nullToAbsent) {
+    return TNoteHistoryCompanion(
       id: Value(id),
-      entityId: Value(entityId),
-      classification: Value(classification),
-      content: Value(content),
-      createTime: Value(createTime),
+      noteId: Value(noteId),
+      contentJson: Value(contentJson),
+      contentChecksum: Value(contentChecksum),
+      contentPlain: Value(contentPlain),
+      changedAt: Value(changedAt),
     );
   }
 
-  factory SnapshotEntity.fromJson(Map<String, dynamic> json,
+  factory TNoteHistoryData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SnapshotEntity(
-      id: serializer.fromJson<String>(json['id']),
-      entityId: serializer.fromJson<String>(json['entity_id']),
-      classification: serializer.fromJson<int>(json['classification']),
-      content: serializer.fromJson<String>(json['content']),
-      createTime: serializer.fromJson<String>(json['create_time']),
+    return TNoteHistoryData(
+      id: serializer.fromJson<int>(json['id']),
+      noteId: serializer.fromJson<String>(json['note_id']),
+      contentJson: serializer.fromJson<String>(json['content_json']),
+      contentChecksum: serializer.fromJson<String>(json['content_checksum']),
+      contentPlain: serializer.fromJson<String>(json['content_plain']),
+      changedAt: serializer.fromJson<DateTime>(json['changed_at']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'entity_id': serializer.toJson<String>(entityId),
-      'classification': serializer.toJson<int>(classification),
-      'content': serializer.toJson<String>(content),
-      'create_time': serializer.toJson<String>(createTime),
+      'id': serializer.toJson<int>(id),
+      'note_id': serializer.toJson<String>(noteId),
+      'content_json': serializer.toJson<String>(contentJson),
+      'content_checksum': serializer.toJson<String>(contentChecksum),
+      'content_plain': serializer.toJson<String>(contentPlain),
+      'changed_at': serializer.toJson<DateTime>(changedAt),
     };
   }
 
-  SnapshotEntity copyWith(
-          {String? id,
-          String? entityId,
-          int? classification,
-          String? content,
-          String? createTime}) =>
-      SnapshotEntity(
+  TNoteHistoryData copyWith(
+          {int? id,
+          String? noteId,
+          String? contentJson,
+          String? contentChecksum,
+          String? contentPlain,
+          DateTime? changedAt}) =>
+      TNoteHistoryData(
         id: id ?? this.id,
-        entityId: entityId ?? this.entityId,
-        classification: classification ?? this.classification,
-        content: content ?? this.content,
-        createTime: createTime ?? this.createTime,
+        noteId: noteId ?? this.noteId,
+        contentJson: contentJson ?? this.contentJson,
+        contentChecksum: contentChecksum ?? this.contentChecksum,
+        contentPlain: contentPlain ?? this.contentPlain,
+        changedAt: changedAt ?? this.changedAt,
       );
-  SnapshotEntity copyWithCompanion(SnapshotsCompanion data) {
-    return SnapshotEntity(
+  TNoteHistoryData copyWithCompanion(TNoteHistoryCompanion data) {
+    return TNoteHistoryData(
       id: data.id.present ? data.id.value : this.id,
-      entityId: data.entityId.present ? data.entityId.value : this.entityId,
-      classification: data.classification.present
-          ? data.classification.value
-          : this.classification,
-      content: data.content.present ? data.content.value : this.content,
-      createTime:
-          data.createTime.present ? data.createTime.value : this.createTime,
+      noteId: data.noteId.present ? data.noteId.value : this.noteId,
+      contentJson:
+          data.contentJson.present ? data.contentJson.value : this.contentJson,
+      contentChecksum: data.contentChecksum.present
+          ? data.contentChecksum.value
+          : this.contentChecksum,
+      contentPlain: data.contentPlain.present
+          ? data.contentPlain.value
+          : this.contentPlain,
+      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('SnapshotEntity(')
+    return (StringBuffer('TNoteHistoryData(')
           ..write('id: $id, ')
-          ..write('entityId: $entityId, ')
-          ..write('classification: $classification, ')
-          ..write('content: $content, ')
-          ..write('createTime: $createTime')
+          ..write('noteId: $noteId, ')
+          ..write('contentJson: $contentJson, ')
+          ..write('contentChecksum: $contentChecksum, ')
+          ..write('contentPlain: $contentPlain, ')
+          ..write('changedAt: $changedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, entityId, classification, content, createTime);
+  int get hashCode => Object.hash(
+      id, noteId, contentJson, contentChecksum, contentPlain, changedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SnapshotEntity &&
+      (other is TNoteHistoryData &&
           other.id == this.id &&
-          other.entityId == this.entityId &&
-          other.classification == this.classification &&
-          other.content == this.content &&
-          other.createTime == this.createTime);
+          other.noteId == this.noteId &&
+          other.contentJson == this.contentJson &&
+          other.contentChecksum == this.contentChecksum &&
+          other.contentPlain == this.contentPlain &&
+          other.changedAt == this.changedAt);
 }
 
-class SnapshotsCompanion extends UpdateCompanion<SnapshotEntity> {
-  final Value<String> id;
-  final Value<String> entityId;
-  final Value<int> classification;
-  final Value<String> content;
-  final Value<String> createTime;
-  final Value<int> rowid;
-  const SnapshotsCompanion({
+class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
+  final Value<int> id;
+  final Value<String> noteId;
+  final Value<String> contentJson;
+  final Value<String> contentChecksum;
+  final Value<String> contentPlain;
+  final Value<DateTime> changedAt;
+  const TNoteHistoryCompanion({
     this.id = const Value.absent(),
-    this.entityId = const Value.absent(),
-    this.classification = const Value.absent(),
-    this.content = const Value.absent(),
-    this.createTime = const Value.absent(),
-    this.rowid = const Value.absent(),
+    this.noteId = const Value.absent(),
+    this.contentJson = const Value.absent(),
+    this.contentChecksum = const Value.absent(),
+    this.contentPlain = const Value.absent(),
+    this.changedAt = const Value.absent(),
   });
-  SnapshotsCompanion.insert({
-    required String id,
-    required String entityId,
-    this.classification = const Value.absent(),
-    required String content,
-    required String createTime,
-    this.rowid = const Value.absent(),
-  })  : id = Value(id),
-        entityId = Value(entityId),
-        content = Value(content),
-        createTime = Value(createTime);
-  static Insertable<SnapshotEntity> custom({
-    Expression<String>? id,
-    Expression<String>? entityId,
-    Expression<int>? classification,
-    Expression<String>? content,
-    Expression<String>? createTime,
-    Expression<int>? rowid,
+  TNoteHistoryCompanion.insert({
+    this.id = const Value.absent(),
+    required String noteId,
+    required String contentJson,
+    required String contentChecksum,
+    required String contentPlain,
+    this.changedAt = const Value.absent(),
+  })  : noteId = Value(noteId),
+        contentJson = Value(contentJson),
+        contentChecksum = Value(contentChecksum),
+        contentPlain = Value(contentPlain);
+  static Insertable<TNoteHistoryData> custom({
+    Expression<int>? id,
+    Expression<String>? noteId,
+    Expression<String>? contentJson,
+    Expression<String>? contentChecksum,
+    Expression<String>? contentPlain,
+    Expression<DateTime>? changedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (entityId != null) 'entity_id': entityId,
-      if (classification != null) 'classification': classification,
-      if (content != null) 'content': content,
-      if (createTime != null) 'create_time': createTime,
-      if (rowid != null) 'rowid': rowid,
+      if (noteId != null) 'note_id': noteId,
+      if (contentJson != null) 'content_json': contentJson,
+      if (contentChecksum != null) 'content_checksum': contentChecksum,
+      if (contentPlain != null) 'content_plain': contentPlain,
+      if (changedAt != null) 'changed_at': changedAt,
     });
   }
 
-  SnapshotsCompanion copyWith(
-      {Value<String>? id,
-      Value<String>? entityId,
-      Value<int>? classification,
-      Value<String>? content,
-      Value<String>? createTime,
-      Value<int>? rowid}) {
-    return SnapshotsCompanion(
+  TNoteHistoryCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? noteId,
+      Value<String>? contentJson,
+      Value<String>? contentChecksum,
+      Value<String>? contentPlain,
+      Value<DateTime>? changedAt}) {
+    return TNoteHistoryCompanion(
       id: id ?? this.id,
-      entityId: entityId ?? this.entityId,
-      classification: classification ?? this.classification,
-      content: content ?? this.content,
-      createTime: createTime ?? this.createTime,
-      rowid: rowid ?? this.rowid,
+      noteId: noteId ?? this.noteId,
+      contentJson: contentJson ?? this.contentJson,
+      contentChecksum: contentChecksum ?? this.contentChecksum,
+      contentPlain: contentPlain ?? this.contentPlain,
+      changedAt: changedAt ?? this.changedAt,
     );
   }
 
@@ -2397,19 +2249,226 @@ class SnapshotsCompanion extends UpdateCompanion<SnapshotEntity> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<String>(id.value);
+      map['id'] = Variable<int>(id.value);
     }
-    if (entityId.present) {
-      map['entity_id'] = Variable<String>(entityId.value);
+    if (noteId.present) {
+      map['note_id'] = Variable<String>(noteId.value);
     }
-    if (classification.present) {
-      map['classification'] = Variable<int>(classification.value);
+    if (contentJson.present) {
+      map['content_json'] = Variable<String>(contentJson.value);
     }
-    if (content.present) {
-      map['content'] = Variable<String>(content.value);
+    if (contentChecksum.present) {
+      map['content_checksum'] = Variable<String>(contentChecksum.value);
     }
-    if (createTime.present) {
-      map['create_time'] = Variable<String>(createTime.value);
+    if (contentPlain.present) {
+      map['content_plain'] = Variable<String>(contentPlain.value);
+    }
+    if (changedAt.present) {
+      map['changed_at'] = Variable<DateTime>(changedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TNoteHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('noteId: $noteId, ')
+          ..write('contentJson: $contentJson, ')
+          ..write('contentChecksum: $contentChecksum, ')
+          ..write('contentPlain: $contentPlain, ')
+          ..write('changedAt: $changedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class TNoteIdx extends Table
+    with
+        TableInfo<TNoteIdx, TNoteIdxData>,
+        VirtualTableInfo<TNoteIdx, TNoteIdxData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  TNoteIdx(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: '');
+  static const VerificationMeta _contentPlainMeta =
+      const VerificationMeta('contentPlain');
+  late final GeneratedColumn<String> contentPlain = GeneratedColumn<String>(
+      'content_plain', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns => [title, contentPlain];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 't_note_idx';
+  @override
+  VerificationContext validateIntegrity(Insertable<TNoteIdxData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('content_plain')) {
+      context.handle(
+          _contentPlainMeta,
+          contentPlain.isAcceptableOrUnknown(
+              data['content_plain']!, _contentPlainMeta));
+    } else if (isInserting) {
+      context.missing(_contentPlainMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  TNoteIdxData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TNoteIdxData(
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      contentPlain: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}content_plain'])!,
+    );
+  }
+
+  @override
+  TNoteIdx createAlias(String alias) {
+    return TNoteIdx(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+  @override
+  String get moduleAndArgs => 'FTS5(title, content_plain, content="t_note")';
+}
+
+class TNoteIdxData extends DataClass implements Insertable<TNoteIdxData> {
+  final String title;
+  final String contentPlain;
+  const TNoteIdxData({required this.title, required this.contentPlain});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['title'] = Variable<String>(title);
+    map['content_plain'] = Variable<String>(contentPlain);
+    return map;
+  }
+
+  TNoteIdxCompanion toCompanion(bool nullToAbsent) {
+    return TNoteIdxCompanion(
+      title: Value(title),
+      contentPlain: Value(contentPlain),
+    );
+  }
+
+  factory TNoteIdxData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TNoteIdxData(
+      title: serializer.fromJson<String>(json['title']),
+      contentPlain: serializer.fromJson<String>(json['content_plain']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'title': serializer.toJson<String>(title),
+      'content_plain': serializer.toJson<String>(contentPlain),
+    };
+  }
+
+  TNoteIdxData copyWith({String? title, String? contentPlain}) => TNoteIdxData(
+        title: title ?? this.title,
+        contentPlain: contentPlain ?? this.contentPlain,
+      );
+  TNoteIdxData copyWithCompanion(TNoteIdxCompanion data) {
+    return TNoteIdxData(
+      title: data.title.present ? data.title.value : this.title,
+      contentPlain: data.contentPlain.present
+          ? data.contentPlain.value
+          : this.contentPlain,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TNoteIdxData(')
+          ..write('title: $title, ')
+          ..write('contentPlain: $contentPlain')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(title, contentPlain);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TNoteIdxData &&
+          other.title == this.title &&
+          other.contentPlain == this.contentPlain);
+}
+
+class TNoteIdxCompanion extends UpdateCompanion<TNoteIdxData> {
+  final Value<String> title;
+  final Value<String> contentPlain;
+  final Value<int> rowid;
+  const TNoteIdxCompanion({
+    this.title = const Value.absent(),
+    this.contentPlain = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TNoteIdxCompanion.insert({
+    required String title,
+    required String contentPlain,
+    this.rowid = const Value.absent(),
+  })  : title = Value(title),
+        contentPlain = Value(contentPlain);
+  static Insertable<TNoteIdxData> custom({
+    Expression<String>? title,
+    Expression<String>? contentPlain,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (title != null) 'title': title,
+      if (contentPlain != null) 'content_plain': contentPlain,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TNoteIdxCompanion copyWith(
+      {Value<String>? title, Value<String>? contentPlain, Value<int>? rowid}) {
+    return TNoteIdxCompanion(
+      title: title ?? this.title,
+      contentPlain: contentPlain ?? this.contentPlain,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (contentPlain.present) {
+      map['content_plain'] = Variable<String>(contentPlain.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2419,12 +2478,9 @@ class SnapshotsCompanion extends UpdateCompanion<SnapshotEntity> {
 
   @override
   String toString() {
-    return (StringBuffer('SnapshotsCompanion(')
-          ..write('id: $id, ')
-          ..write('entityId: $entityId, ')
-          ..write('classification: $classification, ')
-          ..write('content: $content, ')
-          ..write('createTime: $createTime, ')
+    return (StringBuffer('TNoteIdxCompanion(')
+          ..write('title: $title, ')
+          ..write('contentPlain: $contentPlain, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2437,9 +2493,18 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   late final Categories categories = Categories(this);
   late final Passwords passwords = Passwords(this);
   late final Attributes attributes = Attributes(this);
-  late final Notes notes = Notes(this);
-  late final NoteView noteView = NoteView(this);
-  late final Snapshots snapshots = Snapshots(this);
+  late final TNote tNote = TNote(this);
+  late final TNoteHistory tNoteHistory = TNoteHistory(this);
+  late final TNoteIdx tNoteIdx = TNoteIdx(this);
+  late final Trigger triOnNoteInserted = Trigger(
+      'CREATE TRIGGER tri_on_note_inserted AFTER INSERT ON t_note WHEN new.deleted_at IS NULL BEGIN INSERT INTO t_note_idx ("rowid", title, content_plain) VALUES (new."rowid", new.title, new.content_plain);END',
+      'tri_on_note_inserted');
+  late final Trigger triOnNoteUpdated = Trigger(
+      'CREATE TRIGGER tri_on_note_updated AFTER UPDATE ON t_note WHEN new.deleted_at IS NULL BEGIN INSERT INTO t_note_idx (t_note_idx, "rowid", title, content_plain) VALUES (\'delete\', old."rowid", old.title, old.content_plain);INSERT INTO t_note_idx ("rowid", title, content_plain) VALUES (new."rowid", new.title, new.content_plain);END',
+      'tri_on_note_updated');
+  late final Trigger triOnNoteDeleted = Trigger(
+      'CREATE TRIGGER tri_on_note_deleted AFTER UPDATE ON t_note WHEN new.deleted_at IS NOT NULL BEGIN INSERT INTO t_note_idx (t_note_idx, "rowid", title, content_plain) VALUES (\'delete\', old."rowid", old.title, old.content_plain);END',
+      'tri_on_note_deleted');
   Selectable<ActivePasswordsResult> activePasswords() {
     return customSelect(
         'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
@@ -2555,12 +2620,90 @@ abstract class _$SqliteDb extends GeneratedDatabase {
         ));
   }
 
+  Selectable<SelectNotesResult> selectNotes(SelectNotes$order order) {
+    var $arrayStartIndex = 1;
+    final generatedorder = $write(
+        order?.call(this.tNote) ?? const OrderBy.nothing(),
+        startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedorder.amountOfVariables;
+    return customSelect(
+        'SELECT id, classification, title, abstract, created_at, updated_at FROM t_note WHERE deleted_at IS NULL ${generatedorder.sql}',
+        variables: [
+          ...generatedorder.introducedVariables
+        ],
+        readsFrom: {
+          tNote,
+          ...generatedorder.watchedTables,
+        }).map((QueryRow row) => SelectNotesResult(
+          id: row.read<String>('id'),
+          classification: row.read<String>('classification'),
+          title: row.readNullable<String>('title'),
+          abstract: row.readNullable<String>('abstract'),
+          createdAt: row.read<DateTime>('created_at'),
+          updatedAt: row.read<DateTime>('updated_at'),
+        ));
+  }
+
+  Selectable<SearchNotesResult> searchNotes(String var1) {
+    return customSelect(
+        'SELECT n.id, n.title, n.classification, n.abstract, n.created_at, n.updated_at FROM t_note_idx AS i JOIN t_note AS n ON i."rowid" = n.id WHERE t_note_idx MATCH ?1 AND n.deleted_at IS NULL ORDER BY rank',
+        variables: [
+          Variable<String>(var1)
+        ],
+        readsFrom: {
+          tNote,
+          tNoteIdx,
+        }).map((QueryRow row) => SearchNotesResult(
+          id: row.read<String>('id'),
+          title: row.readNullable<String>('title'),
+          classification: row.read<String>('classification'),
+          abstract: row.readNullable<String>('abstract'),
+          createdAt: row.read<DateTime>('created_at'),
+          updatedAt: row.read<DateTime>('updated_at'),
+        ));
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categories, passwords, attributes, notes, noteView, snapshots];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        categories,
+        passwords,
+        attributes,
+        tNote,
+        tNoteHistory,
+        tNoteIdx,
+        triOnNoteInserted,
+        triOnNoteUpdated,
+        triOnNoteDeleted
+      ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
+        [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('t_note',
+                limitUpdateKind: UpdateKind.insert),
+            result: [
+              TableUpdate('t_note_idx', kind: UpdateKind.insert),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('t_note',
+                limitUpdateKind: UpdateKind.update),
+            result: [
+              TableUpdate('t_note_idx', kind: UpdateKind.insert),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('t_note',
+                limitUpdateKind: UpdateKind.update),
+            result: [
+              TableUpdate('t_note_idx', kind: UpdateKind.insert),
+            ],
+          ),
+        ],
+      );
 }
 
 typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({
@@ -3210,35 +3353,35 @@ typedef $AttributesProcessedTableManager = ProcessedTableManager<
     (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
     Attribute,
     PrefetchHooks Function()>;
-typedef $NotesCreateCompanionBuilder = NotesCompanion Function({
+typedef $TNoteCreateCompanionBuilder = TNoteCompanion Function({
   required String id,
-  Value<int> classification,
-  required String title,
-  required String content,
-  required String plainText,
-  Value<int> isFavorite,
-  Value<int> categoryId,
-  required String createTime,
-  required String lastUpdateTime,
-  Value<int> isDeleted,
+  Value<String?> title,
+  required String contentJson,
+  required String contentChecksum,
+  required String contentPlain,
+  Value<String?> abstract,
+  required String classification,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
-typedef $NotesUpdateCompanionBuilder = NotesCompanion Function({
+typedef $TNoteUpdateCompanionBuilder = TNoteCompanion Function({
   Value<String> id,
-  Value<int> classification,
-  Value<String> title,
-  Value<String> content,
-  Value<String> plainText,
-  Value<int> isFavorite,
-  Value<int> categoryId,
-  Value<String> createTime,
-  Value<String> lastUpdateTime,
-  Value<int> isDeleted,
+  Value<String?> title,
+  Value<String> contentJson,
+  Value<String> contentChecksum,
+  Value<String> contentPlain,
+  Value<String?> abstract,
+  Value<String> classification,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
 
-class $NotesFilterComposer extends Composer<_$SqliteDb, Notes> {
-  $NotesFilterComposer({
+class $TNoteFilterComposer extends Composer<_$SqliteDb, TNote> {
+  $TNoteFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3247,39 +3390,39 @@ class $NotesFilterComposer extends Composer<_$SqliteDb, Notes> {
   });
   ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get classification => $composableBuilder(
-      column: $table.classification,
-      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get plainText => $composableBuilder(
-      column: $table.plainText, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnFilters<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get isDeleted => $composableBuilder(
-      column: $table.isDeleted, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get abstract => $composableBuilder(
+      column: $table.abstract, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $NotesOrderingComposer extends Composer<_$SqliteDb, Notes> {
-  $NotesOrderingComposer({
+class $TNoteOrderingComposer extends Composer<_$SqliteDb, TNote> {
+  $TNoteOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3288,39 +3431,40 @@ class $NotesOrderingComposer extends Composer<_$SqliteDb, Notes> {
   });
   ColumnOrderings<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get classification => $composableBuilder(
-      column: $table.classification,
-      builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get plainText => $composableBuilder(
-      column: $table.plainText, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnOrderings<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get isDeleted => $composableBuilder(
-      column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get abstract => $composableBuilder(
+      column: $table.abstract, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $NotesAnnotationComposer extends Composer<_$SqliteDb, Notes> {
-  $NotesAnnotationComposer({
+class $TNoteAnnotationComposer extends Composer<_$SqliteDb, TNote> {
+  $TNoteAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3329,271 +3473,107 @@ class $NotesAnnotationComposer extends Composer<_$SqliteDb, Notes> {
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<int> get classification => $composableBuilder(
-      column: $table.classification, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get content =>
-      $composableBuilder(column: $table.content, builder: (column) => column);
+  GeneratedColumn<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => column);
 
-  GeneratedColumn<String> get plainText =>
-      $composableBuilder(column: $table.plainText, builder: (column) => column);
+  GeneratedColumn<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum, builder: (column) => column);
 
-  GeneratedColumn<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => column);
+  GeneratedColumn<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => column);
 
-  GeneratedColumn<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => column);
+  GeneratedColumn<String> get abstract =>
+      $composableBuilder(column: $table.abstract, builder: (column) => column);
 
-  GeneratedColumn<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => column);
-
-  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime, builder: (column) => column);
-
-  GeneratedColumn<int> get isDeleted =>
-      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
-}
-
-class $NotesTableManager extends RootTableManager<
-    _$SqliteDb,
-    Notes,
-    NoteEntity,
-    $NotesFilterComposer,
-    $NotesOrderingComposer,
-    $NotesAnnotationComposer,
-    $NotesCreateCompanionBuilder,
-    $NotesUpdateCompanionBuilder,
-    (NoteEntity, BaseReferences<_$SqliteDb, Notes, NoteEntity>),
-    NoteEntity,
-    PrefetchHooks Function()> {
-  $NotesTableManager(_$SqliteDb db, Notes table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $NotesFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $NotesOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $NotesAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<int> classification = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> content = const Value.absent(),
-            Value<String> plainText = const Value.absent(),
-            Value<int> isFavorite = const Value.absent(),
-            Value<int> categoryId = const Value.absent(),
-            Value<String> createTime = const Value.absent(),
-            Value<String> lastUpdateTime = const Value.absent(),
-            Value<int> isDeleted = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              NotesCompanion(
-            id: id,
-            classification: classification,
-            title: title,
-            content: content,
-            plainText: plainText,
-            isFavorite: isFavorite,
-            categoryId: categoryId,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
-            isDeleted: isDeleted,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            Value<int> classification = const Value.absent(),
-            required String title,
-            required String content,
-            required String plainText,
-            Value<int> isFavorite = const Value.absent(),
-            Value<int> categoryId = const Value.absent(),
-            required String createTime,
-            required String lastUpdateTime,
-            Value<int> isDeleted = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              NotesCompanion.insert(
-            id: id,
-            classification: classification,
-            title: title,
-            content: content,
-            plainText: plainText,
-            isFavorite: isFavorite,
-            categoryId: categoryId,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
-            isDeleted: isDeleted,
-            rowid: rowid,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
-}
-
-typedef $NotesProcessedTableManager = ProcessedTableManager<
-    _$SqliteDb,
-    Notes,
-    NoteEntity,
-    $NotesFilterComposer,
-    $NotesOrderingComposer,
-    $NotesAnnotationComposer,
-    $NotesCreateCompanionBuilder,
-    $NotesUpdateCompanionBuilder,
-    (NoteEntity, BaseReferences<_$SqliteDb, Notes, NoteEntity>),
-    NoteEntity,
-    PrefetchHooks Function()>;
-typedef $SnapshotsCreateCompanionBuilder = SnapshotsCompanion Function({
-  required String id,
-  required String entityId,
-  Value<int> classification,
-  required String content,
-  required String createTime,
-  Value<int> rowid,
-});
-typedef $SnapshotsUpdateCompanionBuilder = SnapshotsCompanion Function({
-  Value<String> id,
-  Value<String> entityId,
-  Value<int> classification,
-  Value<String> content,
-  Value<String> createTime,
-  Value<int> rowid,
-});
-
-class $SnapshotsFilterComposer extends Composer<_$SqliteDb, Snapshots> {
-  $SnapshotsFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get entityId => $composableBuilder(
-      column: $table.entityId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get classification => $composableBuilder(
-      column: $table.classification,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnFilters(column));
-}
-
-class $SnapshotsOrderingComposer extends Composer<_$SqliteDb, Snapshots> {
-  $SnapshotsOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get entityId => $composableBuilder(
-      column: $table.entityId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get classification => $composableBuilder(
-      column: $table.classification,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get content => $composableBuilder(
-      column: $table.content, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnOrderings(column));
-}
-
-class $SnapshotsAnnotationComposer extends Composer<_$SqliteDb, Snapshots> {
-  $SnapshotsAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get entityId =>
-      $composableBuilder(column: $table.entityId, builder: (column) => column);
-
-  GeneratedColumn<int> get classification => $composableBuilder(
+  GeneratedColumn<String> get classification => $composableBuilder(
       column: $table.classification, builder: (column) => column);
 
-  GeneratedColumn<String> get content =>
-      $composableBuilder(column: $table.content, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  GeneratedColumn<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => column);
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
 
-class $SnapshotsTableManager extends RootTableManager<
+class $TNoteTableManager extends RootTableManager<
     _$SqliteDb,
-    Snapshots,
-    SnapshotEntity,
-    $SnapshotsFilterComposer,
-    $SnapshotsOrderingComposer,
-    $SnapshotsAnnotationComposer,
-    $SnapshotsCreateCompanionBuilder,
-    $SnapshotsUpdateCompanionBuilder,
-    (SnapshotEntity, BaseReferences<_$SqliteDb, Snapshots, SnapshotEntity>),
-    SnapshotEntity,
+    TNote,
+    TNoteData,
+    $TNoteFilterComposer,
+    $TNoteOrderingComposer,
+    $TNoteAnnotationComposer,
+    $TNoteCreateCompanionBuilder,
+    $TNoteUpdateCompanionBuilder,
+    (TNoteData, BaseReferences<_$SqliteDb, TNote, TNoteData>),
+    TNoteData,
     PrefetchHooks Function()> {
-  $SnapshotsTableManager(_$SqliteDb db, Snapshots table)
+  $TNoteTableManager(_$SqliteDb db, TNote table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $SnapshotsFilterComposer($db: db, $table: table),
+              $TNoteFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $SnapshotsOrderingComposer($db: db, $table: table),
+              $TNoteOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $SnapshotsAnnotationComposer($db: db, $table: table),
+              $TNoteAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
-            Value<String> entityId = const Value.absent(),
-            Value<int> classification = const Value.absent(),
-            Value<String> content = const Value.absent(),
-            Value<String> createTime = const Value.absent(),
+            Value<String?> title = const Value.absent(),
+            Value<String> contentJson = const Value.absent(),
+            Value<String> contentChecksum = const Value.absent(),
+            Value<String> contentPlain = const Value.absent(),
+            Value<String?> abstract = const Value.absent(),
+            Value<String> classification = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              SnapshotsCompanion(
+              TNoteCompanion(
             id: id,
-            entityId: entityId,
+            title: title,
+            contentJson: contentJson,
+            contentChecksum: contentChecksum,
+            contentPlain: contentPlain,
+            abstract: abstract,
             classification: classification,
-            content: content,
-            createTime: createTime,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
-            required String entityId,
-            Value<int> classification = const Value.absent(),
-            required String content,
-            required String createTime,
+            Value<String?> title = const Value.absent(),
+            required String contentJson,
+            required String contentChecksum,
+            required String contentPlain,
+            Value<String?> abstract = const Value.absent(),
+            required String classification,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              SnapshotsCompanion.insert(
+              TNoteCompanion.insert(
             id: id,
-            entityId: entityId,
+            title: title,
+            contentJson: contentJson,
+            contentChecksum: contentChecksum,
+            contentPlain: contentPlain,
+            abstract: abstract,
             classification: classification,
-            content: content,
-            createTime: createTime,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3603,17 +3583,316 @@ class $SnapshotsTableManager extends RootTableManager<
         ));
 }
 
-typedef $SnapshotsProcessedTableManager = ProcessedTableManager<
+typedef $TNoteProcessedTableManager = ProcessedTableManager<
     _$SqliteDb,
-    Snapshots,
-    SnapshotEntity,
-    $SnapshotsFilterComposer,
-    $SnapshotsOrderingComposer,
-    $SnapshotsAnnotationComposer,
-    $SnapshotsCreateCompanionBuilder,
-    $SnapshotsUpdateCompanionBuilder,
-    (SnapshotEntity, BaseReferences<_$SqliteDb, Snapshots, SnapshotEntity>),
-    SnapshotEntity,
+    TNote,
+    TNoteData,
+    $TNoteFilterComposer,
+    $TNoteOrderingComposer,
+    $TNoteAnnotationComposer,
+    $TNoteCreateCompanionBuilder,
+    $TNoteUpdateCompanionBuilder,
+    (TNoteData, BaseReferences<_$SqliteDb, TNote, TNoteData>),
+    TNoteData,
+    PrefetchHooks Function()>;
+typedef $TNoteHistoryCreateCompanionBuilder = TNoteHistoryCompanion Function({
+  Value<int> id,
+  required String noteId,
+  required String contentJson,
+  required String contentChecksum,
+  required String contentPlain,
+  Value<DateTime> changedAt,
+});
+typedef $TNoteHistoryUpdateCompanionBuilder = TNoteHistoryCompanion Function({
+  Value<int> id,
+  Value<String> noteId,
+  Value<String> contentJson,
+  Value<String> contentChecksum,
+  Value<String> contentPlain,
+  Value<DateTime> changedAt,
+});
+
+class $TNoteHistoryFilterComposer extends Composer<_$SqliteDb, TNoteHistory> {
+  $TNoteHistoryFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get changedAt => $composableBuilder(
+      column: $table.changedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $TNoteHistoryOrderingComposer extends Composer<_$SqliteDb, TNoteHistory> {
+  $TNoteHistoryOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get noteId => $composableBuilder(
+      column: $table.noteId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get changedAt => $composableBuilder(
+      column: $table.changedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $TNoteHistoryAnnotationComposer
+    extends Composer<_$SqliteDb, TNoteHistory> {
+  $TNoteHistoryAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get noteId =>
+      $composableBuilder(column: $table.noteId, builder: (column) => column);
+
+  GeneratedColumn<String> get contentJson => $composableBuilder(
+      column: $table.contentJson, builder: (column) => column);
+
+  GeneratedColumn<String> get contentChecksum => $composableBuilder(
+      column: $table.contentChecksum, builder: (column) => column);
+
+  GeneratedColumn<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+}
+
+class $TNoteHistoryTableManager extends RootTableManager<
+    _$SqliteDb,
+    TNoteHistory,
+    TNoteHistoryData,
+    $TNoteHistoryFilterComposer,
+    $TNoteHistoryOrderingComposer,
+    $TNoteHistoryAnnotationComposer,
+    $TNoteHistoryCreateCompanionBuilder,
+    $TNoteHistoryUpdateCompanionBuilder,
+    (
+      TNoteHistoryData,
+      BaseReferences<_$SqliteDb, TNoteHistory, TNoteHistoryData>
+    ),
+    TNoteHistoryData,
+    PrefetchHooks Function()> {
+  $TNoteHistoryTableManager(_$SqliteDb db, TNoteHistory table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TNoteHistoryFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TNoteHistoryOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TNoteHistoryAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> noteId = const Value.absent(),
+            Value<String> contentJson = const Value.absent(),
+            Value<String> contentChecksum = const Value.absent(),
+            Value<String> contentPlain = const Value.absent(),
+            Value<DateTime> changedAt = const Value.absent(),
+          }) =>
+              TNoteHistoryCompanion(
+            id: id,
+            noteId: noteId,
+            contentJson: contentJson,
+            contentChecksum: contentChecksum,
+            contentPlain: contentPlain,
+            changedAt: changedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String noteId,
+            required String contentJson,
+            required String contentChecksum,
+            required String contentPlain,
+            Value<DateTime> changedAt = const Value.absent(),
+          }) =>
+              TNoteHistoryCompanion.insert(
+            id: id,
+            noteId: noteId,
+            contentJson: contentJson,
+            contentChecksum: contentChecksum,
+            contentPlain: contentPlain,
+            changedAt: changedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TNoteHistoryProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    TNoteHistory,
+    TNoteHistoryData,
+    $TNoteHistoryFilterComposer,
+    $TNoteHistoryOrderingComposer,
+    $TNoteHistoryAnnotationComposer,
+    $TNoteHistoryCreateCompanionBuilder,
+    $TNoteHistoryUpdateCompanionBuilder,
+    (
+      TNoteHistoryData,
+      BaseReferences<_$SqliteDb, TNoteHistory, TNoteHistoryData>
+    ),
+    TNoteHistoryData,
+    PrefetchHooks Function()>;
+typedef $TNoteIdxCreateCompanionBuilder = TNoteIdxCompanion Function({
+  required String title,
+  required String contentPlain,
+  Value<int> rowid,
+});
+typedef $TNoteIdxUpdateCompanionBuilder = TNoteIdxCompanion Function({
+  Value<String> title,
+  Value<String> contentPlain,
+  Value<int> rowid,
+});
+
+class $TNoteIdxFilterComposer extends Composer<_$SqliteDb, TNoteIdx> {
+  $TNoteIdxFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => ColumnFilters(column));
+}
+
+class $TNoteIdxOrderingComposer extends Composer<_$SqliteDb, TNoteIdx> {
+  $TNoteIdxOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $TNoteIdxAnnotationComposer extends Composer<_$SqliteDb, TNoteIdx> {
+  $TNoteIdxAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get contentPlain => $composableBuilder(
+      column: $table.contentPlain, builder: (column) => column);
+}
+
+class $TNoteIdxTableManager extends RootTableManager<
+    _$SqliteDb,
+    TNoteIdx,
+    TNoteIdxData,
+    $TNoteIdxFilterComposer,
+    $TNoteIdxOrderingComposer,
+    $TNoteIdxAnnotationComposer,
+    $TNoteIdxCreateCompanionBuilder,
+    $TNoteIdxUpdateCompanionBuilder,
+    (TNoteIdxData, BaseReferences<_$SqliteDb, TNoteIdx, TNoteIdxData>),
+    TNoteIdxData,
+    PrefetchHooks Function()> {
+  $TNoteIdxTableManager(_$SqliteDb db, TNoteIdx table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TNoteIdxFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TNoteIdxOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TNoteIdxAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> title = const Value.absent(),
+            Value<String> contentPlain = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TNoteIdxCompanion(
+            title: title,
+            contentPlain: contentPlain,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String title,
+            required String contentPlain,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TNoteIdxCompanion.insert(
+            title: title,
+            contentPlain: contentPlain,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TNoteIdxProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    TNoteIdx,
+    TNoteIdxData,
+    $TNoteIdxFilterComposer,
+    $TNoteIdxOrderingComposer,
+    $TNoteIdxAnnotationComposer,
+    $TNoteIdxCreateCompanionBuilder,
+    $TNoteIdxUpdateCompanionBuilder,
+    (TNoteIdxData, BaseReferences<_$SqliteDb, TNoteIdx, TNoteIdxData>),
+    TNoteIdxData,
     PrefetchHooks Function()>;
 
 class $SqliteDbManager {
@@ -3625,9 +3904,11 @@ class $SqliteDbManager {
       $PasswordsTableManager(_db, _db.passwords);
   $AttributesTableManager get attributes =>
       $AttributesTableManager(_db, _db.attributes);
-  $NotesTableManager get notes => $NotesTableManager(_db, _db.notes);
-  $SnapshotsTableManager get snapshots =>
-      $SnapshotsTableManager(_db, _db.snapshots);
+  $TNoteTableManager get tNote => $TNoteTableManager(_db, _db.tNote);
+  $TNoteHistoryTableManager get tNoteHistory =>
+      $TNoteHistoryTableManager(_db, _db.tNoteHistory);
+  $TNoteIdxTableManager get tNoteIdx =>
+      $TNoteIdxTableManager(_db, _db.tNoteIdx);
 }
 
 class ActivePasswordsResult {
@@ -3753,5 +4034,41 @@ class DeletedPasswordsResult {
     required this.categoryId,
     required this.createTime,
     required this.lastUpdateTime,
+  });
+}
+
+class SelectNotesResult {
+  final String id;
+  final String classification;
+  final String? title;
+  final String? abstract;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  SelectNotesResult({
+    required this.id,
+    required this.classification,
+    this.title,
+    this.abstract,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+}
+
+typedef SelectNotes$order = OrderBy Function(TNote t_note);
+
+class SearchNotesResult {
+  final String id;
+  final String? title;
+  final String classification;
+  final String? abstract;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  SearchNotesResult({
+    required this.id,
+    this.title,
+    required this.classification,
+    this.abstract,
+    required this.createdAt,
+    required this.updatedAt,
   });
 }

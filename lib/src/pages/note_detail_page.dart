@@ -81,7 +81,7 @@ class _NodeDetailPageState extends ConsumerState<NoteDetailPage> {
         ],
       ),
       body: detailFuture.when(
-        data: (note) => FleatherRichText(content: note.content),
+        data: (note) => FleatherRichText(content: note.contentJson),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),

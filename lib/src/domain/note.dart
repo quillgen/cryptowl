@@ -1,18 +1,18 @@
+import 'package:cryptowl/src/common/classification.dart';
+import 'package:cryptowl/src/common/note_util.dart';
 import 'package:cryptowl/src/database/database.dart';
 
-class NoteBasic {
+class NoteListItemDto {
   String id;
-  int categoryId;
-  String title;
+  String? title;
   String abstract;
-  int classification;
+  Classification classification;
   DateTime createTime;
   DateTime lastUpdateTime;
 
-  NoteBasic({
+  NoteListItemDto({
     required this.id,
-    required this.categoryId,
-    required this.title,
+    this.title,
     required this.abstract,
     required this.classification,
     required this.createTime,
@@ -22,34 +22,48 @@ class NoteBasic {
 
 enum NoteSortType { dateAsc, dateDesc }
 
-class Note {
+class NoteDetailDto {
   String id;
-  int categoryId;
-  String title;
-  String content;
-  int classification;
-  DateTime createTime;
-  DateTime lastUpdateTime;
+  String? title;
+  String contentJson;
+  String? contentPlain;
+  Classification classification;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-  Note({
+  NoteDetailDto({
     required this.id,
-    required this.categoryId,
-    required this.title,
-    required this.content,
+    this.title,
+    this.contentPlain,
+    required this.contentJson,
     required this.classification,
-    required this.createTime,
-    required this.lastUpdateTime,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  static Note fromEntity(NoteEntity entity) {
-    return Note(
+  TNoteData toEntity() {
+    final abstract = NoteUtil.createAbstract(contentPlain ?? "");
+    return TNoteData(
+      id: id,
+      classification: classification.value,
+      title: title,
+      contentJson: contentJson,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      contentChecksum: NoteUtil.checksum(contentJson),
+      abstract: abstract,
+      contentPlain: contentPlain ?? "",
+    );
+  }
+
+  static NoteDetailDto fromEntity(TNoteData entity) {
+    return NoteDetailDto(
       id: entity.id,
-      classification: entity.classification,
-      categoryId: entity.categoryId,
+      classification: Classification.parse(entity.classification),
       title: entity.title,
-      content: entity.content,
-      createTime: DateTime.parse(entity.createTime),
-      lastUpdateTime: DateTime.parse(entity.lastUpdateTime),
+      contentJson: entity.contentJson,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
     );
   }
 }

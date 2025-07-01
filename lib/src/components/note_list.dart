@@ -18,7 +18,7 @@ enum FilterMenu {
 class NoteList extends ConsumerWidget {
   const NoteList({super.key});
 
-  Widget _buildList(BuildContext context, List<NoteBasic> items) {
+  Widget _buildList(BuildContext context, List<NoteListItemDto> items) {
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (_, index) {
