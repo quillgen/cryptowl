@@ -62,10 +62,13 @@ class NoteRepository extends SqlcipherRepository {
     // TODO: support history + transaction
     String? checksum =
         contentJson == null ? null : NoteUtil.checksum(contentJson);
+    String? abstract =
+        plainText == null ? null : NoteUtil.createAbstract(plainText);
     await (db.tNote.update()..where((r) => r.id.equals(id))).write(
       TNoteCompanion(
         classification: Value.absentIfNull(classification?.value),
         title: Value.absentIfNull(title),
+        abstract: Value.absentIfNull(abstract),
         contentJson: Value.absentIfNull(contentJson),
         contentPlain: Value.absentIfNull(plainText),
         contentChecksum: Value.absentIfNull(checksum),
