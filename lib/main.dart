@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
+import 'package:native_sqlcipher/native_sqlcipher.dart';
 import 'package:sqlite3/open.dart';
 
 import 'src/app.dart';
@@ -15,7 +15,7 @@ void main() async {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
   WidgetsFlutterBinding.ensureInitialized();
-  open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
+  open.overrideForAll(openSqlcipher);
 
   runApp(
     ProviderScope(
