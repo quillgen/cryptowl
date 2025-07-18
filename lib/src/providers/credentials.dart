@@ -55,6 +55,11 @@ class AsyncLoginNotifier extends AsyncNotifier<Session?> {
 
   Future<void> logout() async {
     logger.fine("Logging out...");
+    final currentSession = state.valueOrNull;
+    if (currentSession != null) {
+      logger.fine("Disposing db...");
+      await currentSession.sqliteDb.close();
+    }
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       return null;

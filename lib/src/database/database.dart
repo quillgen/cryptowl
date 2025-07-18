@@ -62,6 +62,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
 
     return NativeDatabase.createInBackground(
       realFile,
+      logStatements: true,
       isolateSetup: setupSqlCipher,
       setup: (rawDb) {
         final result = rawDb.select('pragma cipher_version');

@@ -240,6 +240,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       print("-----> root redirect");
       final skip = state.uri.queryParameters["skip"];
 
+      // fixme: if create table failed, then we should not redirect
       if (onboardingState.isLoading) {
         return SplashPage.path;
       } else if (onboardingState.unwrapPrevious().valueOrNull == false) {
