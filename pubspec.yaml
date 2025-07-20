@@ -18,6 +18,9 @@ dependencies:
   path_provider: ^2.1.5
   pointycastle: ^3.9.1
   sqlite3: ^2.7.3
+  ffi: ^2.1.3
+  native_argon2:
+    path: deps/native_argon2
   native_sqlcipher:
     path: deps/native_sqlcipher
   kdbx:

@@ -1,29 +1,27 @@
 import 'common.drift'; 
 
-CREATE TABLE
-    t_note (
-        id CHAR(36) NOT NULL PRIMARY KEY,
-        title TEXT,
-        content_json TEXT NOT NULL,
-        content_checksum TEXT NOT NULL,
-        content_plain TEXT NOT NULL,
-        abstract TEXT,
-        classification CHAR(1) NOT NULL CHECK (classification IN ('C', 'S', 'T')),
-        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at DATETIME DEFAULT NULL
-    );
+CREATE TABLE t_note (
+    id CHAR(36) NOT NULL PRIMARY KEY,
+    title TEXT,
+    content_json TEXT NOT NULL,
+    content_checksum TEXT NOT NULL,
+    content_plain TEXT NOT NULL,
+    abstract TEXT,
+    classification CHAR(1) NOT NULL CHECK (classification IN ('C', 'S', 'T')),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at DATETIME DEFAULT NULL
+);
 
-CREATE TABLE
-    t_note_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        note_id CHAR(36) NOT NULL,
-        content_json TEXT NOT NULL,
-        content_checksum TEXT NOT NULL,
-        content_plain TEXT NOT NULL,
-        changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (note_id) REFERENCES t_note (id)
-    );
+CREATE TABLE t_note_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    note_id CHAR(36) NOT NULL,
+    content_json TEXT NOT NULL,
+    content_checksum TEXT NOT NULL,
+    content_plain TEXT NOT NULL,
+    changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (note_id) REFERENCES t_note (id)
+);
 
 CREATE VIRTUAL TABLE t_note_idx USING FTS5 (
     title,

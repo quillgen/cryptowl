@@ -2,6 +2,8 @@ PODS:
   - file_selector_macos (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
+  - native_argon2 (0.0.1):
+    - FlutterMacOS
   - native_sqlcipher (0.0.1):
     - FlutterMacOS
   - package_info_plus (0.0.1):
@@ -15,6 +17,7 @@ PODS:
 DEPENDENCIES:
   - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - native_argon2 (from `Flutter/ephemeral/.symlinks/plugins/native_argon2/macos`)
   - native_sqlcipher (from `Flutter/ephemeral/.symlinks/plugins/native_sqlcipher/macos`)
   - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
@@ -25,6 +28,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
+  native_argon2:
+    :path: Flutter/ephemeral/.symlinks/plugins/native_argon2/macos
   native_sqlcipher:
     :path: Flutter/ephemeral/.symlinks/plugins/native_sqlcipher/macos
   package_info_plus:
@@ -37,6 +42,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  native_argon2: 7a3ded521dbc54cabfac82edc27a1deb90421e35
   native_sqlcipher: 15fac9a7362368c49706f445308c095bd8ee1e2a
   package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
