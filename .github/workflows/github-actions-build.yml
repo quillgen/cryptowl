@@ -15,5 +15,5 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - run: |
-        cd deps/native_argon2/src && mkdir build && cd build && cmake .. && make
+          cd deps/native_argon2/src && mkdir build && cd build && cmake .. && make
       - run: flutter test
