@@ -43,7 +43,7 @@ SPEC CHECKSUMS:
   file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   native_argon2: 7a3ded521dbc54cabfac82edc27a1deb90421e35
-  native_sqlcipher: 15fac9a7362368c49706f445308c095bd8ee1e2a
+  native_sqlcipher: 15c3cc9a030a19d9e85efefa5ce0cb2b9a23db66
   package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404

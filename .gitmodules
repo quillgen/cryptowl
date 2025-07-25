@@ -7,3 +7,6 @@
 [submodule "deps/native_argon2"]
 	path = deps/native_argon2
 	url = git@github.com:quillgen/native_argon2.git
+[submodule "deps/sqlcipher"]
+	path = deps/sqlcipher
+	url = git@github.com:quillgen/sqlcipher.git
