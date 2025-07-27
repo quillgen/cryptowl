@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/open.dart';
 
 import '../../main.dart';
+import '../common/path_util.dart';
 import '../config/version.dart';
 
 // run `dart run build_runner build` to generate
@@ -60,11 +61,13 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
     final realFile = File(p.join(path.path, file));
     logger.fine("opening database: $realFile");
 
+    final dictPath = await PathUtil.getLocalPath('dict');
     return NativeDatabase.createInBackground(
       realFile,
       logStatements: true,
       isolateSetup: setupSqlCipher,
       setup: (rawDb) {
+        print("setting up sqlcipher db...");
         final result = rawDb.select('pragma cipher_version');
         if (result.isEmpty) {
           throw UnsupportedError(
@@ -89,6 +92,8 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
 
         rawDb.execute("pragma key = \"x'${hex.encode(key.binaryValue)}'\";");
         rawDb.execute('select count(*) from sqlite_master');
+
+        rawDb.execute("select enable_jieba('$dictPath')");
       },
     );
   });

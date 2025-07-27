@@ -2355,7 +2355,7 @@ class TNoteIdx extends Table
   bool get dontWriteConstraints => true;
   @override
   String get moduleAndArgs =>
-      'FTS5(title, content_plain, content="t_note", tokenize=\'fts5_hans\')';
+      'FTS5(title, content_plain, content="t_note", tokenize=\'jieba\')';
 }
 
 class TNoteIdxData extends DataClass implements Insertable<TNoteIdxData> {

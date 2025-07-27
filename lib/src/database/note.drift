@@ -27,7 +27,7 @@ CREATE VIRTUAL TABLE t_note_idx USING FTS5 (
     title,
     content_plain,
     content="t_note",
-    tokenize='fts5_hans'
+    tokenize='jieba'
 );
 
 CREATE TRIGGER tri_on_note_inserted AFTER INSERT ON t_note WHEN new.deleted_at IS NULL BEGIN

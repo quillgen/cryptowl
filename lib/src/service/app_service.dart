@@ -6,12 +6,22 @@ import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/repositories/kdbx_repository.dart';
 import 'package:cryptowl/src/service/file_service.dart';
+import 'package:flutter/services.dart';
 import 'package:kdbx/kdbx.dart';
 import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
 import '../config/version.dart';
 import '../database/database.dart';
+
+const dictAssets = [
+  'assets/dict/jieba.dict.utf8',
+  'assets/dict/hmm_model.utf8',
+  'assets/dict/user.dict.utf8',
+  'assets/dict/idf.utf8',
+  'assets/dict/stop_words.utf8',
+];
 
 class AppService {
   static KdbxFormat kdbxFormat = KdbxFormat();
@@ -50,6 +60,7 @@ class AppService {
   }
 
   Future<KdbxEntry> initialize(ProtectedValue masterPassword) async {
+    await _copyJiebaDicts();
     final credentials = Credentials(masterPassword);
     final kdbx = kdbxFormat.create(
       credentials,
@@ -75,5 +86,24 @@ class AppService {
     final entry = await kdbxRepository.createSqlcipherConfig(sqlcipherConfig);
 
     return entry;
+  }
+
+  Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {
+    final docDir = await getApplicationDocumentsDirectory();
+
+    final dictDir = Directory('${docDir.path}/dict');
+    if (!(await dictDir.exists())) {
+      await dictDir.create(recursive: true);
+    }
+    for (final asset in assetPaths) {
+      final data = await rootBundle.load(asset);
+      final filename = asset.split('/').last;
+      final file = File('${docDir.path}/dict/$filename');
+      await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+    }
+  }
+
+  Future<void> _copyJiebaDicts() async {
+    await _copyAssetsToDocDir(dictAssets);
   }
 }
