@@ -44,11 +44,6 @@ QueryExecutor openTestDatabase(String file) {
             'not available!',
           );
         }
-        print("\nSupported SQLite functions:");
-        final functions = rawDb.select('PRAGMA function_list');
-        for (final func in functions) {
-          print('${func['name']} (type: ${func['type']})');
-        }
         rawDb.execute(
             "pragma key = \"x'2DD29CA851E7B56E4697B0E1F08507293D761A05CE4D1B628663F411A8086D99'\";");
         rawDb.execute('select count(*) from sqlite_master');
