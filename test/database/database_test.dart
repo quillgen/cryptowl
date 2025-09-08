@@ -1,12 +1,13 @@
 import 'package:cryptowl/src/database/database.dart';
-import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../repositories/test_util.dart';
 
 void main() {
   late SqliteDb database;
 
   setUp(() async {
-    database = SqliteDb.from(NativeDatabase.memory());
+    database = SqliteDb.from(openTestDatabase("/tmp/test-db.db"));
     await database
         .select(database.categories)
         .get(); // ensure drift is initiallized

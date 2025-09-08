@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:cryptowl/src/common/random_util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:sqlite3/open.dart';
@@ -27,11 +28,11 @@ void setupSqlCipher() {
 
 QueryExecutor openTestDatabase(String file) {
   return LazyDatabase(() async {
-    final realFile = File(file);
+    final tmpDbFile = File('/tmp/test-${RandomUtil.generateUUID()}.db');
 
     final dictPath = "/tmp/dict";
     return NativeDatabase.createInBackground(
-      realFile,
+      tmpDbFile,
       logStatements: true,
       isolateSetup: setupSqlCipher,
       setup: (rawDb) {

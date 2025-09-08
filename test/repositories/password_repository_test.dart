@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:convert/convert.dart';
 import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
@@ -11,7 +9,6 @@ import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kdbx/kdbx.dart';
@@ -22,6 +19,7 @@ import 'package:sqlite3/open.dart';
 
 @GenerateMocks([Ref, KdbxFile, SqliteConfig])
 import 'password_repository_test.mocks.dart';
+import 'test_util.dart';
 
 void main() {
   late SqliteDb database;
@@ -51,11 +49,7 @@ void main() {
 
   setUp(() async {
     open.overrideForAll(openSqlcipher);
-    database = SqliteDb.openFile(
-        File("tmp.db"),
-        ProtectedValue.fromBinary(hex.decode(
-                'bfa11b4e4376cf1b17088a3de375f1df6a9c4cb3eb36f3ce2416b10481eb619f')
-            as Uint8List));
+    database = SqliteDb.from(openTestDatabase("/tmp/test-password.db"));
     await database.select(database.categories).get();
     repository = PasswordRepository(mockRef);
 

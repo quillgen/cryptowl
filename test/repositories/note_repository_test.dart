@@ -35,7 +35,7 @@ void main() {
   }
 
   setUp(() async {
-    database = SqliteDb.from(openTestDatabase("test-1.db"));
+    database = SqliteDb.from(openTestDatabase("/tmp/test-notes.db"));
 
     await database.select(database.categories).get();
     repository = NoteRepository(mockRef);
