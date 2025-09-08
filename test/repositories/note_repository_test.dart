@@ -7,7 +7,6 @@ import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/repositories/note_repository.dart';
-import 'package:drift/native.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +16,7 @@ import 'package:mockito/mockito.dart';
 
 @GenerateMocks([Ref, KdbxFile, SqliteConfig])
 import 'note_repository_test.mocks.dart';
+import 'test_util.dart';
 
 void main() {
   late SqliteDb database;
@@ -35,7 +35,8 @@ void main() {
   }
 
   setUp(() async {
-    database = SqliteDb.from(NativeDatabase.memory());
+    database = SqliteDb.from(openTestDatabase("test-1.db"));
+
     await database.select(database.categories).get();
     repository = NoteRepository(mockRef);
 

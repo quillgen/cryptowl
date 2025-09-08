@@ -21,6 +21,8 @@ class SqliteDb extends _$SqliteDb {
   SqliteDb.from(QueryExecutor e) : super(e);
   SqliteDb.open(String file, ProtectedValue key)
       : super(_openDatabase(file, key));
+  SqliteDb.openFile(File file, ProtectedValue key)
+      : super(_openDatabaseFile(file, key));
 
   @override
   int get schemaVersion => 1;
@@ -50,6 +52,51 @@ class SqliteDb extends _$SqliteDb {
 
 void setupSqlCipher() {
   open.overrideForAll(openSqlcipher);
+}
+
+QueryExecutor _openDatabaseFile(File realFile, ProtectedValue key) {
+  if (key.binaryValue.length != 32) {
+    throw ArgumentError("SQL Cipher must use a key of 32 bytes");
+  }
+  return LazyDatabase(() async {
+    logger.fine("opening database: $realFile");
+
+    final dictPath = await PathUtil.getLocalPath('dict');
+    return NativeDatabase.createInBackground(
+      realFile,
+      logStatements: true,
+      isolateSetup: setupSqlCipher,
+      setup: (rawDb) {
+        print("setting up sqlcipher db...");
+        final result = rawDb.select('pragma cipher_version');
+        if (result.isEmpty) {
+          throw UnsupportedError(
+            'This database needs to run with SQLCipher, but that library is '
+            'not available!',
+          );
+        } else {
+          final cipherVersion = result.single['cipher_version'];
+          if (cipherVersion != SQLCIPHER_VERSION) {
+            throw UnsupportedError(
+              "This application only supports SQLCipher with version=$SQLCIPHER_VERSION, "
+              'however database with version=$cipherVersion detected',
+            );
+          }
+        }
+        // set key without key derivation:
+        // see: https://github.com/sqlcipher/sqlcipher/blob/master/README.md
+        // PRAGMA key = "x'2DD29CA851E7B56E4697B0E1F08507293D761A05CE4D1B628663F411A8086D99'";
+
+        // fixme: for debug only
+        print("pragma key = \"x'${hex.encode(key.binaryValue)}'\";");
+
+        rawDb.execute("pragma key = \"x'${hex.encode(key.binaryValue)}'\";");
+        rawDb.execute('select count(*) from sqlite_master');
+
+        rawDb.execute("select enable_jieba('$dictPath')");
+      },
+    );
+  });
 }
 
 QueryExecutor _openDatabase(String file, ProtectedValue key) {
