@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:cryptowl/src/providers/providers.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DropdownMenuFormField;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdbx/kdbx.dart';
