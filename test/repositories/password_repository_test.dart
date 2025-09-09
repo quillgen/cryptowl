@@ -49,7 +49,7 @@ void main() {
 
   setUp(() async {
     open.overrideForAll(openSqlcipher);
-    database = SqliteDb.from(openTestDatabase("/tmp/test-password.db"));
+    database = SqliteDb.from(openTestDatabase());
     await database.select(database.categories).get();
     repository = PasswordRepository(mockRef);
 

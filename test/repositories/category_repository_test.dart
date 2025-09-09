@@ -33,7 +33,7 @@ void main() {
   final mockRef = MockRef();
 
   setUp(() async {
-    database = SqliteDb.from(openTestDatabase("/tmp/test-notes.db"));
+    database = SqliteDb.from(openTestDatabase());
     await database.select(database.categories).get();
     repository = CategoryRepository(mockRef);
 

@@ -7,7 +7,7 @@ void main() {
   late SqliteDb database;
 
   setUp(() async {
-    database = SqliteDb.from(openTestDatabase("/tmp/test-db.db"));
+    database = SqliteDb.from(openTestDatabase());
     await database
         .select(database.categories)
         .get(); // ensure drift is initiallized
