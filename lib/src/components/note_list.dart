@@ -18,7 +18,7 @@ enum FilterMenu {
 class NoteList extends ConsumerWidget {
   const NoteList({super.key});
 
-  Widget _buildList(BuildContext context, List<NoteListItemDto> items) {
+  Widget _buildList(BuildContext context, List<NoteAbstract> items) {
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (_, index) {
@@ -35,7 +35,7 @@ class NoteList extends ConsumerWidget {
               Padding(
                 padding: EdgeInsetsGeometry.only(bottom: 5),
                 child: Text(
-                  item.abstract,
+                  item.abstract ?? "",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),

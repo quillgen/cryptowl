@@ -9,7 +9,7 @@ import '../domain/note.dart';
 class NoteRepository extends SqlcipherRepository {
   NoteRepository(super.ref);
 
-  Future<List<NoteListItemDto>> list(NoteSortType sortType) async {
+  Future<List<NoteAbstract>> list(NoteSortType sortType) async {
     final db = await requireDb();
     final mode =
         sortType == NoteSortType.dateAsc ? OrderingMode.asc : OrderingMode.desc;
@@ -19,24 +19,24 @@ class NoteRepository extends SqlcipherRepository {
 
     final records = await query.get();
     return records.map((item) {
-      return NoteListItemDto(
+      return NoteAbstract(
         id: item.id,
         classification: Classification.parse(item.classification),
         title: item.title,
-        abstract: item.abstract ?? "",
+        abstract: item.abstract,
         createTime: item.createdAt,
         lastUpdateTime: item.updatedAt,
       );
     }).toList();
   }
 
-  Future<List<NoteListItemDto>> search(String keyword) async {
+  Future<List<NoteAbstract>> search(String keyword) async {
     final db = await requireDb();
     final query = db.searchNotes(keyword);
 
     final records = await query.get();
     return records.map((item) {
-      return NoteListItemDto(
+      return NoteAbstract(
         id: item.id,
         classification: Classification.parse(item.classification),
         title: item.title,

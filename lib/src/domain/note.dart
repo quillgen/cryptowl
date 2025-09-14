@@ -2,15 +2,15 @@ import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/common/note_util.dart';
 import 'package:cryptowl/src/database/database.dart';
 
-class NoteListItemDto {
+class NoteAbstract {
   String id;
   String? title;
-  String abstract;
+  String? abstract;
   Classification classification;
   DateTime createTime;
   DateTime lastUpdateTime;
 
-  NoteListItemDto({
+  NoteAbstract({
     required this.id,
     this.title,
     required this.abstract,

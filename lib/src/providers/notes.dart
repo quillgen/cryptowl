@@ -9,14 +9,14 @@ final _logger = Logger("NotesNotifier");
 final noteSortTypeProvider =
     StateProvider<NoteSortType>((ref) => NoteSortType.dateDesc);
 
-final notesProvider = FutureProvider<List<NoteListItemDto>>((ref) async {
+final notesProvider = FutureProvider<List<NoteAbstract>>((ref) async {
   final repo = ref.watch(noteRepositoryProvider);
   final sortType = ref.watch(noteSortTypeProvider);
   return repo.list(sortType);
 });
 
 final noteSearchProvider = FutureProvider.autoDispose
-    .family<List<NoteListItemDto>, String>((ref, keyword) async {
+    .family<List<NoteAbstract>, String>((ref, keyword) async {
   final repo = ref.watch(noteRepositoryProvider);
   if (keyword.isEmpty) {
     return [];

@@ -13,7 +13,7 @@ class NoteSearchList extends ConsumerWidget {
   final String keyword;
   const NoteSearchList(this.keyword, {super.key});
 
-  Widget _buildList(BuildContext context, List<NoteListItemDto> items) {
+  Widget _buildList(BuildContext context, List<NoteAbstract> items) {
     return ListView.builder(
       itemCount: items.length,
       itemBuilder: (_, index) {
@@ -30,7 +30,7 @@ class NoteSearchList extends ConsumerWidget {
               Padding(
                 padding: EdgeInsetsGeometry.only(bottom: 5),
                 child: Text(
-                  item.abstract,
+                  item.abstract ?? "",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),

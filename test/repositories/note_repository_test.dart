@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
 import 'package:cryptowl/src/repositories/note_repository.dart';
-import 'package:fleather/fleather.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kdbx/kdbx.dart';
@@ -17,18 +14,20 @@ import 'package:mockito/mockito.dart';
 import 'note_repository_test.mocks.dart';
 import 'test_util.dart';
 
-final deltas = [
-  Delta()..insert('Hello world!'),
-  Delta()..insert('Hello world!'),
-  Delta()..insert('你好世界！'),
-  Delta()
-    ..insert('Hello', {'bold': true})
-    ..insert(' ')
-    ..insert('world!', {'italic': true}),
-  Delta()
-    ..insert('Hello', {'bold': true})
-    ..insert(' 我的朋友')
-    ..insert('欢迎来到中国China!', {'italic': true}),
+final contents = [
+  '[{"insert":"Hello world!\\n"}]',
+  '[{"insert":"Hello "},{"insert":"world!","attributes":{"b":true}},{"insert":"\\n"}]',
+  '[{"insert":"Hello 欢迎来到"},{"insert":"中国","attributes":{"b":true}},{"insert":"！\\n"}]',
+  '[{"insert":"Hello world!\\n这是我们地球上现在最好的笔记软件！\\n"}]',
+  '[{"insert":"Hello world!\\n这是我们地球上"},{"insert":"最好的笔记软件","attributes":{"b":true}},{"insert":"！\\n"}]'
+];
+
+final plains = [
+  'Hello world!\n',
+  'Hello world!\n',
+  'Hello 欢迎来到中国！\n',
+  'Hello world!\n这是我们地球上现在最好的笔记软件！\n',
+  'Hello world!\n这是我们地球上最好的笔记软件！\n'
 ];
 
 void main() {
@@ -36,8 +35,6 @@ void main() {
   late NoteRepository repository;
 
   final mockRef = MockRef();
-  final contents = deltas.map((d) => json.encode(d)).toList();
-  final plains = deltas.map((d) => d.toString()).toList();
 
   Future<void> createNotes() async {
     final sql = """
@@ -46,7 +43,7 @@ void main() {
     VALUES 
     ('213fef89-d636-4231-b1f9-d25876ef2430', null, '${contents[0]}', 'checksum1', '${plains[0]}', '${plains[0]}', 'C', '2022-07-25 09:28:42.015Z', '2022-07-25 09:28:42.015Z', null),
     ('213fef89-d636-4231-b1f9-d25876ef2431', null, '${contents[1]}', 'checksum2', '${plains[1]}', '${plains[1]}', 'C', '2022-07-26 09:28:42.015Z', '2022-07-26 09:28:42.015Z', null),
-    ('213fef89-d636-4231-b1f9-d25876ef2432', null, '${contents[2]}', 'checksum3', '${plains[2]}', '${plains[2]}', 'C', '2022-07-21 09:28:42.015Z', '2022-07-23 09:28:42.015Z', null),
+    ('213fef89-d636-4231-b1f9-d25876ef2432', 'Foobar', '${contents[2]}', 'checksum3', '${plains[2]}', '${plains[2]}', 'C', '2022-07-21 09:28:42.015Z', '2022-07-23 09:28:42.015Z', null),
     ('213fef89-d636-4231-b1f9-d25876ef2433', null, '${contents[3]}', 'checksum4', '${plains[3]}', '${plains[3]}', 'C', '2022-07-24 09:28:42.015Z', '2022-07-29 09:28:42.015Z', null),
     ('213fef89-d636-4231-b1f9-d25876ef2434', null, '${contents[4]}', 'checksum5', '${plains[4]}', '${plains[4]}', 'C', '2022-07-22 09:28:42.015Z', '2022-07-25 09:28:42.015Z', null),
     ('59439335-298f-40f0-b4a4-5d7eca4b3220', null, '${contents[4]}', 'checksum5', '${plains[4]}', '${plains[4]}', 'C', '2022-07-22 09:28:42.015Z', '2022-07-25 09:28:42.015Z', '2022-07-25 09:28:42.015Z');
@@ -80,6 +77,11 @@ void main() {
     test('should sort by created time asc', () async {
       final list = await repository.list(NoteSortType.dateAsc);
       expect(list[0].id, "213fef89-d636-4231-b1f9-d25876ef2432");
+      expect(list[0].title, "Foobar");
+      expect(list[0].abstract, "Hello 欢迎来到中国！\n");
+      expect(list[0].createTime, DateTime.parse('2022-07-21 09:28:42.015Z'));
+      expect(
+          list[0].lastUpdateTime, DateTime.parse('2022-07-23 09:28:42.015Z'));
 
       final list1 = await repository.list(NoteSortType.dateDesc);
       expect(list1[0].id, "213fef89-d636-4231-b1f9-d25876ef2431");
