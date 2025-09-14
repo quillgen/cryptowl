@@ -22,7 +22,7 @@ class NoteAbstract {
 
 enum NoteSortType { dateAsc, dateDesc }
 
-class NoteDetailDto {
+class Note {
   String id;
   String? title;
   String contentJson;
@@ -31,7 +31,7 @@ class NoteDetailDto {
   DateTime createdAt;
   DateTime updatedAt;
 
-  NoteDetailDto({
+  Note({
     required this.id,
     this.title,
     this.contentPlain,
@@ -42,7 +42,7 @@ class NoteDetailDto {
   });
 
   TNoteData toEntity() {
-    final abstract = NoteUtil.createAbstract(contentPlain ?? "");
+    final storePlain = classification == Classification.confidential;
     return TNoteData(
       id: id,
       classification: classification.value,
@@ -51,13 +51,13 @@ class NoteDetailDto {
       createdAt: createdAt,
       updatedAt: updatedAt,
       contentChecksum: NoteUtil.checksum(contentJson),
-      abstract: abstract,
-      contentPlain: contentPlain ?? "",
+      abstract: storePlain ? NoteUtil.createAbstract(contentPlain ?? "") : null,
+      contentPlain: storePlain ? contentPlain : null,
     );
   }
 
-  static NoteDetailDto fromEntity(TNoteData entity) {
-    return NoteDetailDto(
+  static Note fromEntity(TNoteData entity) {
+    return Note(
       id: entity.id,
       classification: Classification.parse(entity.classification),
       title: entity.title,

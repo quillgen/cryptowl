@@ -9,9 +9,9 @@ class NoteService {
 
   NoteService(this.repository);
 
-  Future<NoteDetailDto> createNote(String delta, String plainText) async {
+  Future<Note> createNote(String delta, String plainText) async {
     final now = DateTime.now();
-    final item = NoteDetailDto(
+    final item = Note(
       id: RandomUtil.generateUUID(),
       classification: Classification.confidential,
       contentPlain: plainText,
@@ -22,8 +22,7 @@ class NoteService {
     return repository.insert(item);
   }
 
-  Future<NoteDetailDto> updateNote(
-      String id, String delta, String plainText) async {
+  Future<Note> updateNote(String id, String delta, String plainText) async {
     return repository.update(id, contentJson: delta, plainText: plainText);
   }
 }

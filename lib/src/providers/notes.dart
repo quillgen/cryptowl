@@ -25,7 +25,7 @@ final noteSearchProvider = FutureProvider.autoDispose
 });
 
 final noteDetailProvider =
-    FutureProvider.autoDispose.family<NoteDetailDto, String>((ref, id) async {
+    FutureProvider.autoDispose.family<Note, String>((ref, id) async {
   _logger.fine("Fetching note detail for $id");
   return ref.read(noteRepositoryProvider).findById(id);
 });

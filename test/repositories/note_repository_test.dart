@@ -102,5 +102,9 @@ void main() {
       final list2 = await repository.search("Hello");
       expect(list2.length, 5);
     });
+
+    test('insert new notes', () async {
+      //final list = await repository.insert()
+    });
   });
 }

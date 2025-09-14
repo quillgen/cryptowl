@@ -5,7 +5,7 @@ CREATE TABLE t_note (
     title TEXT,
     content_json TEXT NOT NULL,
     content_checksum TEXT NOT NULL,
-    content_plain TEXT NOT NULL,
+    content_plain TEXT NULL,
     abstract TEXT,
     classification CHAR(1) NOT NULL CHECK (classification IN ('C', 'S', 'T')),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -47,13 +47,13 @@ class NoteRepository extends SqlcipherRepository {
     }).toList();
   }
 
-  Future<NoteDetailDto> insert(NoteDetailDto item) async {
+  Future<Note> insert(Note item) async {
     final db = await requireDb();
     await db.into(db.tNote).insert(item.toEntity());
     return item;
   }
 
-  Future<NoteDetailDto> update(String id,
+  Future<Note> update(String id,
       {Classification? classification,
       String? title,
       String? contentJson,
@@ -78,11 +78,11 @@ class NoteRepository extends SqlcipherRepository {
     return findById(id);
   }
 
-  Future<NoteDetailDto> findById(String id) async {
+  Future<Note> findById(String id) async {
     final db = await requireDb();
     final item = await (db.tNote.select()..where((tbl) => tbl.id.equals(id)))
         .getSingle();
 
-    return NoteDetailDto.fromEntity(item);
+    return Note.fromEntity(item);
   }
 }

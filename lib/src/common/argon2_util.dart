@@ -6,7 +6,6 @@ import 'package:kdbx/kdbx.dart';
 import 'package:native_argon2/native_argon2.dart';
 
 class Argon2Util {
-  static const argon2 = PointyCastleArgon2();
   static Future<Uint8List> deriveKey(Argon2Arguments args) async {
     final nativeArgon2 = NativeArgon2();
     final int hashLen = args.length;

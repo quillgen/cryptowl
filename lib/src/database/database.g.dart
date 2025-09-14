@@ -1431,10 +1431,10 @@ class TNote extends Table with TableInfo<TNote, TNoteData> {
   static const VerificationMeta _contentPlainMeta =
       const VerificationMeta('contentPlain');
   late final GeneratedColumn<String> contentPlain = GeneratedColumn<String>(
-      'content_plain', aliasedName, false,
+      'content_plain', aliasedName, true,
       type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+      requiredDuringInsert: false,
+      $customConstraints: 'NULL');
   static const VerificationMeta _abstractMeta =
       const VerificationMeta('abstract');
   late final GeneratedColumn<String> abstract = GeneratedColumn<String>(
@@ -1527,8 +1527,6 @@ class TNote extends Table with TableInfo<TNote, TNoteData> {
           _contentPlainMeta,
           contentPlain.isAcceptableOrUnknown(
               data['content_plain']!, _contentPlainMeta));
-    } else if (isInserting) {
-      context.missing(_contentPlainMeta);
     }
     if (data.containsKey('abstract')) {
       context.handle(_abstractMeta,
@@ -1572,7 +1570,7 @@ class TNote extends Table with TableInfo<TNote, TNoteData> {
       contentChecksum: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}content_checksum'])!,
       contentPlain: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}content_plain'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}content_plain']),
       abstract: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}abstract']),
       classification: attachedDatabase.typeMapping
@@ -1600,7 +1598,7 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
   final String? title;
   final String contentJson;
   final String contentChecksum;
-  final String contentPlain;
+  final String? contentPlain;
   final String? abstract;
   final String classification;
   final DateTime createdAt;
@@ -1611,7 +1609,7 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
       this.title,
       required this.contentJson,
       required this.contentChecksum,
-      required this.contentPlain,
+      this.contentPlain,
       this.abstract,
       required this.classification,
       required this.createdAt,
@@ -1626,7 +1624,9 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
     }
     map['content_json'] = Variable<String>(contentJson);
     map['content_checksum'] = Variable<String>(contentChecksum);
-    map['content_plain'] = Variable<String>(contentPlain);
+    if (!nullToAbsent || contentPlain != null) {
+      map['content_plain'] = Variable<String>(contentPlain);
+    }
     if (!nullToAbsent || abstract != null) {
       map['abstract'] = Variable<String>(abstract);
     }
@@ -1646,7 +1646,9 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
           title == null && nullToAbsent ? const Value.absent() : Value(title),
       contentJson: Value(contentJson),
       contentChecksum: Value(contentChecksum),
-      contentPlain: Value(contentPlain),
+      contentPlain: contentPlain == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentPlain),
       abstract: abstract == null && nullToAbsent
           ? const Value.absent()
           : Value(abstract),
@@ -1667,7 +1669,7 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
       title: serializer.fromJson<String?>(json['title']),
       contentJson: serializer.fromJson<String>(json['content_json']),
       contentChecksum: serializer.fromJson<String>(json['content_checksum']),
-      contentPlain: serializer.fromJson<String>(json['content_plain']),
+      contentPlain: serializer.fromJson<String?>(json['content_plain']),
       abstract: serializer.fromJson<String?>(json['abstract']),
       classification: serializer.fromJson<String>(json['classification']),
       createdAt: serializer.fromJson<DateTime>(json['created_at']),
@@ -1683,7 +1685,7 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
       'title': serializer.toJson<String?>(title),
       'content_json': serializer.toJson<String>(contentJson),
       'content_checksum': serializer.toJson<String>(contentChecksum),
-      'content_plain': serializer.toJson<String>(contentPlain),
+      'content_plain': serializer.toJson<String?>(contentPlain),
       'abstract': serializer.toJson<String?>(abstract),
       'classification': serializer.toJson<String>(classification),
       'created_at': serializer.toJson<DateTime>(createdAt),
@@ -1697,7 +1699,7 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
           Value<String?> title = const Value.absent(),
           String? contentJson,
           String? contentChecksum,
-          String? contentPlain,
+          Value<String?> contentPlain = const Value.absent(),
           Value<String?> abstract = const Value.absent(),
           String? classification,
           DateTime? createdAt,
@@ -1708,7 +1710,8 @@ class TNoteData extends DataClass implements Insertable<TNoteData> {
         title: title.present ? title.value : this.title,
         contentJson: contentJson ?? this.contentJson,
         contentChecksum: contentChecksum ?? this.contentChecksum,
-        contentPlain: contentPlain ?? this.contentPlain,
+        contentPlain:
+            contentPlain.present ? contentPlain.value : this.contentPlain,
         abstract: abstract.present ? abstract.value : this.abstract,
         classification: classification ?? this.classification,
         createdAt: createdAt ?? this.createdAt,
@@ -1778,7 +1781,7 @@ class TNoteCompanion extends UpdateCompanion<TNoteData> {
   final Value<String?> title;
   final Value<String> contentJson;
   final Value<String> contentChecksum;
-  final Value<String> contentPlain;
+  final Value<String?> contentPlain;
   final Value<String?> abstract;
   final Value<String> classification;
   final Value<DateTime> createdAt;
@@ -1803,7 +1806,7 @@ class TNoteCompanion extends UpdateCompanion<TNoteData> {
     this.title = const Value.absent(),
     required String contentJson,
     required String contentChecksum,
-    required String contentPlain,
+    this.contentPlain = const Value.absent(),
     this.abstract = const Value.absent(),
     required String classification,
     this.createdAt = const Value.absent(),
@@ -1813,7 +1816,6 @@ class TNoteCompanion extends UpdateCompanion<TNoteData> {
   })  : id = Value(id),
         contentJson = Value(contentJson),
         contentChecksum = Value(contentChecksum),
-        contentPlain = Value(contentPlain),
         classification = Value(classification);
   static Insertable<TNoteData> custom({
     Expression<String>? id,
@@ -1848,7 +1850,7 @@ class TNoteCompanion extends UpdateCompanion<TNoteData> {
       Value<String?>? title,
       Value<String>? contentJson,
       Value<String>? contentChecksum,
-      Value<String>? contentPlain,
+      Value<String?>? contentPlain,
       Value<String?>? abstract,
       Value<String>? classification,
       Value<DateTime>? createdAt,
@@ -3362,7 +3364,7 @@ typedef $TNoteCreateCompanionBuilder = TNoteCompanion Function({
   Value<String?> title,
   required String contentJson,
   required String contentChecksum,
-  required String contentPlain,
+  Value<String?> contentPlain,
   Value<String?> abstract,
   required String classification,
   Value<DateTime> createdAt,
@@ -3375,7 +3377,7 @@ typedef $TNoteUpdateCompanionBuilder = TNoteCompanion Function({
   Value<String?> title,
   Value<String> contentJson,
   Value<String> contentChecksum,
-  Value<String> contentPlain,
+  Value<String?> contentPlain,
   Value<String?> abstract,
   Value<String> classification,
   Value<DateTime> createdAt,
@@ -3533,7 +3535,7 @@ class $TNoteTableManager extends RootTableManager<
             Value<String?> title = const Value.absent(),
             Value<String> contentJson = const Value.absent(),
             Value<String> contentChecksum = const Value.absent(),
-            Value<String> contentPlain = const Value.absent(),
+            Value<String?> contentPlain = const Value.absent(),
             Value<String?> abstract = const Value.absent(),
             Value<String> classification = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -3559,7 +3561,7 @@ class $TNoteTableManager extends RootTableManager<
             Value<String?> title = const Value.absent(),
             required String contentJson,
             required String contentChecksum,
-            required String contentPlain,
+            Value<String?> contentPlain = const Value.absent(),
             Value<String?> abstract = const Value.absent(),
             required String classification,
             Value<DateTime> createdAt = const Value.absent(),
