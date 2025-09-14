@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/note.dart';
@@ -79,12 +80,27 @@ void main() {
       expect(list[0].id, "213fef89-d636-4231-b1f9-d25876ef2432");
       expect(list[0].title, "Foobar");
       expect(list[0].abstract, "Hello 欢迎来到中国！\n");
+      expect(list[0].classification, Classification.confidential);
       expect(list[0].createTime, DateTime.parse('2022-07-21 09:28:42.015Z'));
       expect(
           list[0].lastUpdateTime, DateTime.parse('2022-07-23 09:28:42.015Z'));
 
       final list1 = await repository.list(NoteSortType.dateDesc);
       expect(list1[0].id, "213fef89-d636-4231-b1f9-d25876ef2431");
+    });
+
+    test('search by chinese keywords', () async {
+      final list = await repository.search("中国");
+      expect(list.length, 1);
+      expect(list[0].id, "213fef89-d636-4231-b1f9-d25876ef2432");
+
+      final list1 = await repository.search("地球");
+      expect(list1.length, 2);
+      expect(list1[0].id, "213fef89-d636-4231-b1f9-d25876ef2434");
+      expect(list1[1].id, "213fef89-d636-4231-b1f9-d25876ef2433");
+
+      final list2 = await repository.search("Hello");
+      expect(list2.length, 5);
     });
   });
 }
