@@ -2705,6 +2705,9 @@ abstract class _$SqliteDb extends GeneratedDatabase {
           ),
         ],
       );
+  @override
+  DriftDatabaseOptions get options =>
+      const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
 typedef $CategoriesCreateCompanionBuilder = CategoriesCompanion Function({

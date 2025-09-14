@@ -36,4 +36,10 @@ void main() {
   tearDown(() async {
     await database.close();
   });
+
+  group("check app initialization", () {
+    test('should return false if config file not exists', () async {
+      service.createNote("", "");
+    });
+  });
 }
