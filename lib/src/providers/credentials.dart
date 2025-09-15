@@ -1,8 +1,8 @@
 import 'package:cryptowl/src/providers/repositories.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:logging/logging.dart';
 
+import '../common/protected_value.dart';
 import '../domain/user.dart';
 
 class OnboardingNotifier extends StateNotifier<AsyncValue<bool>> {

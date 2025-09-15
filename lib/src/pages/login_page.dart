@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 import '../common/exceptions.dart';
+import '../common/protected_value.dart';
 import '../providers/providers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {

@@ -1,0 +1,33 @@
+import 'package:base32/base32.dart';
+import 'package:base32/encodings.dart';
+import 'package:cryptowl/src/common/protected_value.dart';
+
+class EncodingUtil {
+  static String encodeCrockfordBase32(ProtectedValue key) {
+    final str = base32.encode(key.binaryValue, encoding: Encoding.crockford);
+    return _addHyphens(str);
+  }
+
+  static ProtectedValue decodeCrockfordBase32(String keyStr) {
+    final base32Str = keyStr.replaceAll('-', '');
+    final key = base32.decode(base32Str, encoding: Encoding.crockford);
+    return ProtectedValue.fromBinary(key);
+  }
+
+  static String _addHyphens(String input, {int groupSize = 4}) {
+    final buffer = StringBuffer();
+    int count = 0;
+
+    for (int i = 0; i < input.length; i++) {
+      buffer.write(input[i]);
+      count++;
+
+      if (count == groupSize && i != input.length - 1) {
+        buffer.write('-');
+        count = 0;
+      }
+    }
+
+    return buffer.toString();
+  }
+}

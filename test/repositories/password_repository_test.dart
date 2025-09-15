@@ -11,13 +11,12 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:native_sqlcipher/native_sqlcipher.dart';
 import 'package:sqlite3/open.dart';
 
-@GenerateMocks([Ref, KdbxFile, SqliteConfig])
+@GenerateMocks([Ref, SqliteConfig])
 import 'password_repository_test.mocks.dart';
 import 'test_util.dart';
 
@@ -56,8 +55,8 @@ void main() {
     await createPasswords();
     provideDummy<Future<Session?>>(Future.value(null));
 
-    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
-        (_) async => Session(MockKdbxFile(), MockSqliteConfig(), database));
+    when(mockRef.read(asyncLoginProvider.future))
+        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
   });
 
   tearDown(() async {

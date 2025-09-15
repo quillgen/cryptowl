@@ -6,12 +6,11 @@ import 'package:cryptowl/src/repositories/note_repository.dart';
 import 'package:cryptowl/src/service/note_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import '../repositories/test_util.dart';
-@GenerateMocks([Ref, KdbxFile, SqliteConfig])
+@GenerateMocks([Ref, SqliteConfig])
 import 'note_service_test.mocks.dart';
 
 void main() {
@@ -29,8 +28,8 @@ void main() {
 
     provideDummy<Future<Session?>>(Future.value(null));
 
-    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
-        (_) async => Session(MockKdbxFile(), MockSqliteConfig(), database));
+    when(mockRef.read(asyncLoginProvider.future))
+        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
   });
 
   tearDown(() async {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:kdbx/kdbx.dart';
-
+import '../common/protected_value.dart';
 import '../domain/password.dart';
 
 class EncryptionService {

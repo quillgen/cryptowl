@@ -2,8 +2,10 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:native_argon2/native_argon2.dart';
+import 'package:native_argon2/native_argon2_bindings_generated.dart';
+
+import 'argon2.dart';
 
 class Argon2Util {
   static Future<Uint8List> deriveKey(Argon2Arguments args) async {
@@ -22,17 +24,15 @@ class Argon2Util {
     );
     final int result;
     switch (args.type) {
-      case ARGON2_i:
+      case Argon2_type.Argon2_i:
         result = nativeArgon2.argon2iHashRaw(params);
         break;
-      case ARGON2_d:
+      case Argon2_type.Argon2_d:
         result = nativeArgon2.argon2dHashRaw(params);
         break;
-      case ARGON2_id:
+      case Argon2_type.Argon2_id:
         result = nativeArgon2.argon2idHashRaw(params);
         break;
-      default:
-        throw ArgumentError('Invalid Argon2 type: ${args.type}');
     }
     if (result != 0) {
       malloc.free(hashStr);

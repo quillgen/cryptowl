@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:kdbx/kdbx.dart';
 
+import '../common/protected_value.dart';
 import '../components/form_input.dart';
-import '../components/password_list.dart';
 import '../providers/providers.dart';
-import 'password_detail_page.dart';
 
 class PasswordEditPage extends ConsumerStatefulWidget {
   const PasswordEditPage({super.key});

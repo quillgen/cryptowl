@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:cryptowl/src/common/argon2.dart';
 import 'package:cryptowl/src/common/argon2_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kdbx/kdbx.dart';
 import 'package:native_argon2/native_argon2.dart';
+import 'package:native_argon2/native_argon2_bindings_generated.dart';
 
 void main() {
   setUp(() {
@@ -34,7 +35,7 @@ void main() {
         as Uint8List;
     //  argon2: seed=kef.seed, version=19, rounds=2, memory=1024, parallelism=2
     final key = await Argon2Util.deriveKey(
-      Argon2Arguments(password, salt, 1024, 2, 32, 2, ARGON2_d, 19),
+      Argon2Arguments(password, salt, 1024, 2, 32, 2, Argon2_type.Argon2_d, 19),
     );
     String encoded = hex.encode(key);
     expect(
