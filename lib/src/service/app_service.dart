@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:cryptowl/src/common/encoding_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/service/file_service.dart';
+import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
 import '../common/protected_value.dart';
+import '../common/random_util.dart';
 import '../database/database.dart';
 
 const dictAssets = [
@@ -22,12 +25,11 @@ const dictAssets = [
 class AppService {
   final logger = Logger('AppService');
   final FileService fileService;
+  final KdfService kdfService;
 
-  AppService(this.fileService);
+  AppService(this.fileService, this.kdfService);
 
   Future<bool> isInitialized() async {
-    // fixme:
-    await Future.delayed(const Duration(seconds: 2));
     return fileService.hasConfigFile();
   }
 
@@ -47,6 +49,11 @@ class AppService {
 
   Future<void> initialize(ProtectedValue masterPassword) async {
     await _copyJiebaDicts();
+    final id = RandomUtil.generateUUID();
+    final generatedSecretKey = await kdfService.generateSecretKey();
+    fileService.writeFile(
+        EncodingUtil.encodeCrockfordBase32(generatedSecretKey), "${id}.key");
+    final masterSalt = kdfService.generateMasterSalt();
   }
 
   Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {
