@@ -51,9 +51,9 @@ class AppService {
     await _copyJiebaDicts();
     final id = RandomUtil.generateUUID();
     final generatedSecretKey = await kdfService.generateSecretKey();
+    final masterSalt = kdfService.generateMasterSalt();
     fileService.writeFile(
         EncodingUtil.encodeCrockfordBase32(generatedSecretKey), "${id}.key");
-    final masterSalt = kdfService.generateMasterSalt();
   }
 
   Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {
