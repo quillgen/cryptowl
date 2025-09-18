@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptowl/src/common/encoding_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
+import 'package:cryptowl/src/service/config_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +28,9 @@ class AppService {
   final logger = Logger('AppService');
   final FileService fileService;
   final KdfService kdfService;
+  final ConfigService configService;
 
-  AppService(this.fileService, this.kdfService);
+  AppService(this.fileService, this.kdfService, this.configService);
 
   Future<bool> isInitialized() async {
     return fileService.hasConfigFile();
@@ -47,13 +50,36 @@ class AppService {
     }
   }
 
-  Future<void> initialize(ProtectedValue masterPassword) async {
+  Future<void> initialize(ProtectedValue masterPassword, String? hint) async {
     await _copyJiebaDicts();
-    final id = RandomUtil.generateUUID();
-    final generatedSecretKey = await kdfService.generateSecretKey();
-    final masterSalt = kdfService.generateMasterSalt();
-    fileService.writeFile(
-        EncodingUtil.encodeCrockfordBase32(generatedSecretKey), "${id}.key");
+    final instanceId = RandomUtil.generateUUID();
+    final secretKey = await kdfService.generateRandomBytes(length: 32);
+    final transformSeed = await kdfService.generateRandomBytes(length: 16);
+    final masterSeed = await kdfService.generateRandomBytes(length: 16);
+
+    final secretKeyLocation = _secretKeyId(instanceId);
+    await configService.saveSecureStore(secretKeyLocation, secretKey);
+
+    final savedSecretKey =
+        await configService.readSecureStore(secretKeyLocation);
+    print("$savedSecretKey $secretKey");
+    if (secretKey != savedSecretKey) {
+      throw Exception("Failed to save secret key");
+    }
+    final config = await configService.createConfig(
+      instanceId,
+      EncodingUtil.encodeCrockfordBase32(transformSeed),
+      EncodingUtil.encodeCrockfordBase32(masterSeed),
+      masterPassword,
+      secretKey,
+    );
+
+    await fileService.writeFile(
+        json.encode(config.toJson()), "${instanceId}.json");
+  }
+
+  String _secretKeyId(String instanceId) {
+    return "SECRET-KEY:$instanceId";
   }
 
   Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {

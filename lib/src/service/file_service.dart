@@ -21,6 +21,7 @@ class FileService {
 
   Future<void> writeFile(String content, String fileName) async {
     final file = File(await PathUtil.getLocalPath(fileName));
+    print("saving ${file}...");
     await file.writeAsString(content, flush: true);
   }
 }

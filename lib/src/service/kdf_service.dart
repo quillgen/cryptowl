@@ -26,11 +26,7 @@ class KdfService {
     return ProtectedValue.fromBinary(key);
   }
 
-  Future<ProtectedValue> generateSecretKey() async {
-    return ProtectedValue.fromBinary(RandomUtil.generateSecureBytes(32));
-  }
-
-  Future<Uint8List> generateMasterSalt() async {
-    return RandomUtil.generateSecureBytes(16);
+  Future<ProtectedValue> generateRandomBytes({int length = 32}) async {
+    return ProtectedValue.fromBinary(RandomUtil.generateSecureBytes(length));
   }
 }

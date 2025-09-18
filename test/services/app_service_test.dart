@@ -1,12 +1,18 @@
 import 'package:cryptowl/src/service/app_service.dart';
+import 'package:cryptowl/src/service/config_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
+import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-@GenerateNiceMocks([MockSpec<FileService>()])
+@GenerateNiceMocks([
+  MockSpec<FileService>(),
+  MockSpec<KdfService>(),
+  MockSpec<ConfigService>()
+])
 import 'app_service_test.mocks.dart';
 
 const String kTemporaryPath = 'temporaryPath';
@@ -66,8 +72,11 @@ class MockPathProviderPlatform extends Mock
 
 void main() {
   final mockFileService = MockFileService();
+  final mockKdfService = MockKdfService();
+  final mockConfigService = MockConfigService();
 
-  final service = AppService(mockFileService);
+  final service =
+      AppService(mockFileService, mockKdfService, mockConfigService);
 
   TestWidgetsFlutterBinding.ensureInitialized();
 

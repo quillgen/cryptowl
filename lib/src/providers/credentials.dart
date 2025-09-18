@@ -18,10 +18,10 @@ class OnboardingNotifier extends StateNotifier<AsyncValue<bool>> {
     });
   }
 
-  Future<void> completeOnboarding(ProtectedValue password) async {
+  Future<void> completeOnboarding(ProtectedValue password, String? hint) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(appServiceProvider).initialize(password);
+      await ref.read(appServiceProvider).initialize(password, hint);
       return ref.read(appServiceProvider).isInitialized();
     });
   }

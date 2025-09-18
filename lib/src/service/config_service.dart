@@ -1,9 +1,19 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:cryptowl/src/common/encoding_util.dart';
+import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import '../config/app_config.dart';
 
 class ConfigService {
-  static Future<AppConfig> loadConfig(String content) async {
+  final secureStore = FlutterSecureStorage();
+
+  Future<AppConfig> loadConfig(String content) async {
     try {
       final jsonMap = jsonDecode(content) as Map<String, dynamic>;
       final config = AppConfig.fromJson(jsonMap);
@@ -14,9 +24,84 @@ class ConfigService {
     }
   }
 
-  static Future<String> saveConfig(AppConfig config) async {
+  Future<AppConfig> createConfig(
+      String instanceId,
+      String transformSeed,
+      String masterSeed,
+      ProtectedValue masterPassword,
+      ProtectedValue secretKey) async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final now = DateTime.now();
+    final configData = ConfigData(
+        instanceId: instanceId,
+        createdAt: now,
+        updatedAt: now,
+        kdf: KdfParams(algorithm: "argon2id", m: 19, t: 2, p: 1),
+        transformSeed: transformSeed,
+        masterSeed: masterSeed);
+
+    return AppConfig(version: packageInfo.version, data: configData, hash: "");
+  }
+
+  Future<String> saveConfig(AppConfig config) async {
     final jsonString = jsonEncode(config.toJson());
     return jsonString;
+  }
+
+  Future<ProtectedValue?> readSecureStore(String key) async {
+    String? value = await secureStore.read(key: key);
+    if (value != null) {
+      return EncodingUtil.decodeCrockfordBase32(value);
+    }
+    return null;
+  }
+
+  Future<void> saveSecureStore(String key, ProtectedValue data) async {
+    await secureStore.write(
+        key: key, value: EncodingUtil.encodeCrockfordBase32(data));
+  }
+
+  Future<Uint8List> generateEmergencyKit(String secretKey) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Center(
+          child: pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [
+              pw.Text(
+                'SECRET KEY BACKUP',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Generated on: ${DateTime.now().toString()}',
+                style: const pw.TextStyle(fontSize: 12),
+              ),
+              pw.Divider(),
+              pw.Text(
+                secretKey,
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  font: pw.Font.courier(), // Monospace font
+                ),
+              ),
+              pw.SizedBox(height: 30),
+              pw.Text(
+                '⚠️ Keep this key secure! Do not share it.',
+                style: pw.TextStyle(color: PdfColors.red),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return pdf.save();
   }
 }
 

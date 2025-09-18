@@ -3,11 +3,18 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i7;
 import 'dart:io' as _i2;
+import 'dart:typed_data' as _i9;
 
-import 'package:cryptowl/src/service/file_service.dart' as _i3;
+import 'package:cryptowl/src/common/protected_value.dart' as _i3;
+import 'package:cryptowl/src/config/app_config.dart' as _i5;
+import 'package:cryptowl/src/service/config_service.dart' as _i10;
+import 'package:cryptowl/src/service/file_service.dart' as _i6;
+import 'package:cryptowl/src/service/kdf_service.dart' as _i8;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -33,39 +40,274 @@ class _FakeFile_0 extends _i1.SmartFake implements _i2.File {
         );
 }
 
+class _FakeProtectedValue_1 extends _i1.SmartFake
+    implements _i3.ProtectedValue {
+  _FakeProtectedValue_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeFlutterSecureStorage_2 extends _i1.SmartFake
+    implements _i4.FlutterSecureStorage {
+  _FakeFlutterSecureStorage_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeAppConfig_3 extends _i1.SmartFake implements _i5.AppConfig {
+  _FakeAppConfig_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [FileService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFileService extends _i1.Mock implements _i3.FileService {
+class MockFileService extends _i1.Mock implements _i6.FileService {
   @override
-  _i4.Future<_i2.File> getConfigFile() => (super.noSuchMethod(
+  _i7.Future<_i2.File> getConfigFile() => (super.noSuchMethod(
         Invocation.method(
           #getConfigFile,
           [],
         ),
-        returnValue: _i4.Future<_i2.File>.value(_FakeFile_0(
+        returnValue: _i7.Future<_i2.File>.value(_FakeFile_0(
           this,
           Invocation.method(
             #getConfigFile,
             [],
           ),
         )),
-        returnValueForMissingStub: _i4.Future<_i2.File>.value(_FakeFile_0(
+        returnValueForMissingStub: _i7.Future<_i2.File>.value(_FakeFile_0(
           this,
           Invocation.method(
             #getConfigFile,
             [],
           ),
         )),
-      ) as _i4.Future<_i2.File>);
+      ) as _i7.Future<_i2.File>);
 
   @override
-  _i4.Future<bool> hasConfigFile() => (super.noSuchMethod(
+  _i7.Future<bool> hasConfigFile() => (super.noSuchMethod(
         Invocation.method(
           #hasConfigFile,
           [],
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<void> writeConfig(String? content) => (super.noSuchMethod(
+        Invocation.method(
+          #writeConfig,
+          [content],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> writeFile(
+    String? content,
+    String? fileName,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #writeFile,
+          [
+            content,
+            fileName,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+}
+
+/// A class which mocks [KdfService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockKdfService extends _i1.Mock implements _i8.KdfService {
+  @override
+  _i7.Future<_i3.ProtectedValue> createMasterKey(
+    _i3.ProtectedValue? masterPassword,
+    _i3.ProtectedValue? secretKey,
+    _i9.Uint8List? salt,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #createMasterKey,
+          [
+            masterPassword,
+            secretKey,
+            salt,
+          ],
+        ),
+        returnValue: _i7.Future<_i3.ProtectedValue>.value(_FakeProtectedValue_1(
+          this,
+          Invocation.method(
+            #createMasterKey,
+            [
+              masterPassword,
+              secretKey,
+              salt,
+            ],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i3.ProtectedValue>.value(_FakeProtectedValue_1(
+          this,
+          Invocation.method(
+            #createMasterKey,
+            [
+              masterPassword,
+              secretKey,
+              salt,
+            ],
+          ),
+        )),
+      ) as _i7.Future<_i3.ProtectedValue>);
+
+  @override
+  _i7.Future<_i3.ProtectedValue> generateRandomBytes({int? length = 32}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generateRandomBytes,
+          [],
+          {#length: length},
+        ),
+        returnValue: _i7.Future<_i3.ProtectedValue>.value(_FakeProtectedValue_1(
+          this,
+          Invocation.method(
+            #generateRandomBytes,
+            [],
+            {#length: length},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i3.ProtectedValue>.value(_FakeProtectedValue_1(
+          this,
+          Invocation.method(
+            #generateRandomBytes,
+            [],
+            {#length: length},
+          ),
+        )),
+      ) as _i7.Future<_i3.ProtectedValue>);
+}
+
+/// A class which mocks [ConfigService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockConfigService extends _i1.Mock implements _i10.ConfigService {
+  @override
+  _i4.FlutterSecureStorage get secureStore => (super.noSuchMethod(
+        Invocation.getter(#secureStore),
+        returnValue: _FakeFlutterSecureStorage_2(
+          this,
+          Invocation.getter(#secureStore),
+        ),
+        returnValueForMissingStub: _FakeFlutterSecureStorage_2(
+          this,
+          Invocation.getter(#secureStore),
+        ),
+      ) as _i4.FlutterSecureStorage);
+
+  @override
+  _i7.Future<_i5.AppConfig> loadConfig(String? content) => (super.noSuchMethod(
+        Invocation.method(
+          #loadConfig,
+          [content],
+        ),
+        returnValue: _i7.Future<_i5.AppConfig>.value(_FakeAppConfig_3(
+          this,
+          Invocation.method(
+            #loadConfig,
+            [content],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<_i5.AppConfig>.value(_FakeAppConfig_3(
+          this,
+          Invocation.method(
+            #loadConfig,
+            [content],
+          ),
+        )),
+      ) as _i7.Future<_i5.AppConfig>);
+
+  @override
+  _i7.Future<String> saveConfig(_i5.AppConfig? config) => (super.noSuchMethod(
+        Invocation.method(
+          #saveConfig,
+          [config],
+        ),
+        returnValue: _i7.Future<String>.value(_i11.dummyValue<String>(
+          this,
+          Invocation.method(
+            #saveConfig,
+            [config],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i7.Future<String>.value(_i11.dummyValue<String>(
+          this,
+          Invocation.method(
+            #saveConfig,
+            [config],
+          ),
+        )),
+      ) as _i7.Future<String>);
+
+  @override
+  _i7.Future<_i3.ProtectedValue?> readSecureStore(String? key) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #readSecureStore,
+          [key],
+        ),
+        returnValue: _i7.Future<_i3.ProtectedValue?>.value(),
+        returnValueForMissingStub: _i7.Future<_i3.ProtectedValue?>.value(),
+      ) as _i7.Future<_i3.ProtectedValue?>);
+
+  @override
+  _i7.Future<void> saveSecureStore(
+    String? key,
+    _i3.ProtectedValue? data,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveSecureStore,
+          [
+            key,
+            data,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<_i9.Uint8List> generateEmergencyKit(String? secretKey) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #generateEmergencyKit,
+          [secretKey],
+        ),
+        returnValue: _i7.Future<_i9.Uint8List>.value(_i9.Uint8List(0)),
+        returnValueForMissingStub:
+            _i7.Future<_i9.Uint8List>.value(_i9.Uint8List(0)),
+      ) as _i7.Future<_i9.Uint8List>);
 }

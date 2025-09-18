@@ -27,12 +27,12 @@ void main() {
   });
 
   test('should return 32 bytes secret key', () async {
-    final key = await service.generateSecretKey();
+    final key = await service.generateRandomBytes(length: 32);
     expect(key.binaryValue, hasLength(32));
   });
 
   test('should return 16 bytes salt', () async {
-    final key = await service.generateMasterSalt();
+    final key = await service.generateRandomBytes(length: 16);
     expect(key, hasLength(16));
   });
 

@@ -5,7 +5,7 @@ import 'package:cryptowl/src/common/protected_value.dart';
 class EncodingUtil {
   static String encodeCrockfordBase32(ProtectedValue key) {
     final str = base32.encode(key.binaryValue, encoding: Encoding.crockford);
-    return _addHyphens(str);
+    return _addHyphens(str, groupSize: 5);
   }
 
   static ProtectedValue decodeCrockfordBase32(String keyStr) {

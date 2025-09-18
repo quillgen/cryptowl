@@ -1,6 +1,7 @@
 {
     "version": "1",
     "data": {
+        "name": "My secrets",
         "db": "ab8fc21b-3236-4713-8915-09223eac08bb.enc",
         "created_at": "2022-07-25 09:28:42.015Z",
         "updated_at": "2022-07-26 09:28:42.015Z",
@@ -10,7 +11,8 @@
             "t": 2,
             "p": 1
         },
-        "seed": "xkvMpbgl6ZfUKFxO"
+        "transformSeed": "",
+        "masterSeed": "xkvMpbgl6ZfUKFxO"
     },
     "hash": ""
 }
