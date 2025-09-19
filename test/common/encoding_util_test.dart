@@ -11,7 +11,7 @@ void main() {
     final str =
         EncodingUtil.encodeCrockfordBase32(ProtectedValue.fromBinary(password));
 
-    expect(str, equals("D1JP-RV3F-41VP-YWKC-CGGG"));
+    expect(str, equals("D1JPR-V3F41-VPYWK-CCGGG"));
   });
 
   test('should return decoded key from crockford base32 string', () async {

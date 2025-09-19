@@ -33,7 +33,8 @@ class AppService {
   AppService(this.fileService, this.kdfService, this.configService);
 
   Future<bool> isInitialized() async {
-    return fileService.hasConfigFile();
+    final dbs = await fileService.getSqlcipherInstances();
+    return dbs.isNotEmpty;
   }
 
   Future<Session> login(ProtectedValue password) async {
@@ -56,13 +57,14 @@ class AppService {
     final secretKey = await kdfService.generateRandomBytes(length: 32);
     final transformSeed = await kdfService.generateRandomBytes(length: 16);
     final masterSeed = await kdfService.generateRandomBytes(length: 16);
+    final symmectricKey = await kdfService.generateRandomBytes(length: 64);
+    final encryptionIv = await kdfService.generateRandomBytes(length: 16);
 
     final secretKeyLocation = _secretKeyId(instanceId);
     await configService.saveSecureStore(secretKeyLocation, secretKey);
 
     final savedSecretKey =
         await configService.readSecureStore(secretKeyLocation);
-    print("$savedSecretKey $secretKey");
     if (secretKey != savedSecretKey) {
       throw Exception("Failed to save secret key");
     }
@@ -76,6 +78,12 @@ class AppService {
 
     await fileService.writeFile(
         json.encode(config.toJson()), "${instanceId}.json");
+    // final db = SqliteDb.open(instanceId, ProtectedValue.fromBinary(key));
+
+    // // force to trigger database creation
+    // logger.fine("Creating sqlcipher db $instance...");
+    // await db.select(db.passwords).get();
+    // await db.close();
   }
 
   String _secretKeyId(String instanceId) {

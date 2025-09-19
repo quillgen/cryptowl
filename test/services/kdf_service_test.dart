@@ -33,7 +33,7 @@ void main() {
 
   test('should return 16 bytes salt', () async {
     final key = await service.generateRandomBytes(length: 16);
-    expect(key, hasLength(16));
+    expect(key.binaryValue, hasLength(16));
   });
 
   test('should return master key based on master password and email as salt',
@@ -44,7 +44,7 @@ void main() {
     final secretKey = hex.decode(
             "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f")
         as Uint8List;
-    final key = await service.createMasterKey(
+    final key = await service.createTransformedMasterKey(
         ProtectedValue.fromString("123456"),
         ProtectedValue.fromBinary(secretKey),
         hex.decode("b27f6e2bd596308c190c4f1d68660bc3") as Uint8List);

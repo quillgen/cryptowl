@@ -85,15 +85,17 @@ void main() {
   });
 
   group("check app initialization", () {
-    test('should return false if config file not exists', () async {
-      when(mockFileService.hasConfigFile()).thenAnswer((_) async => false);
+    test('should return false if .enc file not exists', () async {
+      when(mockFileService.getSqlcipherInstances())
+          .thenAnswer((_) async => List.empty());
       final initialized = await service.isInitialized();
 
       expect(initialized, false);
     });
 
-    test('should return true if config file exists', () async {
-      when(mockFileService.hasConfigFile()).thenAnswer((_) async => true);
+    test('should return true if .enc file exists', () async {
+      when(mockFileService.getSqlcipherInstances())
+          .thenAnswer((_) async => List.of(["1.enc"]));
       final initialized = await service.isInitialized();
 
       expect(initialized, true);

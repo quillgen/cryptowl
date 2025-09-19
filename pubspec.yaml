@@ -22,7 +22,6 @@ dependencies:
     path: deps/native_argon2
   native_sqlcipher:
     path: deps/native_sqlcipher
-  crypto: ^3.0.6
   uuid: ^4.5.1
   drift: ^2.25.0
   convert: ^3.1.2
@@ -52,6 +51,9 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   file_saver: ^0.3.1
   pdf: ^3.11.3
+  cryptography: ^2.7.0
+  cryptography_flutter: ^2.3.2
+  crypto: ^3.0.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

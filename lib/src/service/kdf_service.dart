@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:cryptowl/src/common/random_util.dart';
+import 'package:cryptowl/src/crypto/hkdf.dart';
 import 'package:native_argon2/native_argon2_bindings_generated.dart';
 
 import '../common/argon2.dart';
@@ -9,13 +10,17 @@ import '../common/argon2_util.dart';
 import '../common/protected_value.dart';
 
 class KdfService {
+  final hkdf = new CryptoGraphyHkdf();
+
   /// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
   /// OWASP suggested:
   /// Use Argon2id with a minimum configuration of 19 MiB of memory,
   /// an iteration count of 2, and 1 degree of parallelism.
   /// $argon2id$v=19$m=19456,t=2,p=1$ZHJAcmlndXouY29t$CMiXFHTwhEhxwgjjl7BDk65dnX3p8plUpMKY95AE2o4
-  Future<ProtectedValue> createMasterKey(ProtectedValue masterPassword,
-      ProtectedValue secretKey, Uint8List salt) async {
+  Future<ProtectedValue> createTransformedMasterKey(
+      ProtectedValue masterPassword,
+      ProtectedValue secretKey,
+      Uint8List salt) async {
     final hmacSha256 = Hmac(sha256, masterPassword.binaryValue);
     final hash1 = hmacSha256.convert(secretKey.binaryValue);
 
@@ -24,6 +29,14 @@ class KdfService {
           1, Argon2_type.Argon2_id, 19),
     );
     return ProtectedValue.fromBinary(key);
+  }
+
+  Future<ProtectedValue> createStretchedMasterKey(
+      ProtectedValue transformedMasterKey,
+      Uint8List instanceId,
+      Uint8List masterSeed) async {
+    return hkdf.deriveKey(
+        ikm: transformedMasterKey, salt: masterSeed, info: instanceId);
   }
 
   Future<ProtectedValue> generateRandomBytes({int length = 32}) async {
