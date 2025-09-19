@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:cryptowl/src/common/encoding_util.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -9,6 +8,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../config/app_config.dart';
+import '../crypto/crockford_base32.dart';
 
 class ConfigService {
   final secureStore = FlutterSecureStorage();
@@ -51,14 +51,13 @@ class ConfigService {
   Future<ProtectedValue?> readSecureStore(String key) async {
     String? value = await secureStore.read(key: key);
     if (value != null) {
-      return EncodingUtil.decodeCrockfordBase32(value);
+      return CrockfordBase32.decode(value);
     }
     return null;
   }
 
   Future<void> saveSecureStore(String key, ProtectedValue data) async {
-    await secureStore.write(
-        key: key, value: EncodingUtil.encodeCrockfordBase32(data));
+    await secureStore.write(key: key, value: CrockfordBase32.encode(data));
   }
 
   Future<Uint8List> generateEmergencyKit(String secretKey) async {

@@ -2,13 +2,13 @@ import 'package:base32/base32.dart';
 import 'package:base32/encodings.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 
-class EncodingUtil {
-  static String encodeCrockfordBase32(ProtectedValue key) {
+class CrockfordBase32 {
+  static String encode(ProtectedValue key) {
     final str = base32.encode(key.binaryValue, encoding: Encoding.crockford);
     return _addHyphens(str, groupSize: 5);
   }
 
-  static ProtectedValue decodeCrockfordBase32(String keyStr) {
+  static ProtectedValue decode(String keyStr) {
     final base32Str = keyStr.replaceAll('-', '');
     final key = base32.decode(base32Str, encoding: Encoding.crockford);
     return ProtectedValue.fromBinary(key);

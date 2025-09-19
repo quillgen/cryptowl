@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cryptowl/src/common/encoding_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/service/config_service.dart';
@@ -12,8 +11,9 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
-import '../common/random_util.dart';
+import '../crypto/crockford_base32.dart';
 import '../crypto/protected_value.dart';
+import '../crypto/random_util.dart';
 import '../database/database.dart';
 
 const dictAssets = [
@@ -70,8 +70,8 @@ class AppService {
     }
     final config = await configService.createConfig(
       instanceId,
-      EncodingUtil.encodeCrockfordBase32(transformSeed),
-      EncodingUtil.encodeCrockfordBase32(masterSeed),
+      CrockfordBase32.encode(transformSeed),
+      CrockfordBase32.encode(masterSeed),
       masterPassword,
       secretKey,
     );

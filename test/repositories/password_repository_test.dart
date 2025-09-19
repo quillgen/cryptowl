@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
+import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/domain/user.dart';

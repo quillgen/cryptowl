@@ -2,7 +2,7 @@ import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/repositories/note_repository.dart';
 
-import '../common/random_util.dart';
+import '../crypto/random_util.dart';
 
 class NoteService {
   final NoteRepository repository;

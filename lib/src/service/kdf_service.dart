@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:cryptowl/src/common/random_util.dart';
 import 'package:cryptowl/src/crypto/argon2.dart';
 import 'package:cryptowl/src/crypto/hkdf.dart';
+import 'package:cryptowl/src/crypto/random_util.dart';
 
 import '../crypto/protected_value.dart';
 

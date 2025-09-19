@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:cryptowl/src/common/random_util.dart';
+import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:sqlite3/open.dart';

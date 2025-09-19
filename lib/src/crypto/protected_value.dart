@@ -3,7 +3,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:cryptowl/src/common/encoding_util.dart';
+
+import 'crockford_base32.dart';
 
 class ProtectedValue {
   ProtectedValue(this._value, this._salt, {this.encodeText});
@@ -52,7 +53,7 @@ class ProtectedValue {
   String getText() {
     return encodeText == true
         ? base64Encode(binaryValue)
-        : EncodingUtil.encodeCrockfordBase32(this);
+        : CrockfordBase32.encode(this);
   }
 
   @override
