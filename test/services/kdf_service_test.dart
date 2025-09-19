@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:native_argon2/native_argon2.dart';
 
 void main() {
-  final service = KdfService();
   setUp(() {
     String testLibPath;
 
@@ -27,17 +26,20 @@ void main() {
   });
 
   test('should return 32 bytes secret key', () async {
+    final service = KdfService();
     final key = await service.generateRandomBytes(length: 32);
     expect(key.binaryValue, hasLength(32));
   });
 
   test('should return 16 bytes salt', () async {
+    final service = KdfService();
     final key = await service.generateRandomBytes(length: 16);
     expect(key.binaryValue, hasLength(16));
   });
 
   test('should return master key based on master password and email as salt',
       () async {
+    final service = KdfService();
     // https://argon2.online/
     // $argon2id$v=19$m=19456,t=2,p=1$ZHJAcmlndXouY29t$CMiXFHTwhEhxwgjjl7BDk65dnX3p8plUpMKY95AE2o4
 

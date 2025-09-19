@@ -2,15 +2,14 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:cryptowl/src/common/random_util.dart';
+import 'package:cryptowl/src/crypto/argon2.dart';
 import 'package:cryptowl/src/crypto/hkdf.dart';
-import 'package:native_argon2/native_argon2_bindings_generated.dart';
 
-import '../common/argon2.dart';
-import '../common/argon2_util.dart';
 import '../crypto/protected_value.dart';
 
 class KdfService {
-  final hkdf = new CryptoGraphyHkdf();
+  final hkdf = CryptoGraphyHkdf();
+  final argon2 = NativeArgon2();
 
   /// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
   /// OWASP suggested:
@@ -24,9 +23,9 @@ class KdfService {
     final hmacSha256 = Hmac(sha256, masterPassword.binaryValue);
     final hash1 = hmacSha256.convert(secretKey.binaryValue);
 
-    final key = await Argon2Util.deriveKey(
+    final key = await argon2.deriveKey(
       Argon2Arguments(Uint8List.fromList(hash1.bytes), salt, 19 * 1024, 2, 32,
-          1, Argon2_type.Argon2_id, 19),
+          1, Argon2Variant.argon2id, 19),
     );
     return ProtectedValue.fromBinary(key);
   }

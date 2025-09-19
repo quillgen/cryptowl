@@ -3,12 +3,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:native_argon2/native_argon2_bindings_generated.dart';
 import 'package:uuid/data.dart';
 import 'package:uuid/rng.dart';
 import 'package:uuid/uuid.dart';
 
-import 'argon2.dart';
+import '../crypto/argon2.dart';
 
 class RandomUtil {
   static final _uuid = Uuid(goptions: GlobalOptions(CryptoRNG()));
@@ -33,6 +32,6 @@ class RandomUtil {
         .bytes as Uint8List;
 
     return Argon2Arguments(
-        random1, random2, 12288, 3, 32, 1, Argon2_type.Argon2_id, 19);
+        random1, random2, 12288, 3, 32, 1, Argon2Variant.argon2id, 19);
   }
 }
