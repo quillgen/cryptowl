@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart' as c;
 import 'package:cryptography/cryptography.dart' as cg;
-import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 
 abstract class Hkdf {
   Future<ProtectedValue> deriveKey({

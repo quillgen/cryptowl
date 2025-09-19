@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 
 class OnboardingPage extends HookConsumerWidget {
   const OnboardingPage({super.key});

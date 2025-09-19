@@ -12,8 +12,8 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
-import '../common/protected_value.dart';
 import '../common/random_util.dart';
+import '../crypto/protected_value.dart';
 import '../database/database.dart';
 
 const dictAssets = [

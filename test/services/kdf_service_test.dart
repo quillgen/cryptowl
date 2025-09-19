@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:native_argon2/native_argon2.dart';

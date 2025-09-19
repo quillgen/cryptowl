@@ -10,8 +10,8 @@ import 'package:sqlite3/open.dart';
 
 import '../../main.dart';
 import '../common/path_util.dart';
-import '../common/protected_value.dart';
 import '../config/version.dart';
+import '../crypto/protected_value.dart';
 
 // run `dart run build_runner build` to generate
 part 'database.g.dart';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 import '../domain/password.dart';
 
 class EncryptionService {

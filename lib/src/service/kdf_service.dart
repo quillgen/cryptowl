@@ -7,7 +7,7 @@ import 'package:native_argon2/native_argon2_bindings_generated.dart';
 
 import '../common/argon2.dart';
 import '../common/argon2_util.dart';
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 
 class KdfService {
   final hkdf = new CryptoGraphyHkdf();

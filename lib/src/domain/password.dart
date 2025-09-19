@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 import '../database/database.dart';
 
 const CONFIDENTIAL = -1;

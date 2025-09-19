@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../common/protected_value.dart';
 import '../components/form_input.dart';
+import '../crypto/protected_value.dart';
 import '../providers/providers.dart';
 
 class PasswordEditPage extends ConsumerStatefulWidget {

@@ -7,9 +7,9 @@ import 'dart:async' as _i8;
 import 'dart:io' as _i2;
 import 'dart:typed_data' as _i10;
 
-import 'package:cryptowl/src/common/protected_value.dart' as _i4;
 import 'package:cryptowl/src/config/app_config.dart' as _i6;
 import 'package:cryptowl/src/crypto/hkdf.dart' as _i3;
+import 'package:cryptowl/src/crypto/protected_value.dart' as _i4;
 import 'package:cryptowl/src/service/config_service.dart' as _i11;
 import 'package:cryptowl/src/service/file_service.dart' as _i7;
 import 'package:cryptowl/src/service/kdf_service.dart' as _i9;

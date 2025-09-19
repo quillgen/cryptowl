@@ -5,7 +5,7 @@ import 'package:toastification/toastification.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 import '../common/exceptions.dart';
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 import '../providers/providers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {

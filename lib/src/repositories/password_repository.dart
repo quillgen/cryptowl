@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
-import '../common/protected_value.dart';
+import '../crypto/protected_value.dart';
 import '../domain/password.dart';
 import 'base_repository.dart';
 

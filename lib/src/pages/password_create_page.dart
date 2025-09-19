@@ -5,9 +5,9 @@ import 'package:flutter/material.dart' hide DropdownMenuFormField;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../common/protected_value.dart';
 import '../components/dropdown_formfield.dart';
 import '../components/form_input.dart';
+import '../crypto/protected_value.dart';
 import '../domain/password.dart';
 
 class PasswordCreatePage extends ConsumerStatefulWidget {

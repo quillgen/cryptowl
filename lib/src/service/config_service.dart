@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptowl/src/common/encoding_util.dart';
-import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pdf/pdf.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cryptowl/src/common/encoding_util.dart';
-import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

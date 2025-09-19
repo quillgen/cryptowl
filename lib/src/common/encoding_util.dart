@@ -1,6 +1,6 @@
 import 'package:base32/base32.dart';
 import 'package:base32/encodings.dart';
-import 'package:cryptowl/src/common/protected_value.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 
 class EncodingUtil {
   static String encodeCrockfordBase32(ProtectedValue key) {

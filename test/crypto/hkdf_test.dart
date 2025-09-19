@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:convert/convert.dart';
-import 'package:cryptowl/src/common/protected_value.dart';
 import 'package:cryptowl/src/crypto/hkdf.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
