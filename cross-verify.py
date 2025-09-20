@@ -2,6 +2,33 @@ import hmac
 import hashlib
 import binascii
 from argon2 import low_level, Type
+# pip install argon2-cffi pynacl
+
+import binascii
+from nacl.bindings import crypto_aead_chacha20poly1305_ietf_encrypt
+
+# Input data
+data = b"hello world!"
+key = binascii.unhexlify("3f09ea13ceffb8e867a4af3ab17854f9f5f152591653c737a8962b94356e2c0f")
+nonce = binascii.unhexlify("b27f6e2bd596308c190c4f1d")
+aad = b"41964e60-5fc3-472c-8b87-71363c71b03c"
+
+# Encrypt using ChaCha20-Poly1305
+ciphertext = crypto_aead_chacha20poly1305_ietf_encrypt(
+    data, 
+    aad, 
+    nonce, 
+    key
+)
+
+# Extract ciphertext and authentication tag
+# Last 16 bytes are the authentication tag
+auth_tag = ciphertext[-16:]
+encrypted_data = ciphertext[:-16]
+
+print(f"Ciphertext: {binascii.hexlify(encrypted_data).decode()}")
+print(f"Authentication Tag: {binascii.hexlify(auth_tag).decode()}")
+print(f"Combined (ciphertext + tag): {binascii.hexlify(ciphertext).decode()}")
 
 def hmac_sha256_hex(hex_key: str, hex_message: str) -> str:
     key_bytes = binascii.unhexlify(hex_key)
