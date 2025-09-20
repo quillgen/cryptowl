@@ -35,6 +35,7 @@ class AppService {
 
   Future<bool> isInitialized() async {
     final dbs = await fileService.getSqlcipherInstances();
+    logger.info("Find existing instances: $dbs");
     return dbs.isNotEmpty;
   }
 
@@ -54,7 +55,7 @@ class AppService {
 
   Future<void> initialize(ProtectedValue masterPassword, String? hint) async {
     await _copyJiebaDicts();
-    final instanceId = RandomUtil.generateUUID();
+    final instanceId = RandomUtil.generateName();
     final secretKey = await kdfService.generateRandomBytes(length: 32);
     final transformSeed = await kdfService.generateRandomBytes(length: 16);
     final masterSeed = await kdfService.generateRandomBytes(length: 16);
@@ -82,16 +83,22 @@ class AppService {
         instanceId,
         transformSeed.binaryValue,
         masterSeed.binaryValue,
-        encryptedSymmetricKey);
+        encryptedSymmetricKey,
+        ProtectedValue.fromBinary(
+            Uint8List.sublistView(stretchedMasterKey.binaryValue, 32)));
 
     await fileService.writeFile(
-        json.encode(config.toJson()), "${instanceId}.json");
-    // final db = SqliteDb.open(instanceId, ProtectedValue.fromBinary(key));
+        json.encode(config.toJson()), "${instanceId}.cfg");
 
-    // // force to trigger database creation
-    // logger.fine("Creating sqlcipher db $instance...");
-    // await db.select(db.passwords).get();
-    // await db.close();
+    final db = SqliteDb.open(
+        "${instanceId}.enc",
+        ProtectedValue.fromBinary(
+            Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32)));
+
+    // force to trigger database creation
+    logger.fine("Creating sqlcipher db $instanceId...");
+    await db.select(db.passwords).get();
+    await db.close();
   }
 
   String _secretKeyId(String instanceId) {

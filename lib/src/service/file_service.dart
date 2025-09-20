@@ -8,7 +8,7 @@ class FileService {
   static const String configFileName = "config.json";
 
   Future<List<String>> getSqlcipherInstances() async {
-    final documentDir = Directory(await PathUtil.getLocalPath("/"));
+    final documentDir = Directory(await PathUtil.getLocalPath("."));
     return await documentDir
         .list()
         .where(

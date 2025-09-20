@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
+import 'package:cryptowl/src/crypto/hmac.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -12,7 +14,9 @@ import '../config/app_config.dart';
 import '../crypto/crockford_base32.dart';
 
 class ConfigService {
+  final logger = Logger('ConfigService');
   final secureStore = FlutterSecureStorage();
+  final hmac = CryptoHmac();
 
   Future<AppConfig> loadConfig(String content) async {
     try {
@@ -25,21 +29,32 @@ class ConfigService {
     }
   }
 
-  Future<AppConfig> createConfig(String instanceId, Uint8List transformSeed,
-      Uint8List masterSeed, AuthEncryptedResult symmetricKey) async {
+  Future<AppConfig> createConfig(
+      String instanceId,
+      Uint8List transformSeed,
+      Uint8List masterSeed,
+      AuthEncryptedResult symmetricKey,
+      ProtectedValue macKey) async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final now = DateTime.now();
     final configData = ConfigData(
-        instanceId: instanceId,
-        createdAt: now,
-        updatedAt: now,
-        kdf: KdfParams(algorithm: "argon2id", m: 19, t: 2, p: 1),
-        transformSeed: CrockfordBase32.encode(transformSeed),
-        masterSeed: CrockfordBase32.encode(transformSeed),
-        encryptedKey: CrockfordBase32.encode(symmetricKey.cipherData),
-        authTag: CrockfordBase32.encode(symmetricKey.authTag));
+      instanceId: instanceId,
+      createdAt: now,
+      updatedAt: now,
+      kdf: KdfParams(algorithm: "argon2id", m: 19, t: 2, p: 1),
+      transformSeed: CrockfordBase32.encode(transformSeed),
+      masterSeed: CrockfordBase32.encode(transformSeed),
+      encryptedKey: CrockfordBase32.encode(symmetricKey.cipherData),
+      authTag: CrockfordBase32.encode(symmetricKey.authTag),
+    );
 
-    return AppConfig(version: packageInfo.version, data: configData, hash: "");
+    final message = utf8.encode(json.encode(configData..toJson()));
+    final hash =
+        await hmac.calculateMac(ProtectedValue.fromBinary(message), macKey);
+    return AppConfig(
+        version: packageInfo.version,
+        data: configData,
+        hash: CrockfordBase32.encode(hash));
   }
 
   Future<String> saveConfig(AppConfig config) async {
