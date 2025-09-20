@@ -1,14 +1,13 @@
 import 'dart:convert';
 
 import 'package:cryptowl/src/crypto/crockford_base32.dart';
-import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('should return crockford base32 string', () async {
     final password = utf8.encode("hello world!");
 
-    final str = CrockfordBase32.encode(ProtectedValue.fromBinary(password));
+    final str = CrockfordBase32.encode(password);
 
     expect(str, equals("D1JPR-V3F41-VPYWK-CCGGG"));
   });

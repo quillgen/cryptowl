@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptowl/src/config/sqlite.dart';
+import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/service/config_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
@@ -11,7 +12,6 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
-import '../crypto/crockford_base32.dart';
 import '../crypto/protected_value.dart';
 import '../crypto/random_util.dart';
 import '../database/database.dart';
@@ -29,6 +29,7 @@ class AppService {
   final FileService fileService;
   final KdfService kdfService;
   final ConfigService configService;
+  final aeadCrypto = CryptographyAesGcm();
 
   AppService(this.fileService, this.kdfService, this.configService);
 
@@ -57,8 +58,17 @@ class AppService {
     final secretKey = await kdfService.generateRandomBytes(length: 32);
     final transformSeed = await kdfService.generateRandomBytes(length: 16);
     final masterSeed = await kdfService.generateRandomBytes(length: 16);
-    final symmectricKey = await kdfService.generateRandomBytes(length: 64);
-    final encryptionIv = await kdfService.generateRandomBytes(length: 16);
+    final symmetricKey = await kdfService.generateRandomBytes(length: 64);
+    final nonce = await kdfService.generateRandomBytes(length: 16);
+
+    final instanceIdBytes = utf8.encode(instanceId);
+
+    final transformedMasterKey = await kdfService.createTransformedMasterKey(
+        masterPassword, secretKey, transformSeed.binaryValue);
+    final stretchedMasterKey = await kdfService.createStretchedMasterKey(
+        transformedMasterKey, instanceIdBytes, masterSeed.binaryValue);
+    final encryptedSymmetricKey = await _encryptSymmetricKey(
+        symmetricKey, stretchedMasterKey, nonce.binaryValue, instanceIdBytes);
 
     final secretKeyLocation = _secretKeyId(instanceId);
     await configService.saveSecureStore(secretKeyLocation, secretKey);
@@ -69,12 +79,10 @@ class AppService {
       throw Exception("Failed to save secret key");
     }
     final config = await configService.createConfig(
-      instanceId,
-      CrockfordBase32.encode(transformSeed),
-      CrockfordBase32.encode(masterSeed),
-      masterPassword,
-      secretKey,
-    );
+        instanceId,
+        transformSeed.binaryValue,
+        masterSeed.binaryValue,
+        encryptedSymmetricKey);
 
     await fileService.writeFile(
         json.encode(config.toJson()), "${instanceId}.json");
@@ -107,5 +115,15 @@ class AppService {
 
   Future<void> _copyJiebaDicts() async {
     await _copyAssetsToDocDir(dictAssets);
+  }
+
+  Future<AuthEncryptedResult> _encryptSymmetricKey(
+      ProtectedValue symmetricKey,
+      ProtectedValue stretchedMasterKey,
+      Uint8List nonce,
+      Uint8List instanceId) async {
+    final key = Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
+    return aeadCrypto.encrypt(
+        symmetricKey, ProtectedValue.fromBinary(key), nonce, instanceId);
   }
 }

@@ -7,7 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'crockford_base32.dart';
 
 class ProtectedValue {
-  ProtectedValue(this._value, this._salt, {this.encodeText});
+  ProtectedValue(this._value, this._salt);
 
   factory ProtectedValue.fromString(String value) {
     final valueBytes = utf8.encode(value);
@@ -23,14 +23,13 @@ class ProtectedValue {
 
   factory ProtectedValue.fromRawBinary(Uint8List value) {
     final salt = _randomBytes(value.length);
-    return ProtectedValue(_xor(value, salt), salt, encodeText: true);
+    return ProtectedValue(_xor(value, salt), salt);
   }
 
   static final _random = Random.secure();
 
   final Uint8List _value;
   final Uint8List _salt;
-  final bool? encodeText;
 
   Uint8List get binaryValue => _xor(_value, _salt);
 
@@ -51,9 +50,7 @@ class ProtectedValue {
   }
 
   String getText() {
-    return encodeText == true
-        ? base64Encode(binaryValue)
-        : CrockfordBase32.encode(this);
+    return CrockfordBase32.encode(binaryValue);
   }
 
   @override

@@ -1,10 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:base32/base32.dart';
 import 'package:base32/encodings.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 
 class CrockfordBase32 {
-  static String encode(ProtectedValue key) {
+  static String encodeProtected(ProtectedValue key) {
     final str = base32.encode(key.binaryValue, encoding: Encoding.crockford);
+    return _addHyphens(str, groupSize: 5);
+  }
+
+  static String encode(Uint8List key) {
+    final str = base32.encode(key, encoding: Encoding.crockford);
     return _addHyphens(str, groupSize: 5);
   }
 

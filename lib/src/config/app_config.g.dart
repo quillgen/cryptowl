@@ -25,6 +25,8 @@ ConfigData _$ConfigDataFromJson(Map<String, dynamic> json) => ConfigData(
       kdf: KdfParams.fromJson(json['kdf'] as Map<String, dynamic>),
       transformSeed: json['transformSeed'] as String,
       masterSeed: json['masterSeed'] as String,
+      encryptedKey: json['encryptedKey'] as String,
+      authTag: json['authTag'] as String,
     );
 
 Map<String, dynamic> _$ConfigDataToJson(ConfigData instance) =>
@@ -35,6 +37,8 @@ Map<String, dynamic> _$ConfigDataToJson(ConfigData instance) =>
       'kdf': instance.kdf,
       'transformSeed': instance.transformSeed,
       'masterSeed': instance.masterSeed,
+      'encryptedKey': instance.encryptedKey,
+      'authTag': instance.authTag,
     };
 
 KdfParams _$KdfParamsFromJson(Map<String, dynamic> json) => KdfParams(

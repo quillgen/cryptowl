@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,12 +25,8 @@ class ConfigService {
     }
   }
 
-  Future<AppConfig> createConfig(
-      String instanceId,
-      String transformSeed,
-      String masterSeed,
-      ProtectedValue masterPassword,
-      ProtectedValue secretKey) async {
+  Future<AppConfig> createConfig(String instanceId, Uint8List transformSeed,
+      Uint8List masterSeed, AuthEncryptedResult symmetricKey) async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final now = DateTime.now();
     final configData = ConfigData(
@@ -37,8 +34,10 @@ class ConfigService {
         createdAt: now,
         updatedAt: now,
         kdf: KdfParams(algorithm: "argon2id", m: 19, t: 2, p: 1),
-        transformSeed: transformSeed,
-        masterSeed: masterSeed);
+        transformSeed: CrockfordBase32.encode(transformSeed),
+        masterSeed: CrockfordBase32.encode(transformSeed),
+        encryptedKey: CrockfordBase32.encode(symmetricKey.cipherData),
+        authTag: CrockfordBase32.encode(symmetricKey.authTag));
 
     return AppConfig(version: packageInfo.version, data: configData, hash: "");
   }
@@ -57,7 +56,8 @@ class ConfigService {
   }
 
   Future<void> saveSecureStore(String key, ProtectedValue data) async {
-    await secureStore.write(key: key, value: CrockfordBase32.encode(data));
+    await secureStore.write(
+        key: key, value: CrockfordBase32.encodeProtected(data));
   }
 
   Future<Uint8List> generateEmergencyKit(String secretKey) async {

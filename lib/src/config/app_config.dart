@@ -28,6 +28,8 @@ class ConfigData {
   final KdfParams kdf;
   final String transformSeed;
   final String masterSeed;
+  final String encryptedKey;
+  final String authTag;
 
   ConfigData({
     required this.instanceId,
@@ -36,6 +38,8 @@ class ConfigData {
     required this.kdf,
     required this.transformSeed,
     required this.masterSeed,
+    required this.encryptedKey,
+    required this.authTag,
   });
 
   factory ConfigData.fromJson(Map<String, dynamic> json) =>
