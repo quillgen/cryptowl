@@ -30,6 +30,26 @@ print(f"Ciphertext: {binascii.hexlify(encrypted_data).decode()}")
 print(f"Authentication Tag: {binascii.hexlify(auth_tag).decode()}")
 print(f"Combined (ciphertext + tag): {binascii.hexlify(ciphertext).decode()}")
 
+import hmac
+import hashlib
+from binascii import hexlify
+
+# Your provided parameters
+key = bytes.fromhex("509f825b859521f72fe511d2c120f53ed52bf641932d92ba086b89be3d65153a")
+salt = bytes.fromhex("b27f6e2bd596308c190c4f1d68660bc3")
+info = "41964e60-5fc3-472c-8b87-71363c71b03c".encode('utf-8')
+
+# Combine salt and info to form the message
+message =  salt + info
+
+# Calculate HMAC-SHA256
+hmac_result = hmac.new(key, message, hashlib.sha256).digest()
+
+# Convert to hexadecimal string
+hmac_hex = hexlify(hmac_result)
+
+print(f"HMAC-SHA256 Result=>: {hmac_hex}")
+
 def hmac_sha256_hex(hex_key: str, hex_message: str) -> str:
     key_bytes = binascii.unhexlify(hex_key)
     message_bytes = binascii.unhexlify(hex_message)
