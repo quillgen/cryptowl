@@ -30,6 +30,7 @@ class ConfigData {
   final String masterSeed;
   final String encryptedKey;
   final String authTag;
+  final String nonce;
 
   ConfigData({
     required this.instanceId,
@@ -40,6 +41,7 @@ class ConfigData {
     required this.masterSeed,
     required this.encryptedKey,
     required this.authTag,
+    required this.nonce,
   });
 
   factory ConfigData.fromJson(Map<String, dynamic> json) =>

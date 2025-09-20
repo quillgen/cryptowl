@@ -5,6 +5,7 @@ import 'package:cryptowl/src/service/app_service.dart';
 import 'package:cryptowl/src/service/config_service.dart';
 import 'package:cryptowl/src/service/file_service.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
+import 'package:cryptowl/src/service/version_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../service/note_service.dart';
@@ -26,11 +27,15 @@ final fileServiceProvider = Provider((ref) {
 });
 
 final kdfServiceProvider = Provider((ref) {
-  return KdfService();
+  return KdfService(ref.read(configServiceProvider));
+});
+
+final versionServiceProvider = Provider((ref) {
+  return VersionService();
 });
 
 final configServiceProvider = Provider((ref) {
-  return ConfigService();
+  return ConfigService(ref.read(versionServiceProvider));
 });
 
 final noteServiceProvider = Provider((ref) {

@@ -1,22 +1,27 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/crypto/hmac.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logging/logging.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../config/app_config.dart';
 import '../crypto/crockford_base32.dart';
+import 'version_service.dart';
 
 class ConfigService {
   final logger = Logger('ConfigService');
   final secureStore = FlutterSecureStorage();
   final hmac = CryptoHmac();
+
+  final VersionService versionService;
+
+  ConfigService(this.versionService);
 
   Future<AppConfig> loadConfig(String content) async {
     try {
@@ -25,7 +30,7 @@ class ConfigService {
 
       return config;
     } catch (e) {
-      throw ConfigParseException('Failed to load config: $e');
+      throw CorruptedConfigException('Failed to load config: $e');
     }
   }
 
@@ -34,8 +39,8 @@ class ConfigService {
       Uint8List transformSeed,
       Uint8List masterSeed,
       AuthEncryptedResult symmetricKey,
-      ProtectedValue macKey) async {
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      ProtectedValue macKey,
+      Uint8List nonce) async {
     final now = DateTime.now();
     final configData = ConfigData(
       instanceId: instanceId,
@@ -46,13 +51,14 @@ class ConfigService {
       masterSeed: CrockfordBase32.encode(transformSeed),
       encryptedKey: CrockfordBase32.encode(symmetricKey.cipherData),
       authTag: CrockfordBase32.encode(symmetricKey.authTag),
+      nonce: CrockfordBase32.encode(nonce),
     );
 
     final message = utf8.encode(json.encode(configData..toJson()));
     final hash =
         await hmac.calculateMac(ProtectedValue.fromBinary(message), macKey);
     return AppConfig(
-        version: packageInfo.version,
+        version: await versionService.getPackageVersion(),
         data: configData,
         hash: CrockfordBase32.encode(hash));
   }
@@ -117,12 +123,4 @@ class ConfigService {
 
     return pdf.save();
   }
-}
-
-class ConfigParseException implements Exception {
-  final String message;
-  ConfigParseException(this.message);
-
-  @override
-  String toString() => 'ConfigParseException: $message';
 }

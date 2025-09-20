@@ -1,15 +1,25 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:cryptowl/src/config/app_config.dart';
 import 'package:cryptowl/src/crypto/argon2.dart';
+import 'package:cryptowl/src/crypto/crockford_base32.dart';
 import 'package:cryptowl/src/crypto/hkdf.dart';
 import 'package:cryptowl/src/crypto/random_util.dart';
+import 'package:cryptowl/src/service/config_service.dart';
 
+import '../crypto/aead_crypto.dart';
 import '../crypto/protected_value.dart';
 
 class KdfService {
   final hkdf = CryptoGraphyHkdf();
   final argon2 = NativeArgon2();
+  final aeadCrypto = CryptographyAesGcm();
+
+  final ConfigService configService;
+
+  KdfService(this.configService);
 
   /// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
   /// OWASP suggested:
@@ -40,5 +50,71 @@ class KdfService {
 
   Future<ProtectedValue> generateRandomBytes({int length = 32}) async {
     return ProtectedValue.fromBinary(RandomUtil.generateSecureBytes(length));
+  }
+
+  Future<AppConfig> generateAppConfig(
+    ProtectedValue masterPassword,
+    ProtectedValue secretKey,
+    String instanceId,
+    Uint8List transformSeed,
+    Uint8List masterSeed,
+    ProtectedValue symmetricKey,
+    Uint8List nonce,
+  ) async {
+    final instanceIdBytes = utf8.encode(instanceId);
+
+    final transformedMasterKey = await createTransformedMasterKey(
+        masterPassword, secretKey, transformSeed);
+    final stretchedMasterKey = await createStretchedMasterKey(
+        transformedMasterKey, instanceIdBytes, masterSeed);
+    final encryptedSymmetricKey = await _encryptSymmetricKey(
+        symmetricKey, stretchedMasterKey, nonce, instanceIdBytes);
+
+    return configService.createConfig(
+        instanceId,
+        transformSeed,
+        masterSeed,
+        encryptedSymmetricKey,
+        ProtectedValue.fromBinary(
+            Uint8List.sublistView(stretchedMasterKey.binaryValue, 32)),
+        nonce);
+  }
+
+  Future<ProtectedValue> decryptSymmetricKey(ProtectedValue masterPassword,
+      ProtectedValue secretKey, AppConfig config) async {
+    final configData = config.data;
+
+    final transformSeed = CrockfordBase32.decode(configData.transformSeed);
+    final masterSeed = CrockfordBase32.decode(configData.masterSeed);
+    final transformedMasterKey = await createTransformedMasterKey(
+        masterPassword, secretKey, transformSeed.binaryValue);
+    final instanceIdBytes = utf8.encode(configData.instanceId);
+    final stretchedMasterKey = await createStretchedMasterKey(
+        transformedMasterKey, instanceIdBytes, masterSeed.binaryValue);
+
+    print("stretched master key=${stretchedMasterKey.getText()}");
+    final encryptedSymmetricKey =
+        CrockfordBase32.decode(configData.encryptedKey);
+    final authTag = CrockfordBase32.decode(configData.authTag);
+    final nonce = CrockfordBase32.decode(configData.nonce);
+    final decryptKey =
+        Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
+    return aeadCrypto.decrypt(
+        AuthEncryptedResult(
+            encryptedSymmetricKey.binaryValue, authTag.binaryValue),
+        ProtectedValue.fromBinary(decryptKey),
+        nonce.binaryValue,
+        instanceIdBytes);
+  }
+
+  Future<AuthEncryptedResult> _encryptSymmetricKey(
+      ProtectedValue symmetricKey,
+      ProtectedValue stretchedMasterKey,
+      Uint8List nonce,
+      Uint8List instanceId) async {
+    print("stretched master key:${stretchedMasterKey.getText()}");
+    final key = Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
+    return aeadCrypto.encrypt(
+        symmetricKey, ProtectedValue.fromBinary(key), nonce, instanceId);
   }
 }

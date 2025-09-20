@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cryptowl/src/config/app_config.dart';
 import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/domain/user.dart';
@@ -32,23 +33,8 @@ class AppService {
 
   Future<void> initialize(ProtectedValue masterPassword, String? hint) async {
     await fileService.copyJiebaDicts();
-
-    final instanceId = RandomUtil.generateName();
     final secretKey = await kdfService.generateRandomBytes(length: 32);
-    final transformSeed = await kdfService.generateRandomBytes(length: 16);
-    final masterSeed = await kdfService.generateRandomBytes(length: 16);
-    final symmetricKey = await kdfService.generateRandomBytes(length: 64);
-    final nonce = await kdfService.generateRandomBytes(length: 16);
-
-    final instanceIdBytes = utf8.encode(instanceId);
-
-    final transformedMasterKey = await kdfService.createTransformedMasterKey(
-        masterPassword, secretKey, transformSeed.binaryValue);
-    final stretchedMasterKey = await kdfService.createStretchedMasterKey(
-        transformedMasterKey, instanceIdBytes, masterSeed.binaryValue);
-    final encryptedSymmetricKey = await _encryptSymmetricKey(
-        symmetricKey, stretchedMasterKey, nonce.binaryValue, instanceIdBytes);
-
+    final instanceId = RandomUtil.generateName();
     final secretKeyLocation = _secretKeyId(instanceId);
     await configService.saveSecureStore(secretKeyLocation, secretKey);
     if (hint != null) {
@@ -61,21 +47,26 @@ class AppService {
     if (secretKey != savedSecretKey) {
       throw Exception("Failed to save secret key");
     }
-    final config = await configService.createConfig(
+
+    final transformSeed = await kdfService.generateRandomBytes(length: 16);
+    final masterSeed = await kdfService.generateRandomBytes(length: 16);
+    final symmetricKey = await kdfService.generateRandomBytes(length: 64);
+    final nonce = await kdfService.generateRandomBytes(length: 16);
+    final config = await kdfService.generateAppConfig(
+        masterPassword,
+        secretKey,
         instanceId,
         transformSeed.binaryValue,
         masterSeed.binaryValue,
-        encryptedSymmetricKey,
-        ProtectedValue.fromBinary(
-            Uint8List.sublistView(stretchedMasterKey.binaryValue, 32)));
-
+        symmetricKey,
+        nonce.binaryValue);
     await fileService.writeFile(
         json.encode(config.toJson()), "${instanceId}.cfg");
 
     final db = SqliteDb.open(
         "${instanceId}.enc",
         ProtectedValue.fromBinary(
-            Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32)));
+            Uint8List.sublistView(symmetricKey.binaryValue, 0, 32)));
 
     // force to trigger database creation
     logger.fine("Creating sqlcipher db $instanceId...");
@@ -87,8 +78,18 @@ class AppService {
     logger.info("Trying to login with $instanceId");
 
     final File configFile = await fileService.getConfigFile(instanceId);
+    if (!await configFile.exists()) {
+      throw CorruptedConfigException("Config file does not exist: $configFile");
+    }
     final data = await configFile.readAsBytes();
     final config = await configService.loadConfig(utf8.decode(data));
+
+    try {
+      final symmetricKey = await _decryptSymmetricKey(password, config);
+    } catch (e) {
+      logger.warning("Failed to decrypt symmetric key: $e");
+      throw IncorrectPasswordException();
+    }
 
     try {
       final sqlite = SqliteDb.open("fixme", ProtectedValue.fromString("fixMe"));
@@ -96,9 +97,20 @@ class AppService {
       await sqlite.select(sqlite.passwords).get();
       return Session(dbConfig, sqlite);
     } catch (e) {
-      logger.severe("Login failed, password incorrect", e);
       throw IncorrectPasswordException();
     }
+  }
+
+  Future<ProtectedValue> _decryptSymmetricKey(
+      ProtectedValue masterPassword, AppConfig config) async {
+    final configData = config.data;
+    final secretKeyLocation = _secretKeyId(configData.instanceId);
+    final secretKey = await configService.readSecureStore(secretKeyLocation);
+    if (secretKey == null) {
+      throw CorruptedConfigException(
+          "Secret key not found for instance:${configData.instanceId}");
+    }
+    return kdfService.decryptSymmetricKey(masterPassword, secretKey, config);
   }
 
   String _secretKeyId(String instanceId) {
@@ -114,6 +126,7 @@ class AppService {
       ProtectedValue stretchedMasterKey,
       Uint8List nonce,
       Uint8List instanceId) async {
+    print("stretched master key:${stretchedMasterKey.getText()}");
     final key = Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
     return aeadCrypto.encrypt(
         symmetricKey, ProtectedValue.fromBinary(key), nonce, instanceId);

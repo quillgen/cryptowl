@@ -27,6 +27,7 @@ ConfigData _$ConfigDataFromJson(Map<String, dynamic> json) => ConfigData(
       masterSeed: json['masterSeed'] as String,
       encryptedKey: json['encryptedKey'] as String,
       authTag: json['authTag'] as String,
+      nonce: json['nonce'] as String,
     );
 
 Map<String, dynamic> _$ConfigDataToJson(ConfigData instance) =>
@@ -39,6 +40,7 @@ Map<String, dynamic> _$ConfigDataToJson(ConfigData instance) =>
       'masterSeed': instance.masterSeed,
       'encryptedKey': instance.encryptedKey,
       'authTag': instance.authTag,
+      'nonce': instance.nonce,
     };
 
 KdfParams _$KdfParamsFromJson(Map<String, dynamic> json) => KdfParams(
