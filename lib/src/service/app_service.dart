@@ -30,20 +30,6 @@ class AppService {
     return dbs.isNotEmpty;
   }
 
-  Future<Session> login(ProtectedValue password) async {
-    final File config = await fileService.getConfigFile();
-    final data = await config.readAsBytes();
-    try {
-      final sqlite = SqliteDb.open("fixme", ProtectedValue.fromString("fixMe"));
-      final SqliteConfig dbConfig = SqliteConfig("1", "1", "1");
-      await sqlite.select(sqlite.passwords).get();
-      return Session(dbConfig, sqlite);
-    } catch (e) {
-      logger.severe("Login failed, password incorrect", e);
-      throw IncorrectPasswordException();
-    }
-  }
-
   Future<void> initialize(ProtectedValue masterPassword, String? hint) async {
     await fileService.copyJiebaDicts();
 
@@ -65,6 +51,10 @@ class AppService {
 
     final secretKeyLocation = _secretKeyId(instanceId);
     await configService.saveSecureStore(secretKeyLocation, secretKey);
+    if (hint != null) {
+      await configService.saveSecureStore(
+          _hintId(instanceId), ProtectedValue.fromBinary(utf8.encode(hint)));
+    }
 
     final savedSecretKey =
         await configService.readSecureStore(secretKeyLocation);
@@ -93,8 +83,30 @@ class AppService {
     await db.close();
   }
 
+  Future<Session> login(String instanceId, ProtectedValue password) async {
+    logger.info("Trying to login with $instanceId");
+
+    final File configFile = await fileService.getConfigFile(instanceId);
+    final data = await configFile.readAsBytes();
+    final config = await configService.loadConfig(utf8.decode(data));
+
+    try {
+      final sqlite = SqliteDb.open("fixme", ProtectedValue.fromString("fixMe"));
+      final SqliteConfig dbConfig = SqliteConfig("1", "1", "1");
+      await sqlite.select(sqlite.passwords).get();
+      return Session(dbConfig, sqlite);
+    } catch (e) {
+      logger.severe("Login failed, password incorrect", e);
+      throw IncorrectPasswordException();
+    }
+  }
+
   String _secretKeyId(String instanceId) {
     return "SECRET-KEY:$instanceId";
+  }
+
+  String _hintId(String instanceId) {
+    return "HINT:$instanceId";
   }
 
   Future<AuthEncryptedResult> _encryptSymmetricKey(

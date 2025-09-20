@@ -14,8 +14,6 @@ const dictAssets = [
 ];
 
 class FileService {
-  static const String configFileName = "config.json";
-
   Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {
     final docDir = await PathUtil.getLocalPath("dict");
 
@@ -45,18 +43,9 @@ class FileService {
         .toList();
   }
 
-  Future<File> getConfigFile() async {
-    return File(await PathUtil.getLocalPath(configFileName));
-  }
-
-  Future<bool> hasConfigFile() async {
-    final File config = await getConfigFile();
-    return config.existsSync();
-  }
-
-  Future<void> writeConfig(String content) async {
-    final file = await getConfigFile();
-    await file.writeAsString(content, flush: true);
+  Future<File> getConfigFile(String instanceId) async {
+    final config = "${instanceId}.cfg";
+    return File(await PathUtil.getLocalPath(config));
   }
 
   Future<void> writeFile(String content, String fileName) async {

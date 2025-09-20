@@ -40,10 +40,11 @@ class AsyncLoginNotifier extends AsyncNotifier<Session?> {
     return null;
   }
 
-  Future<void> login(ProtectedValue password) async {
+  Future<void> login(String instanceId, ProtectedValue password) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final session = await ref.read(appServiceProvider).login(password);
+      final session =
+          await ref.read(appServiceProvider).login(instanceId, password);
 
       ref.onDispose(() {
         logger.fine("Disposing db...");
