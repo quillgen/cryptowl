@@ -9,20 +9,11 @@ import 'package:cryptowl/src/service/file_service.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../common/exceptions.dart';
 import '../crypto/protected_value.dart';
 import '../crypto/random_util.dart';
 import '../database/database.dart';
-
-const dictAssets = [
-  'assets/dict/jieba.dict.utf8',
-  'assets/dict/hmm_model.utf8',
-  'assets/dict/user.dict.utf8',
-  'assets/dict/idf.utf8',
-  'assets/dict/stop_words.utf8',
-];
 
 class AppService {
   final logger = Logger('AppService');
@@ -54,7 +45,8 @@ class AppService {
   }
 
   Future<void> initialize(ProtectedValue masterPassword, String? hint) async {
-    await _copyJiebaDicts();
+    await fileService.copyJiebaDicts();
+
     final instanceId = RandomUtil.generateName();
     final secretKey = await kdfService.generateRandomBytes(length: 32);
     final transformSeed = await kdfService.generateRandomBytes(length: 16);
@@ -103,25 +95,6 @@ class AppService {
 
   String _secretKeyId(String instanceId) {
     return "SECRET-KEY:$instanceId";
-  }
-
-  Future<void> _copyAssetsToDocDir(List<String> assetPaths) async {
-    final docDir = await getApplicationDocumentsDirectory();
-
-    final dictDir = Directory('${docDir.path}/dict');
-    if (!(await dictDir.exists())) {
-      await dictDir.create(recursive: true);
-    }
-    for (final asset in assetPaths) {
-      final data = await rootBundle.load(asset);
-      final filename = asset.split('/').last;
-      final file = File('${docDir.path}/dict/$filename');
-      await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
-    }
-  }
-
-  Future<void> _copyJiebaDicts() async {
-    await _copyAssetsToDocDir(dictAssets);
   }
 
   Future<AuthEncryptedResult> _encryptSymmetricKey(
