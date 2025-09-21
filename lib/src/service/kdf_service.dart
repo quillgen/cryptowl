@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:cryptowl/src/config/app_config.dart';
 import 'package:cryptowl/src/crypto/argon2.dart';
 import 'package:cryptowl/src/crypto/crockford_base32.dart';
@@ -46,6 +47,27 @@ class KdfService {
       Uint8List masterSeed) async {
     return hkdf.deriveKey(
         ikm: transformedMasterKey, salt: masterSeed, info: instanceId);
+  }
+
+  Future<AuthEncryptedResult> createProtectedSymmetricKey(
+      ProtectedValue symmetricKey,
+      ProtectedValue stretchedMasterKey,
+      Uint8List nonce,
+      Uint8List instanceId) async {
+    if (symmetricKey.binaryValue.length != 64) {
+      throw InvalidKeyException(
+          "Symmetric key should be 64 bytes long but actually is ${symmetricKey.binaryValue.length}");
+    }
+    if (stretchedMasterKey.binaryValue.length != 64) {
+      throw InvalidKeyException(
+          "Stretched master key should be 64 bytes long but actually is ${stretchedMasterKey.binaryValue.length}");
+    }
+    if (nonce.length != 12) {
+      throw InvalidKeyException(
+          "Nonce should be 12 bytes long but actually is ${nonce.length}");
+    }
+    return _encryptSymmetricKey(
+        symmetricKey, stretchedMasterKey, nonce, instanceId);
   }
 
   Future<ProtectedValue> generateRandomBytes({int length = 32}) async {
@@ -112,7 +134,6 @@ class KdfService {
       ProtectedValue stretchedMasterKey,
       Uint8List nonce,
       Uint8List instanceId) async {
-    print("stretched master key:${stretchedMasterKey.getText()}");
     final key = Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
     return aeadCrypto.encrypt(
         symmetricKey, ProtectedValue.fromBinary(key), nonce, instanceId);

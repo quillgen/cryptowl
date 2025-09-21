@@ -2,10 +2,12 @@ import hmac
 import hashlib
 import binascii
 from argon2 import low_level, Type
-# pip install argon2-cffi pynacl
-
-import binascii
+from binascii import unhexlify
+from hkdf import hkdf_extract, hkdf_expand
+from Crypto.Cipher import AES
 from nacl.bindings import crypto_aead_chacha20poly1305_ietf_encrypt
+
+# pip install argon2-cffi pynacl pycryptodome
 
 # Input data
 data = b"hello world!"
@@ -30,25 +32,16 @@ print(f"Ciphertext: {binascii.hexlify(encrypted_data).decode()}")
 print(f"Authentication Tag: {binascii.hexlify(auth_tag).decode()}")
 print(f"Combined (ciphertext + tag): {binascii.hexlify(ciphertext).decode()}")
 
-import hmac
-import hashlib
-from binascii import hexlify
+def encrypt_aes256gcm_hex(hex_key: str, hex_plain_text: str, hex_nonce: str, aad: str) -> (str, str):
+    key_bytes = binascii.unhexlify(hex_key)
+    message_bytes = binascii.unhexlify(hex_plain_text)
+    nonce_bytes = binascii.unhexlify(hex_nonce)
+    aad_bytes = aad.encode('utf-8')
 
-# Your provided parameters
-key = bytes.fromhex("509f825b859521f72fe511d2c120f53ed52bf641932d92ba086b89be3d65153a")
-salt = bytes.fromhex("b27f6e2bd596308c190c4f1d68660bc3")
-info = "41964e60-5fc3-472c-8b87-71363c71b03c".encode('utf-8')
-
-# Combine salt and info to form the message
-message =  salt + info
-
-# Calculate HMAC-SHA256
-hmac_result = hmac.new(key, message, hashlib.sha256).digest()
-
-# Convert to hexadecimal string
-hmac_hex = hexlify(hmac_result)
-
-print(f"HMAC-SHA256 Result=>: {hmac_hex}")
+    cipher = AES.new(key_bytes, AES.MODE_GCM, nonce_bytes)
+    cipher.update(aad_bytes)
+    ed, auth_tag = cipher.encrypt_and_digest(message_bytes)
+    return (binascii.hexlify(ed).decode('utf-8'), binascii.hexlify(auth_tag).decode('utf-8'))
 
 def hmac_sha256_hex(hex_key: str, hex_message: str) -> str:
     key_bytes = binascii.unhexlify(hex_key)
@@ -79,12 +72,34 @@ def generate_argon2_hash_hex(hex_password: str, hex_salt: str) -> str:
     
     return binascii.hexlify(raw_key).decode('utf-8')
 
-if __name__ == "__main__":
-    hex_key = "313233343536" #123456
-    hex_message = "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f"
-    hex_salt = "b27f6e2bd596308c190c4f1d68660bc3"
+def derive_hkdf(key_hex, salt_hex, info, output_length=64):
+    key = binascii.unhexlify(key_hex)
+    salt = binascii.unhexlify(salt_hex)
+    info_bytes = info.encode('utf-8')
 
-    hash1 = hmac_sha256_hex(hex_key, hex_message)
-    master_key = generate_argon2_hash_hex(hash1, hex_salt)
-    print(f"HMAC-SHA256 (hex): {hash1}")
-    print(f"MasterKey (hex): {master_key}")
+    prk = hkdf_extract(salt, key, hash=hashlib.sha256)
+    derived_key = hkdf_expand(prk, info_bytes, output_length, hash=hashlib.sha256)
+
+    return binascii.hexlify(derived_key).decode('utf-8')
+
+if __name__ == "__main__":
+    master_password = "313233343536" #123456
+    secret_key = "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f"
+    transform_seed = "b27f6e2bd596308c190c4f1d68660bc3"
+    master_seed = "8a7c01c0b81c8872e016d779486bc189"
+    instance_id = "WJB6W"
+    symmetric_key = "8fc13f5ef75f029588dfe60f72706283bbc1e781a13f3df799c25131abb8b300adf0efe34d377c605f964bd505bf174c1f4521d6244d5e75309dc3ea115b95be"
+    nonce = "2921075aed8cae8b22aae119"
+
+    master_key = hmac_sha256_hex(master_password, secret_key)
+    transformed_master_key = generate_argon2_hash_hex(master_key, transform_seed)
+    strectched_master_key = derive_hkdf(transformed_master_key, master_seed, instance_id)
+
+    encrypted_symmetric_Key, auth_tag = encrypt_aes256gcm_hex(strectched_master_key[:64], symmetric_key, nonce, instance_id)
+
+    print(f"secret_key: {secret_key}")
+    print(f"master_key: {master_key}")
+    print(f"transformed_master_key: {transformed_master_key}")
+    print(f"strectched_master_key: {strectched_master_key}")
+    print(f"protected_symmetric_Key: {encrypted_symmetric_Key}")
+    print(f"auth_tag: {auth_tag}")

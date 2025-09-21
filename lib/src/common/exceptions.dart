@@ -4,3 +4,8 @@ class CorruptedConfigException implements Exception {
   String cause;
   CorruptedConfigException(this.cause);
 }
+
+class InvalidKeyException implements Exception {
+  String cause;
+  InvalidKeyException(this.cause);
+}

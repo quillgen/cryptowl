@@ -51,7 +51,8 @@ class AppService {
     final transformSeed = await kdfService.generateRandomBytes(length: 16);
     final masterSeed = await kdfService.generateRandomBytes(length: 16);
     final symmetricKey = await kdfService.generateRandomBytes(length: 64);
-    final nonce = await kdfService.generateRandomBytes(length: 16);
+    final nonce = await kdfService.generateRandomBytes(
+        length: 12); // AES-256 GCM uses 12bytes nonce
     final config = await kdfService.generateAppConfig(
         masterPassword,
         secretKey,
