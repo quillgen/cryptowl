@@ -1,179 +1,118 @@
-import 'dart:collection';
-
 import 'package:cryptowl/src/providers/providers.dart';
 import 'package:flutter/material.dart' hide DropdownMenuFormField;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../components/dropdown_formfield.dart';
-import '../components/form_input.dart';
 import '../crypto/protected_value.dart';
 
-class PasswordCreatePage extends ConsumerStatefulWidget {
+class PasswordCreatePage extends HookConsumerWidget {
   const PasswordCreatePage({super.key});
 
   static const String path = '/create';
   static const String name = 'Password Create';
 
   @override
-  ConsumerState<PasswordCreatePage> createState() => _PasswordCreatePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final passwordRepository = ref.watch(passwordRepositoryProvider);
 
-const formTextStyle = TextStyle(fontSize: 14);
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final titleController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    final userController = useTextEditingController();
+    final remarkController = useTextEditingController();
+    final isTopSecret = useState<bool>(false);
 
-typedef IconEntry = DropdownMenuEntry<ClassificationLabel>;
-
-enum ClassificationLabel {
-  confidential(
-      'Confidential', Icon(Icons.notes, color: Colors.green, size: 18), 1),
-  secret('Secret', Icon(Icons.notes, color: Colors.orange, size: 18), 0),
-  topSecret('Top Secret', Icon(Icons.notes, color: Colors.red, size: 18), 99);
-
-  const ClassificationLabel(this.label, this.icon, this.level);
-
-  final String label;
-  final Icon icon;
-  final int level;
-
-  static final List<IconEntry> entries = UnmodifiableListView<IconEntry>(
-    values.map<IconEntry>(
-      (ClassificationLabel icon) =>
-          IconEntry(value: icon, label: icon.label, leadingIcon: icon.icon),
-    ),
-  );
-
-  static ClassificationLabel from(int level) {
-    switch (level) {
-      case 1:
-        return ClassificationLabel.topSecret;
-      case 0:
-        return ClassificationLabel.confidential;
-      default:
-        return ClassificationLabel.secret;
+    String? mandatoryValidator(String? value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter a value';
+      }
+      return null;
     }
-  }
-}
 
-class _PasswordCreatePageState extends ConsumerState<PasswordCreatePage> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _uriController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _remarkController = TextEditingController();
-  final _classificationController = TextEditingController();
+    void submitForm() async {
+      if (formKey.currentState!.validate()) {
+        await passwordRepository.create(
+            titleController.text,
+            ProtectedValue.fromString(passwordController.text),
+            isTopSecret.value,
+            userController.text,
+            remarkController.text);
+        if (context.mounted) {
+          context.pop();
+        }
+      }
+    }
 
-  ClassificationLabel classification = ClassificationLabel.secret;
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _uriController.dispose();
-    _remarkController.dispose();
-    _classificationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final passwordRepository = ref.read(passwordRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Add item'),
-        actions: [
-          TextButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  await passwordRepository.create(
-                      classification.level,
-                      _titleController.text,
-                      ProtectedValue.fromString(_passwordController.text),
-                      username: _usernameController.text,
-                      url: _uriController.text,
-                      remark: _remarkController.text);
-                  ref.invalidate(passwordsProvider);
-                  if (context.mounted) {
-                    context.pop();
-                  }
-                }
-              },
-              child: Text("Save"))
-        ],
+        title: Text('Create password'),
+        actions: [TextButton(onPressed: submitForm, child: Text("Save"))],
       ),
       body: Padding(
         padding: EdgeInsets.all(12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              DropdownMenuFormField<ClassificationLabel>(
-                enableFilter: true,
-                expandedInsets: EdgeInsets.zero,
-                controller: _classificationController,
-                initialSelection: ClassificationLabel.secret,
-                requestFocusOnTap: true,
-                leadingIcon: classification.icon,
-                label: const Text('Classification'),
-                inputDecorationTheme: const InputDecorationTheme(
-                  filled: true,
-                  isDense: true,
+        child: SingleChildScrollView(
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                TextFormField(
+                  controller: titleController,
+                  validator: mandatoryValidator,
+                  decoration: const InputDecoration(
+                    helperText: 'Title is plaintext and searchable',
+                    labelText: 'Title *',
+                  ),
                 ),
-                onSelected: (ClassificationLabel? value) {
-                  setState(() {
-                    classification = value ?? ClassificationLabel.secret;
-                  });
-                },
-                dropdownMenuEntries: ClassificationLabel.entries,
-                validator: (ClassificationLabel? value) {
-                  final input = _classificationController.text;
-                  if (value == null ||
-                      !ClassificationLabel.values
-                          .map((label) => label.label)
-                          .contains(input)) {
-                    return 'Please select a classification.';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
-              FormInput(
-                controller: _titleController,
-                name: "Name",
-                protected: false,
-                required: true,
-              ),
-              SizedBox(height: 10),
-              FormInput(
-                controller: _usernameController,
-                name: "Username",
-                protected: false,
-                required: true,
-              ),
-              SizedBox(height: 10),
-              FormInput(
-                controller: _passwordController,
-                name: "Password",
-                protected: true,
-                required: true,
-              ),
-              SizedBox(height: 10),
-              FormInput(
-                controller: _uriController,
-                name: "URI",
-                protected: false,
-                required: false,
-              ),
-              SizedBox(height: 10),
-              FormInput(
-                controller: _remarkController,
-                name: "Remark",
-                protected: false,
-                required: false,
-              ),
-            ],
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  validator: mandatoryValidator,
+                  decoration: const InputDecoration(
+                      helperText: 'Password will be encrypted and protected',
+                      labelText: 'Password *',
+                      suffixIcon: Icon(
+                        Icons.shield,
+                        color: Colors.green,
+                      )),
+                ),
+                const SizedBox(height: 20),
+                SwitchListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  contentPadding: EdgeInsets.all(0),
+                  title: Text(
+                    'Top secret',
+                  ),
+                  subtitle: Text(
+                    'Top secret will be encrypted with additional security',
+                  ),
+                  value: isTopSecret.value,
+                  onChanged: (bool value) {
+                    isTopSecret.value = value;
+                  },
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: userController,
+                  decoration: const InputDecoration(
+                    helperText: 'User name of this login',
+                    labelText: 'User name',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: remarkController,
+                  decoration: const InputDecoration(
+                    helperText: 'Add any remark if you want',
+                    labelText: 'Remark',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

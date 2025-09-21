@@ -108,7 +108,8 @@ class AppService {
       await sqlite.select(sqlite.tPassword).get();
       return Session(sqlite);
     } catch (e) {
-      throw IncorrectPasswordException();
+      logger.severe("Failed to open sqlcipher: $e");
+      throw InternalException("Failed to open sqlcihper: ${e}");
     }
   }
 

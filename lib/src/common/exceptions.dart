@@ -9,3 +9,8 @@ class InvalidKeyException implements Exception {
   String cause;
   InvalidKeyException(this.cause);
 }
+
+class InternalException implements Exception {
+  String cause;
+  InternalException(this.cause);
+}

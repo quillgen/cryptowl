@@ -1,4 +1,6 @@
 import 'package:cryptowl/src/common/classification.dart';
+import 'package:cryptowl/src/common/string.dart';
+import 'package:cryptowl/src/crypto/random_util.dart';
 
 import '../crypto/protected_value.dart';
 import '../database/database.dart';
@@ -25,6 +27,9 @@ class PasswordBasic {
   });
 }
 
+const ATTR_USER = "user";
+const ATTR_REMARK = "remark";
+
 class PasswordAttribute {
   String name;
   bool isProtected;
@@ -42,7 +47,7 @@ class Password {
   String? title;
   DateTime? expireTime;
   ProtectedValue value;
-  List<PasswordAttribute>? attributes;
+  List<PasswordAttribute> attributes;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -53,11 +58,35 @@ class Password {
       required this.title,
       this.expireTime,
       required this.value,
-      this.attributes,
+      required this.attributes,
       required this.categoryId,
       required this.createdAt,
       required this.updatedAt});
 
+  factory Password.create(String title, ProtectedValue password,
+      bool isTopSecret, String? user, String? remark) {
+    final now = DateTime.now();
+    return Password(
+        id: RandomUtil.generateUUID(),
+        type: 0,
+        title: title,
+        value: password,
+        categoryId: 0,
+        attributes: [
+          if (user.isNotBlank)
+            PasswordAttribute(
+                name: ATTR_USER,
+                isProtected: false,
+                value: ProtectedValue.fromString(user!)),
+          if (remark.isNotBlank)
+            PasswordAttribute(
+                name: ATTR_USER,
+                isProtected: false,
+                value: ProtectedValue.fromString(remark!)),
+        ],
+        createdAt: now,
+        updatedAt: now);
+  }
   static Password fromEntity(TPasswordData e) {
     return Password(
         id: e.id,
@@ -66,6 +95,7 @@ class Password {
         value: ProtectedValue.fromString("tbd"),
         categoryId: e.categoryId,
         createdAt: e.createdAt,
+        attributes: [],
         updatedAt: e.updatedAt);
   }
 }

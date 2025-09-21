@@ -44,10 +44,11 @@ class PasswordRepository extends SqlcipherRepository {
     return true;
   }
 
-  Future<void> create(int level, String text, ProtectedValue protectedValue,
-      {required String username,
-      required String url,
-      required String remark}) async {}
+  Future<void> create(String title, ProtectedValue protectedValue,
+      bool isTopSecret, String? user, String? remark) async {
+    final db = await requireDb();
+    return db.transaction(() async {});
+  }
 
   Future<void> update(String id,
       {required String title,
