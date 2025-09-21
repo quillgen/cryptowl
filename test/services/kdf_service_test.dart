@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:cryptography/cryptography.dart';
+import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:cryptowl/src/service/config_service.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
@@ -10,6 +12,7 @@ import 'package:cryptowl/src/service/version_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:native_argon2/native_argon2.dart';
+import 'package:path/path.dart' as path;
 
 @GenerateNiceMocks([MockSpec<ConfigService>(), MockSpec<VersionService>()])
 import 'kdf_service_test.mocks.dart';
@@ -128,6 +131,93 @@ void main() {
         ProtectedValue.fromBinary(symmetricKey),
         nonce);
 
-    expect(config.data.instanceId, "001");
+    final decrypted = await service.decryptSymmetricKey(
+        ProtectedValue.fromBinary(masterPassword),
+        ProtectedValue.fromBinary(secretKey),
+        config);
+    expect(decrypted.binaryValue, symmetricKey);
+  });
+
+  test('should decrypt and get symmetric key if credentials correct', () async {
+    final scriptDir = path.dirname(Platform.script.path);
+    final file = File(path.join(scriptDir, 'test/services/WJB6W.cfg'));
+    final content = await file.readAsString();
+    final config = await ConfigService(mockVersionService).loadConfig(content);
+
+    final masterPassword = utf8.encode("123456");
+    final secretKey = hex.decode(
+            "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f")
+        as Uint8List;
+
+    final symmetricKey = hex.decode(
+            "8fc13f5ef75f029588dfe60f72706283bbc1e781a13f3df799c25131abb8b300adf0efe34d377c605f964bd505bf174c1f4521d6244d5e75309dc3ea115b95be")
+        as Uint8List;
+
+    final decrypted = await service.decryptSymmetricKey(
+        ProtectedValue.fromBinary(masterPassword),
+        ProtectedValue.fromBinary(secretKey),
+        config);
+    expect(decrypted.binaryValue, symmetricKey);
+  });
+
+  test('should return error when decrypt if master password in correct',
+      () async {
+    final scriptDir = path.dirname(Platform.script.path);
+    final file = File(path.join(scriptDir, 'test/services/WJB6W.cfg'));
+    final content = await file.readAsString();
+    final config = await ConfigService(mockVersionService).loadConfig(content);
+
+    final masterPassword = utf8.encode("45678");
+    final secretKey = hex.decode(
+            "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f")
+        as Uint8List;
+
+    Future<ProtectedValue> r() async => await service.decryptSymmetricKey(
+        ProtectedValue.fromBinary(masterPassword),
+        ProtectedValue.fromBinary(secretKey),
+        config);
+
+    expect(r, throwsA(isA<SecretBoxAuthenticationError>()));
+  });
+
+  test('should return error when decrypt if secret key incorrect', () async {
+    final scriptDir = path.dirname(Platform.script.path);
+    final file = File(path.join(scriptDir, 'test/services/WJB6W.cfg'));
+    final content = await file.readAsString();
+    final config = await ConfigService(mockVersionService).loadConfig(content);
+
+    final masterPassword = utf8.encode("123456");
+    final secretKey = hex.decode(
+        "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f"
+            .replaceAll("9", "8")) as Uint8List;
+
+    Future<ProtectedValue> r() async => await service.decryptSymmetricKey(
+        ProtectedValue.fromBinary(masterPassword),
+        ProtectedValue.fromBinary(secretKey),
+        config);
+
+    expect(r, throwsA(isA<SecretBoxAuthenticationError>()));
+  });
+
+  test('should return error when decrypt if config file hash not match',
+      () async {
+    final scriptDir = path.dirname(Platform.script.path);
+    final file = File(path.join(scriptDir, 'test/services/WJB6W.cfg'));
+    final content = await file.readAsString();
+    // corrupt create/update time, if other fields are corrupted, will result in SecretBoxAuthenticationError
+    final config = await ConfigService(mockVersionService)
+        .loadConfig(content.replaceAll("2025-09-21", "2025-09-22"));
+
+    final masterPassword = utf8.encode("123456");
+    final secretKey = hex.decode(
+            "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f")
+        as Uint8List;
+
+    Future<ProtectedValue> r() async => await service.decryptSymmetricKey(
+        ProtectedValue.fromBinary(masterPassword),
+        ProtectedValue.fromBinary(secretKey),
+        config);
+
+    expect(r, throwsA(isA<CorruptedConfigException>()));
   });
 }

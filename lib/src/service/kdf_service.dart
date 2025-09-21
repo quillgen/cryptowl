@@ -120,12 +120,23 @@ class KdfService {
     final nonce = CrockfordBase32.decode(configData.nonce);
     final decryptKey =
         Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
-    return aeadCrypto.decrypt(
+    final symmetricKey = await aeadCrypto.decrypt(
         AuthEncryptedResult(
             encryptedSymmetricKey.binaryValue, authTag.binaryValue),
         ProtectedValue.fromBinary(decryptKey),
         nonce.binaryValue,
         instanceIdBytes);
+
+    // though the symmetric key is decrypted, other config data might be corrupted,
+    // thus it's necessary to verify it anyway
+    final hashVerifyOk = await configService.verifyConfig(
+        config,
+        ProtectedValue.fromBinary(
+            Uint8List.sublistView(stretchedMasterKey.binaryValue, 32)));
+    if (!hashVerifyOk) {
+      throw CorruptedConfigException("Config file is corrupted");
+    }
+    return symmetricKey;
   }
 
   Future<AuthEncryptedResult> _encryptSymmetricKey(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:cryptowl/src/common/exceptions.dart';
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/crypto/hmac.dart';
@@ -32,6 +33,14 @@ class ConfigService {
     } catch (e) {
       throw CorruptedConfigException('Failed to load config: $e');
     }
+  }
+
+  Future<bool> verifyConfig(AppConfig config, ProtectedValue macKey) async {
+    final message = utf8.encode(json.encode(config.data.toJson()));
+    final hash =
+        await hmac.calculateMac(ProtectedValue.fromBinary(message), macKey);
+    return hex.encode(CrockfordBase32.decode(config.hash).binaryValue) ==
+        hex.encode(hash);
   }
 
   Future<AppConfig> createConfig(
