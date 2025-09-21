@@ -15,17 +15,16 @@ class AsyncPasswordsNotifier extends AsyncNotifier<List<PasswordBasic>> {
     final includeDeleted = filters.contains(PasswordFilter.deleted);
     final classifications = <int>[];
     if (filters.contains(PasswordFilter.topSecret)) {
-      classifications.add(TOP_SECRET);
+      classifications.add(1);
     }
     if (filters.contains(PasswordFilter.secret)) {
-      classifications.add(SECRET);
+      classifications.add(1);
     }
     if (filters.contains(PasswordFilter.confidential)) {
-      classifications.add(CONFIDENTIAL);
+      classifications.add(1);
     }
-    return ref
-        .read(passwordRepositoryProvider)
-        .listByFilters(classifications, includeDeleted);
+    // FIXME:
+    return ref.read(passwordRepositoryProvider).list();
   }
 }
 

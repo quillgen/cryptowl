@@ -69,7 +69,7 @@ class AppService {
 
     // force to trigger database creation
     logger.fine("Creating sqlcipher db $instanceId...");
-    await db.select(db.passwords).get();
+    await db.select(db.tPassword).get();
     await db.close();
   }
 
@@ -105,7 +105,7 @@ class AppService {
       final sqlite =
           SqliteDb.open("${config.data.instanceId}.enc", encryptionKey);
 
-      await sqlite.select(sqlite.passwords).get();
+      await sqlite.select(sqlite.tPassword).get();
       return Session(sqlite);
     } catch (e) {
       throw IncorrectPasswordException();

@@ -24,8 +24,8 @@ class NoteRepository extends SqlcipherRepository {
         classification: Classification.parse(item.classification),
         title: item.title,
         abstract: item.abstract,
-        createTime: item.createdAt,
-        lastUpdateTime: item.updatedAt,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       );
     }).toList();
   }
@@ -41,8 +41,8 @@ class NoteRepository extends SqlcipherRepository {
         classification: Classification.parse(item.classification),
         title: item.title,
         abstract: item.abstract,
-        createTime: item.createdAt,
-        lastUpdateTime: item.updatedAt,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       );
     }).toList();
   }

@@ -43,11 +43,11 @@ class _PasswordEditPageState extends ConsumerState<PasswordEditPage> {
     final passwordRepository = ref.read(passwordRepositoryProvider);
 
     detailFuture.whenData((value) {
-      _titleController.text = value.title;
-      _usernameController.text = value.username ?? "";
+      _titleController.text = value.title ?? "";
+      _usernameController.text = "";
       _passwordController.text = value.value.getText();
-      _uriController.text = value.uri ?? "";
-      _remarkController.text = value.remark ?? "";
+      _uriController.text = "";
+      _remarkController.text = "";
     });
 
     return Scaffold(

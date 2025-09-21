@@ -79,9 +79,8 @@ void main() {
       expect(list[0].title, "Foobar");
       expect(list[0].abstract, "Hello 欢迎来到中国！\n");
       expect(list[0].classification, Classification.confidential);
-      expect(list[0].createTime, DateTime.parse('2022-07-21 09:28:42.015Z'));
-      expect(
-          list[0].lastUpdateTime, DateTime.parse('2022-07-23 09:28:42.015Z'));
+      expect(list[0].createdAt, DateTime.parse('2022-07-21 09:28:42.015Z'));
+      expect(list[0].updatedAt, DateTime.parse('2022-07-23 09:28:42.015Z'));
 
       final list1 = await repository.list(NoteSortType.dateDesc);
       expect(list1[0].id, "213fef89-d636-4231-b1f9-d25876ef2431");

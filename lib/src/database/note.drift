@@ -1,4 +1,5 @@
 import 'common.drift'; 
+import 'encrypted_data.drift';
 
 CREATE TABLE t_note (
     id CHAR(36) NOT NULL PRIMARY KEY,
@@ -19,7 +20,7 @@ CREATE TABLE t_note_history (
     content_json TEXT NOT NULL,
     content_checksum TEXT NOT NULL,
     content_plain TEXT NOT NULL,
-    changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (note_id) REFERENCES t_note (id)
 );
 
@@ -44,14 +45,14 @@ INSERT INTO t_note_idx(t_note_idx, rowid, title, content_plain) VALUES('delete',
 END;
 
 selectNotes:
-  SELECT id, classification, title, abstract, created_at, updated_at
-  FROM t_note
-  WHERE deleted_at IS NULL
-  ORDER BY $order;
+    SELECT id, classification, title, abstract, created_at, updated_at
+    FROM t_note
+    WHERE deleted_at IS NULL
+    ORDER BY $order;
 
 searchNotes:
-  SELECT n.id, n.title, n.classification, n.abstract, n.created_at, n.updated_at 
-  FROM t_note_idx i
-  JOIN t_note n ON i.rowid = n.rowid 
-  WHERE t_note_idx MATCH ? AND n.deleted_at IS NULL
-  ORDER BY rank;
+    SELECT n.id, n.title, n.classification, n.abstract, n.created_at, n.updated_at 
+    FROM t_note_idx i
+    JOIN t_note n ON i.rowid = n.rowid 
+    WHERE t_note_idx MATCH ? AND n.deleted_at IS NULL
+    ORDER BY rank;

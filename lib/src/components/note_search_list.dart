@@ -37,7 +37,7 @@ class NoteSearchList extends ConsumerWidget {
               ),
               Text(
                 MaterialLocalizations.of(context)
-                    .formatShortDate(item.lastUpdateTime),
+                    .formatShortDate(item.updatedAt),
                 style: Theme.of(context).textTheme.labelSmall,
               )
             ],

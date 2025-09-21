@@ -316,11 +316,845 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
   }
 }
 
-class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
+class TDataEncryptKey extends Table
+    with TableInfo<TDataEncryptKey, TDataEncryptKeyData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Passwords(this.attachedDatabase, [this._alias]);
+  TDataEncryptKey(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+      'data', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nonceMeta = const VerificationMeta('nonce');
+  late final GeneratedColumn<String> nonce = GeneratedColumn<String>(
+      'nonce', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _authTagMeta =
+      const VerificationMeta('authTag');
+  late final GeneratedColumn<String> authTag = GeneratedColumn<String>(
+      'auth_tag', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, data, nonce, authTag, createdAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 't_data_encrypt_key';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<TDataEncryptKeyData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+          _dataMeta, this.data.isAcceptableOrUnknown(data['data']!, _dataMeta));
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    if (data.containsKey('nonce')) {
+      context.handle(
+          _nonceMeta, nonce.isAcceptableOrUnknown(data['nonce']!, _nonceMeta));
+    } else if (isInserting) {
+      context.missing(_nonceMeta);
+    }
+    if (data.containsKey('auth_tag')) {
+      context.handle(_authTagMeta,
+          authTag.isAcceptableOrUnknown(data['auth_tag']!, _authTagMeta));
+    } else if (isInserting) {
+      context.missing(_authTagMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TDataEncryptKeyData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TDataEncryptKeyData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      data: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}data'])!,
+      nonce: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}nonce'])!,
+      authTag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}auth_tag'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  TDataEncryptKey createAlias(String alias) {
+    return TDataEncryptKey(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class TDataEncryptKeyData extends DataClass
+    implements Insertable<TDataEncryptKeyData> {
+  final String id;
+  final String data;
+  final String nonce;
+  final String authTag;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const TDataEncryptKeyData(
+      {required this.id,
+      required this.data,
+      required this.nonce,
+      required this.authTag,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['data'] = Variable<String>(data);
+    map['nonce'] = Variable<String>(nonce);
+    map['auth_tag'] = Variable<String>(authTag);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  TDataEncryptKeyCompanion toCompanion(bool nullToAbsent) {
+    return TDataEncryptKeyCompanion(
+      id: Value(id),
+      data: Value(data),
+      nonce: Value(nonce),
+      authTag: Value(authTag),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TDataEncryptKeyData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TDataEncryptKeyData(
+      id: serializer.fromJson<String>(json['id']),
+      data: serializer.fromJson<String>(json['data']),
+      nonce: serializer.fromJson<String>(json['nonce']),
+      authTag: serializer.fromJson<String>(json['auth_tag']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'data': serializer.toJson<String>(data),
+      'nonce': serializer.toJson<String>(nonce),
+      'auth_tag': serializer.toJson<String>(authTag),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  TDataEncryptKeyData copyWith(
+          {String? id,
+          String? data,
+          String? nonce,
+          String? authTag,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      TDataEncryptKeyData(
+        id: id ?? this.id,
+        data: data ?? this.data,
+        nonce: nonce ?? this.nonce,
+        authTag: authTag ?? this.authTag,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  TDataEncryptKeyData copyWithCompanion(TDataEncryptKeyCompanion data) {
+    return TDataEncryptKeyData(
+      id: data.id.present ? data.id.value : this.id,
+      data: data.data.present ? data.data.value : this.data,
+      nonce: data.nonce.present ? data.nonce.value : this.nonce,
+      authTag: data.authTag.present ? data.authTag.value : this.authTag,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TDataEncryptKeyData(')
+          ..write('id: $id, ')
+          ..write('data: $data, ')
+          ..write('nonce: $nonce, ')
+          ..write('authTag: $authTag, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, data, nonce, authTag, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TDataEncryptKeyData &&
+          other.id == this.id &&
+          other.data == this.data &&
+          other.nonce == this.nonce &&
+          other.authTag == this.authTag &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TDataEncryptKeyCompanion extends UpdateCompanion<TDataEncryptKeyData> {
+  final Value<String> id;
+  final Value<String> data;
+  final Value<String> nonce;
+  final Value<String> authTag;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const TDataEncryptKeyCompanion({
+    this.id = const Value.absent(),
+    this.data = const Value.absent(),
+    this.nonce = const Value.absent(),
+    this.authTag = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TDataEncryptKeyCompanion.insert({
+    required String id,
+    required String data,
+    required String nonce,
+    required String authTag,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        data = Value(data),
+        nonce = Value(nonce),
+        authTag = Value(authTag);
+  static Insertable<TDataEncryptKeyData> custom({
+    Expression<String>? id,
+    Expression<String>? data,
+    Expression<String>? nonce,
+    Expression<String>? authTag,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (data != null) 'data': data,
+      if (nonce != null) 'nonce': nonce,
+      if (authTag != null) 'auth_tag': authTag,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TDataEncryptKeyCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? data,
+      Value<String>? nonce,
+      Value<String>? authTag,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return TDataEncryptKeyCompanion(
+      id: id ?? this.id,
+      data: data ?? this.data,
+      nonce: nonce ?? this.nonce,
+      authTag: authTag ?? this.authTag,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    if (nonce.present) {
+      map['nonce'] = Variable<String>(nonce.value);
+    }
+    if (authTag.present) {
+      map['auth_tag'] = Variable<String>(authTag.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TDataEncryptKeyCompanion(')
+          ..write('id: $id, ')
+          ..write('data: $data, ')
+          ..write('nonce: $nonce, ')
+          ..write('authTag: $authTag, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class TEncryptedData extends Table
+    with TableInfo<TEncryptedData, TEncryptedDataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  TEncryptedData(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  static const VerificationMeta _dekIdMeta = const VerificationMeta('dekId');
+  late final GeneratedColumn<String> dekId = GeneratedColumn<String>(
+      'dek_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _contentMeta =
+      const VerificationMeta('content');
+  late final GeneratedColumn<Uint8List> content = GeneratedColumn<Uint8List>(
+      'content', aliasedName, false,
+      type: DriftSqlType.blob,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _algorithmIdMeta =
+      const VerificationMeta('algorithmId');
+  late final GeneratedColumn<String> algorithmId = GeneratedColumn<String>(
+      'algorithm_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _authTagMeta =
+      const VerificationMeta('authTag');
+  late final GeneratedColumn<String> authTag = GeneratedColumn<String>(
+      'auth_tag', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nonceMeta = const VerificationMeta('nonce');
+  late final GeneratedColumn<String> nonce = GeneratedColumn<String>(
+      'nonce', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'DEFAULT NULL',
+      defaultValue: const CustomExpression('NULL'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dekId,
+        content,
+        algorithmId,
+        authTag,
+        nonce,
+        createdAt,
+        updatedAt,
+        deletedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 't_encrypted_data';
+  @override
+  VerificationContext validateIntegrity(Insertable<TEncryptedDataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('dek_id')) {
+      context.handle(
+          _dekIdMeta, dekId.isAcceptableOrUnknown(data['dek_id']!, _dekIdMeta));
+    } else if (isInserting) {
+      context.missing(_dekIdMeta);
+    }
+    if (data.containsKey('content')) {
+      context.handle(_contentMeta,
+          content.isAcceptableOrUnknown(data['content']!, _contentMeta));
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('algorithm_id')) {
+      context.handle(
+          _algorithmIdMeta,
+          algorithmId.isAcceptableOrUnknown(
+              data['algorithm_id']!, _algorithmIdMeta));
+    } else if (isInserting) {
+      context.missing(_algorithmIdMeta);
+    }
+    if (data.containsKey('auth_tag')) {
+      context.handle(_authTagMeta,
+          authTag.isAcceptableOrUnknown(data['auth_tag']!, _authTagMeta));
+    } else if (isInserting) {
+      context.missing(_authTagMeta);
+    }
+    if (data.containsKey('nonce')) {
+      context.handle(
+          _nonceMeta, nonce.isAcceptableOrUnknown(data['nonce']!, _nonceMeta));
+    } else if (isInserting) {
+      context.missing(_nonceMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TEncryptedDataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TEncryptedDataData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      dekId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}dek_id'])!,
+      content: attachedDatabase.typeMapping
+          .read(DriftSqlType.blob, data['${effectivePrefix}content'])!,
+      algorithmId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}algorithm_id'])!,
+      authTag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}auth_tag'])!,
+      nonce: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}nonce'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
+    );
+  }
+
+  @override
+  TEncryptedData createAlias(String alias) {
+    return TEncryptedData(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['FOREIGN KEY(dek_id)REFERENCES t_data_encrypt_key(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class TEncryptedDataData extends DataClass
+    implements Insertable<TEncryptedDataData> {
+  final String id;
+  final String dekId;
+  final Uint8List content;
+  final String algorithmId;
+  final String authTag;
+  final String nonce;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const TEncryptedDataData(
+      {required this.id,
+      required this.dekId,
+      required this.content,
+      required this.algorithmId,
+      required this.authTag,
+      required this.nonce,
+      required this.createdAt,
+      required this.updatedAt,
+      this.deletedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['dek_id'] = Variable<String>(dekId);
+    map['content'] = Variable<Uint8List>(content);
+    map['algorithm_id'] = Variable<String>(algorithmId);
+    map['auth_tag'] = Variable<String>(authTag);
+    map['nonce'] = Variable<String>(nonce);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  TEncryptedDataCompanion toCompanion(bool nullToAbsent) {
+    return TEncryptedDataCompanion(
+      id: Value(id),
+      dekId: Value(dekId),
+      content: Value(content),
+      algorithmId: Value(algorithmId),
+      authTag: Value(authTag),
+      nonce: Value(nonce),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory TEncryptedDataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TEncryptedDataData(
+      id: serializer.fromJson<String>(json['id']),
+      dekId: serializer.fromJson<String>(json['dek_id']),
+      content: serializer.fromJson<Uint8List>(json['content']),
+      algorithmId: serializer.fromJson<String>(json['algorithm_id']),
+      authTag: serializer.fromJson<String>(json['auth_tag']),
+      nonce: serializer.fromJson<String>(json['nonce']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deleted_at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dek_id': serializer.toJson<String>(dekId),
+      'content': serializer.toJson<Uint8List>(content),
+      'algorithm_id': serializer.toJson<String>(algorithmId),
+      'auth_tag': serializer.toJson<String>(authTag),
+      'nonce': serializer.toJson<String>(nonce),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
+      'deleted_at': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  TEncryptedDataData copyWith(
+          {String? id,
+          String? dekId,
+          Uint8List? content,
+          String? algorithmId,
+          String? authTag,
+          String? nonce,
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          Value<DateTime?> deletedAt = const Value.absent()}) =>
+      TEncryptedDataData(
+        id: id ?? this.id,
+        dekId: dekId ?? this.dekId,
+        content: content ?? this.content,
+        algorithmId: algorithmId ?? this.algorithmId,
+        authTag: authTag ?? this.authTag,
+        nonce: nonce ?? this.nonce,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+      );
+  TEncryptedDataData copyWithCompanion(TEncryptedDataCompanion data) {
+    return TEncryptedDataData(
+      id: data.id.present ? data.id.value : this.id,
+      dekId: data.dekId.present ? data.dekId.value : this.dekId,
+      content: data.content.present ? data.content.value : this.content,
+      algorithmId:
+          data.algorithmId.present ? data.algorithmId.value : this.algorithmId,
+      authTag: data.authTag.present ? data.authTag.value : this.authTag,
+      nonce: data.nonce.present ? data.nonce.value : this.nonce,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TEncryptedDataData(')
+          ..write('id: $id, ')
+          ..write('dekId: $dekId, ')
+          ..write('content: $content, ')
+          ..write('algorithmId: $algorithmId, ')
+          ..write('authTag: $authTag, ')
+          ..write('nonce: $nonce, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, dekId, $driftBlobEquality.hash(content),
+      algorithmId, authTag, nonce, createdAt, updatedAt, deletedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TEncryptedDataData &&
+          other.id == this.id &&
+          other.dekId == this.dekId &&
+          $driftBlobEquality.equals(other.content, this.content) &&
+          other.algorithmId == this.algorithmId &&
+          other.authTag == this.authTag &&
+          other.nonce == this.nonce &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class TEncryptedDataCompanion extends UpdateCompanion<TEncryptedDataData> {
+  final Value<String> id;
+  final Value<String> dekId;
+  final Value<Uint8List> content;
+  final Value<String> algorithmId;
+  final Value<String> authTag;
+  final Value<String> nonce;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const TEncryptedDataCompanion({
+    this.id = const Value.absent(),
+    this.dekId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.algorithmId = const Value.absent(),
+    this.authTag = const Value.absent(),
+    this.nonce = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TEncryptedDataCompanion.insert({
+    required String id,
+    required String dekId,
+    required Uint8List content,
+    required String algorithmId,
+    required String authTag,
+    required String nonce,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        dekId = Value(dekId),
+        content = Value(content),
+        algorithmId = Value(algorithmId),
+        authTag = Value(authTag),
+        nonce = Value(nonce);
+  static Insertable<TEncryptedDataData> custom({
+    Expression<String>? id,
+    Expression<String>? dekId,
+    Expression<Uint8List>? content,
+    Expression<String>? algorithmId,
+    Expression<String>? authTag,
+    Expression<String>? nonce,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dekId != null) 'dek_id': dekId,
+      if (content != null) 'content': content,
+      if (algorithmId != null) 'algorithm_id': algorithmId,
+      if (authTag != null) 'auth_tag': authTag,
+      if (nonce != null) 'nonce': nonce,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TEncryptedDataCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? dekId,
+      Value<Uint8List>? content,
+      Value<String>? algorithmId,
+      Value<String>? authTag,
+      Value<String>? nonce,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<DateTime?>? deletedAt,
+      Value<int>? rowid}) {
+    return TEncryptedDataCompanion(
+      id: id ?? this.id,
+      dekId: dekId ?? this.dekId,
+      content: content ?? this.content,
+      algorithmId: algorithmId ?? this.algorithmId,
+      authTag: authTag ?? this.authTag,
+      nonce: nonce ?? this.nonce,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dekId.present) {
+      map['dek_id'] = Variable<String>(dekId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<Uint8List>(content.value);
+    }
+    if (algorithmId.present) {
+      map['algorithm_id'] = Variable<String>(algorithmId.value);
+    }
+    if (authTag.present) {
+      map['auth_tag'] = Variable<String>(authTag.value);
+    }
+    if (nonce.present) {
+      map['nonce'] = Variable<String>(nonce.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TEncryptedDataCompanion(')
+          ..write('id: $id, ')
+          ..write('dekId: $dekId, ')
+          ..write('content: $content, ')
+          ..write('algorithmId: $algorithmId, ')
+          ..write('authTag: $authTag, ')
+          ..write('nonce: $nonce, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class TPassword extends Table with TableInfo<TPassword, TPasswordData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  TPassword(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
@@ -334,60 +1168,6 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT 1',
       defaultValue: const CustomExpression('1'));
-  static const VerificationMeta _classificationMeta =
-      const VerificationMeta('classification');
-  late final GeneratedColumn<int> classification = GeneratedColumn<int>(
-      'classification', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _expireTimeMeta =
-      const VerificationMeta('expireTime');
-  late final GeneratedColumn<String> expireTime = GeneratedColumn<String>(
-      'expire_time', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _usernameMeta =
-      const VerificationMeta('username');
-  late final GeneratedColumn<String> username = GeneratedColumn<String>(
-      'username', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _uriMeta = const VerificationMeta('uri');
-  late final GeneratedColumn<String> uri = GeneratedColumn<String>(
-      'uri', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
-  late final GeneratedColumn<String> remark = GeneratedColumn<String>(
-      'remark', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _isFavoriteMeta =
-      const VerificationMeta('isFavorite');
-  late final GeneratedColumn<int> isFavorite = GeneratedColumn<int>(
-      'is_favorite', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
   static const VerificationMeta _categoryIdMeta =
       const VerificationMeta('categoryId');
   late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
@@ -396,52 +1176,78 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT 1',
       defaultValue: const CustomExpression('1'));
-  static const VerificationMeta _createTimeMeta =
-      const VerificationMeta('createTime');
-  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
-      'create_time', aliasedName, false,
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<String> classification = GeneratedColumn<String>(
+      'classification', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _lastUpdateTimeMeta =
-      const VerificationMeta('lastUpdateTime');
-  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
-      'last_update_time', aliasedName, false,
+      $customConstraints:
+          'NOT NULL CHECK (classification IN (\'C\', \'S\', \'T\'))');
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
       type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _isDeletedMeta =
-      const VerificationMeta('isDeleted');
-  late final GeneratedColumn<int> isDeleted = GeneratedColumn<int>(
-      'is_deleted', aliasedName, false,
-      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 0',
-      defaultValue: const CustomExpression('0'));
+      $customConstraints: '');
+  static const VerificationMeta _encryptedDataIdMeta =
+      const VerificationMeta('encryptedDataId');
+  late final GeneratedColumn<String> encryptedDataId = GeneratedColumn<String>(
+      'encrypted_data_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _expireTimeMeta =
+      const VerificationMeta('expireTime');
+  late final GeneratedColumn<DateTime> expireTime = GeneratedColumn<DateTime>(
+      'expire_time', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _deletedAtMeta =
+      const VerificationMeta('deletedAt');
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+      'deleted_at', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'DEFAULT NULL',
+      defaultValue: const CustomExpression('NULL'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
         type,
+        categoryId,
         classification,
         title,
-        value,
+        encryptedDataId,
         expireTime,
-        username,
-        uri,
-        remark,
-        isFavorite,
-        categoryId,
-        createTime,
-        lastUpdateTime,
-        isDeleted
+        createdAt,
+        updatedAt,
+        deletedAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'passwords';
+  static const String $name = 't_password';
   @override
-  VerificationContext validateIntegrity(Insertable<PasswordEntity> instance,
+  VerificationContext validateIntegrity(Insertable<TPasswordData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -454,23 +1260,31 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
       context.handle(
           _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
     }
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    }
     if (data.containsKey('classification')) {
       context.handle(
           _classificationMeta,
           classification.isAcceptableOrUnknown(
               data['classification']!, _classificationMeta));
+    } else if (isInserting) {
+      context.missing(_classificationMeta);
     }
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
     }
-    if (data.containsKey('value')) {
+    if (data.containsKey('encrypted_data_id')) {
       context.handle(
-          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+          _encryptedDataIdMeta,
+          encryptedDataId.isAcceptableOrUnknown(
+              data['encrypted_data_id']!, _encryptedDataIdMeta));
     } else if (isInserting) {
-      context.missing(_valueMeta);
+      context.missing(_encryptedDataIdMeta);
     }
     if (data.containsKey('expire_time')) {
       context.handle(
@@ -478,49 +1292,17 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
           expireTime.isAcceptableOrUnknown(
               data['expire_time']!, _expireTimeMeta));
     }
-    if (data.containsKey('username')) {
-      context.handle(_usernameMeta,
-          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
-    if (data.containsKey('uri')) {
-      context.handle(
-          _uriMeta, uri.isAcceptableOrUnknown(data['uri']!, _uriMeta));
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
     }
-    if (data.containsKey('remark')) {
-      context.handle(_remarkMeta,
-          remark.isAcceptableOrUnknown(data['remark']!, _remarkMeta));
-    }
-    if (data.containsKey('is_favorite')) {
-      context.handle(
-          _isFavoriteMeta,
-          isFavorite.isAcceptableOrUnknown(
-              data['is_favorite']!, _isFavoriteMeta));
-    }
-    if (data.containsKey('category_id')) {
-      context.handle(
-          _categoryIdMeta,
-          categoryId.isAcceptableOrUnknown(
-              data['category_id']!, _categoryIdMeta));
-    }
-    if (data.containsKey('create_time')) {
-      context.handle(
-          _createTimeMeta,
-          createTime.isAcceptableOrUnknown(
-              data['create_time']!, _createTimeMeta));
-    } else if (isInserting) {
-      context.missing(_createTimeMeta);
-    }
-    if (data.containsKey('last_update_time')) {
-      context.handle(
-          _lastUpdateTimeMeta,
-          lastUpdateTime.isAcceptableOrUnknown(
-              data['last_update_time']!, _lastUpdateTimeMeta));
-    } else if (isInserting) {
-      context.missing(_lastUpdateTimeMeta);
-    }
-    if (data.containsKey('is_deleted')) {
-      context.handle(_isDeletedMeta,
-          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta,
+          deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
     }
     return context;
   }
@@ -528,152 +1310,124 @@ class Passwords extends Table with TableInfo<Passwords, PasswordEntity> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PasswordEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TPasswordData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PasswordEntity(
+    return TPasswordData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
-      classification: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}classification'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
-      expireTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}expire_time']),
-      username: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}username']),
-      uri: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}uri']),
-      remark: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}remark']),
-      isFavorite: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}is_favorite'])!,
       categoryId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
-      createTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
-      lastUpdateTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
-      isDeleted: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}is_deleted'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}classification'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title']),
+      encryptedDataId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}encrypted_data_id'])!,
+      expireTime: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expire_time']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      deletedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}deleted_at']),
     );
   }
 
   @override
-  Passwords createAlias(String alias) {
-    return Passwords(attachedDatabase, alias);
+  TPassword createAlias(String alias) {
+    return TPassword(attachedDatabase, alias);
   }
 
   @override
-  List<String> get customConstraints =>
-      const ['FOREIGN KEY(category_id)REFERENCES categories(id)'];
+  List<String> get customConstraints => const [
+        'FOREIGN KEY(category_id)REFERENCES categories(id)',
+        'FOREIGN KEY(encrypted_data_id)REFERENCES t_encrypted_data(id)'
+      ];
   @override
   bool get dontWriteConstraints => true;
 }
 
-class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
+class TPasswordData extends DataClass implements Insertable<TPasswordData> {
   final String id;
   final int type;
-  final int classification;
-  final String title;
-  final String value;
-  final String? expireTime;
-  final String? username;
-  final String? uri;
-  final String? remark;
-  final int isFavorite;
   final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  final int isDeleted;
-  const PasswordEntity(
+  final String classification;
+  final String? title;
+  final String encryptedDataId;
+  final DateTime? expireTime;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const TPasswordData(
       {required this.id,
       required this.type,
-      required this.classification,
-      required this.title,
-      required this.value,
-      this.expireTime,
-      this.username,
-      this.uri,
-      this.remark,
-      required this.isFavorite,
       required this.categoryId,
-      required this.createTime,
-      required this.lastUpdateTime,
-      required this.isDeleted});
+      required this.classification,
+      this.title,
+      required this.encryptedDataId,
+      this.expireTime,
+      required this.createdAt,
+      required this.updatedAt,
+      this.deletedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['type'] = Variable<int>(type);
-    map['classification'] = Variable<int>(classification);
-    map['title'] = Variable<String>(title);
-    map['value'] = Variable<String>(value);
-    if (!nullToAbsent || expireTime != null) {
-      map['expire_time'] = Variable<String>(expireTime);
-    }
-    if (!nullToAbsent || username != null) {
-      map['username'] = Variable<String>(username);
-    }
-    if (!nullToAbsent || uri != null) {
-      map['uri'] = Variable<String>(uri);
-    }
-    if (!nullToAbsent || remark != null) {
-      map['remark'] = Variable<String>(remark);
-    }
-    map['is_favorite'] = Variable<int>(isFavorite);
     map['category_id'] = Variable<int>(categoryId);
-    map['create_time'] = Variable<String>(createTime);
-    map['last_update_time'] = Variable<String>(lastUpdateTime);
-    map['is_deleted'] = Variable<int>(isDeleted);
+    map['classification'] = Variable<String>(classification);
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    map['encrypted_data_id'] = Variable<String>(encryptedDataId);
+    if (!nullToAbsent || expireTime != null) {
+      map['expire_time'] = Variable<DateTime>(expireTime);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
-  PasswordsCompanion toCompanion(bool nullToAbsent) {
-    return PasswordsCompanion(
+  TPasswordCompanion toCompanion(bool nullToAbsent) {
+    return TPasswordCompanion(
       id: Value(id),
       type: Value(type),
+      categoryId: Value(categoryId),
       classification: Value(classification),
-      title: Value(title),
-      value: Value(value),
+      title:
+          title == null && nullToAbsent ? const Value.absent() : Value(title),
+      encryptedDataId: Value(encryptedDataId),
       expireTime: expireTime == null && nullToAbsent
           ? const Value.absent()
           : Value(expireTime),
-      username: username == null && nullToAbsent
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
-          : Value(username),
-      uri: uri == null && nullToAbsent ? const Value.absent() : Value(uri),
-      remark:
-          remark == null && nullToAbsent ? const Value.absent() : Value(remark),
-      isFavorite: Value(isFavorite),
-      categoryId: Value(categoryId),
-      createTime: Value(createTime),
-      lastUpdateTime: Value(lastUpdateTime),
-      isDeleted: Value(isDeleted),
+          : Value(deletedAt),
     );
   }
 
-  factory PasswordEntity.fromJson(Map<String, dynamic> json,
+  factory TPasswordData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PasswordEntity(
+    return TPasswordData(
       id: serializer.fromJson<String>(json['id']),
       type: serializer.fromJson<int>(json['type']),
-      classification: serializer.fromJson<int>(json['classification']),
-      title: serializer.fromJson<String>(json['title']),
-      value: serializer.fromJson<String>(json['value']),
-      expireTime: serializer.fromJson<String?>(json['expire_time']),
-      username: serializer.fromJson<String?>(json['username']),
-      uri: serializer.fromJson<String?>(json['uri']),
-      remark: serializer.fromJson<String?>(json['remark']),
-      isFavorite: serializer.fromJson<int>(json['is_favorite']),
       categoryId: serializer.fromJson<int>(json['category_id']),
-      createTime: serializer.fromJson<String>(json['create_time']),
-      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
-      isDeleted: serializer.fromJson<int>(json['is_deleted']),
+      classification: serializer.fromJson<String>(json['classification']),
+      title: serializer.fromJson<String?>(json['title']),
+      encryptedDataId: serializer.fromJson<String>(json['encrypted_data_id']),
+      expireTime: serializer.fromJson<DateTime?>(json['expire_time']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deleted_at']),
     );
   }
   @override
@@ -682,257 +1436,188 @@ class PasswordEntity extends DataClass implements Insertable<PasswordEntity> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'type': serializer.toJson<int>(type),
-      'classification': serializer.toJson<int>(classification),
-      'title': serializer.toJson<String>(title),
-      'value': serializer.toJson<String>(value),
-      'expire_time': serializer.toJson<String?>(expireTime),
-      'username': serializer.toJson<String?>(username),
-      'uri': serializer.toJson<String?>(uri),
-      'remark': serializer.toJson<String?>(remark),
-      'is_favorite': serializer.toJson<int>(isFavorite),
       'category_id': serializer.toJson<int>(categoryId),
-      'create_time': serializer.toJson<String>(createTime),
-      'last_update_time': serializer.toJson<String>(lastUpdateTime),
-      'is_deleted': serializer.toJson<int>(isDeleted),
+      'classification': serializer.toJson<String>(classification),
+      'title': serializer.toJson<String?>(title),
+      'encrypted_data_id': serializer.toJson<String>(encryptedDataId),
+      'expire_time': serializer.toJson<DateTime?>(expireTime),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
+      'deleted_at': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
-  PasswordEntity copyWith(
+  TPasswordData copyWith(
           {String? id,
           int? type,
-          int? classification,
-          String? title,
-          String? value,
-          Value<String?> expireTime = const Value.absent(),
-          Value<String?> username = const Value.absent(),
-          Value<String?> uri = const Value.absent(),
-          Value<String?> remark = const Value.absent(),
-          int? isFavorite,
           int? categoryId,
-          String? createTime,
-          String? lastUpdateTime,
-          int? isDeleted}) =>
-      PasswordEntity(
+          String? classification,
+          Value<String?> title = const Value.absent(),
+          String? encryptedDataId,
+          Value<DateTime?> expireTime = const Value.absent(),
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          Value<DateTime?> deletedAt = const Value.absent()}) =>
+      TPasswordData(
         id: id ?? this.id,
         type: type ?? this.type,
-        classification: classification ?? this.classification,
-        title: title ?? this.title,
-        value: value ?? this.value,
-        expireTime: expireTime.present ? expireTime.value : this.expireTime,
-        username: username.present ? username.value : this.username,
-        uri: uri.present ? uri.value : this.uri,
-        remark: remark.present ? remark.value : this.remark,
-        isFavorite: isFavorite ?? this.isFavorite,
         categoryId: categoryId ?? this.categoryId,
-        createTime: createTime ?? this.createTime,
-        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-        isDeleted: isDeleted ?? this.isDeleted,
+        classification: classification ?? this.classification,
+        title: title.present ? title.value : this.title,
+        encryptedDataId: encryptedDataId ?? this.encryptedDataId,
+        expireTime: expireTime.present ? expireTime.value : this.expireTime,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
       );
-  PasswordEntity copyWithCompanion(PasswordsCompanion data) {
-    return PasswordEntity(
+  TPasswordData copyWithCompanion(TPasswordCompanion data) {
+    return TPasswordData(
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
       classification: data.classification.present
           ? data.classification.value
           : this.classification,
       title: data.title.present ? data.title.value : this.title,
-      value: data.value.present ? data.value.value : this.value,
+      encryptedDataId: data.encryptedDataId.present
+          ? data.encryptedDataId.value
+          : this.encryptedDataId,
       expireTime:
           data.expireTime.present ? data.expireTime.value : this.expireTime,
-      username: data.username.present ? data.username.value : this.username,
-      uri: data.uri.present ? data.uri.value : this.uri,
-      remark: data.remark.present ? data.remark.value : this.remark,
-      isFavorite:
-          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
-      categoryId:
-          data.categoryId.present ? data.categoryId.value : this.categoryId,
-      createTime:
-          data.createTime.present ? data.createTime.value : this.createTime,
-      lastUpdateTime: data.lastUpdateTime.present
-          ? data.lastUpdateTime.value
-          : this.lastUpdateTime,
-      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('PasswordEntity(')
+    return (StringBuffer('TPasswordData(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('categoryId: $categoryId, ')
           ..write('classification: $classification, ')
           ..write('title: $title, ')
-          ..write('value: $value, ')
+          ..write('encryptedDataId: $encryptedDataId, ')
           ..write('expireTime: $expireTime, ')
-          ..write('username: $username, ')
-          ..write('uri: $uri, ')
-          ..write('remark: $remark, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isDeleted: $isDeleted')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id,
-      type,
-      classification,
-      title,
-      value,
-      expireTime,
-      username,
-      uri,
-      remark,
-      isFavorite,
-      categoryId,
-      createTime,
-      lastUpdateTime,
-      isDeleted);
+  int get hashCode => Object.hash(id, type, categoryId, classification, title,
+      encryptedDataId, expireTime, createdAt, updatedAt, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is PasswordEntity &&
+      (other is TPasswordData &&
           other.id == this.id &&
           other.type == this.type &&
+          other.categoryId == this.categoryId &&
           other.classification == this.classification &&
           other.title == this.title &&
-          other.value == this.value &&
+          other.encryptedDataId == this.encryptedDataId &&
           other.expireTime == this.expireTime &&
-          other.username == this.username &&
-          other.uri == this.uri &&
-          other.remark == this.remark &&
-          other.isFavorite == this.isFavorite &&
-          other.categoryId == this.categoryId &&
-          other.createTime == this.createTime &&
-          other.lastUpdateTime == this.lastUpdateTime &&
-          other.isDeleted == this.isDeleted);
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
 }
 
-class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
+class TPasswordCompanion extends UpdateCompanion<TPasswordData> {
   final Value<String> id;
   final Value<int> type;
-  final Value<int> classification;
-  final Value<String> title;
-  final Value<String> value;
-  final Value<String?> expireTime;
-  final Value<String?> username;
-  final Value<String?> uri;
-  final Value<String?> remark;
-  final Value<int> isFavorite;
   final Value<int> categoryId;
-  final Value<String> createTime;
-  final Value<String> lastUpdateTime;
-  final Value<int> isDeleted;
+  final Value<String> classification;
+  final Value<String?> title;
+  final Value<String> encryptedDataId;
+  final Value<DateTime?> expireTime;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
   final Value<int> rowid;
-  const PasswordsCompanion({
+  const TPasswordCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.classification = const Value.absent(),
     this.title = const Value.absent(),
-    this.value = const Value.absent(),
+    this.encryptedDataId = const Value.absent(),
     this.expireTime = const Value.absent(),
-    this.username = const Value.absent(),
-    this.uri = const Value.absent(),
-    this.remark = const Value.absent(),
-    this.isFavorite = const Value.absent(),
-    this.categoryId = const Value.absent(),
-    this.createTime = const Value.absent(),
-    this.lastUpdateTime = const Value.absent(),
-    this.isDeleted = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  PasswordsCompanion.insert({
+  TPasswordCompanion.insert({
     required String id,
     this.type = const Value.absent(),
-    this.classification = const Value.absent(),
-    required String title,
-    required String value,
-    this.expireTime = const Value.absent(),
-    this.username = const Value.absent(),
-    this.uri = const Value.absent(),
-    this.remark = const Value.absent(),
-    this.isFavorite = const Value.absent(),
     this.categoryId = const Value.absent(),
-    required String createTime,
-    required String lastUpdateTime,
-    this.isDeleted = const Value.absent(),
+    required String classification,
+    this.title = const Value.absent(),
+    required String encryptedDataId,
+    this.expireTime = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        title = Value(title),
-        value = Value(value),
-        createTime = Value(createTime),
-        lastUpdateTime = Value(lastUpdateTime);
-  static Insertable<PasswordEntity> custom({
+        classification = Value(classification),
+        encryptedDataId = Value(encryptedDataId);
+  static Insertable<TPasswordData> custom({
     Expression<String>? id,
     Expression<int>? type,
-    Expression<int>? classification,
-    Expression<String>? title,
-    Expression<String>? value,
-    Expression<String>? expireTime,
-    Expression<String>? username,
-    Expression<String>? uri,
-    Expression<String>? remark,
-    Expression<int>? isFavorite,
     Expression<int>? categoryId,
-    Expression<String>? createTime,
-    Expression<String>? lastUpdateTime,
-    Expression<int>? isDeleted,
+    Expression<String>? classification,
+    Expression<String>? title,
+    Expression<String>? encryptedDataId,
+    Expression<DateTime>? expireTime,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
+      if (categoryId != null) 'category_id': categoryId,
       if (classification != null) 'classification': classification,
       if (title != null) 'title': title,
-      if (value != null) 'value': value,
+      if (encryptedDataId != null) 'encrypted_data_id': encryptedDataId,
       if (expireTime != null) 'expire_time': expireTime,
-      if (username != null) 'username': username,
-      if (uri != null) 'uri': uri,
-      if (remark != null) 'remark': remark,
-      if (isFavorite != null) 'is_favorite': isFavorite,
-      if (categoryId != null) 'category_id': categoryId,
-      if (createTime != null) 'create_time': createTime,
-      if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
-      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  PasswordsCompanion copyWith(
+  TPasswordCompanion copyWith(
       {Value<String>? id,
       Value<int>? type,
-      Value<int>? classification,
-      Value<String>? title,
-      Value<String>? value,
-      Value<String?>? expireTime,
-      Value<String?>? username,
-      Value<String?>? uri,
-      Value<String?>? remark,
-      Value<int>? isFavorite,
       Value<int>? categoryId,
-      Value<String>? createTime,
-      Value<String>? lastUpdateTime,
-      Value<int>? isDeleted,
+      Value<String>? classification,
+      Value<String?>? title,
+      Value<String>? encryptedDataId,
+      Value<DateTime?>? expireTime,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<DateTime?>? deletedAt,
       Value<int>? rowid}) {
-    return PasswordsCompanion(
+    return TPasswordCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
+      categoryId: categoryId ?? this.categoryId,
       classification: classification ?? this.classification,
       title: title ?? this.title,
-      value: value ?? this.value,
+      encryptedDataId: encryptedDataId ?? this.encryptedDataId,
       expireTime: expireTime ?? this.expireTime,
-      username: username ?? this.username,
-      uri: uri ?? this.uri,
-      remark: remark ?? this.remark,
-      isFavorite: isFavorite ?? this.isFavorite,
-      categoryId: categoryId ?? this.categoryId,
-      createTime: createTime ?? this.createTime,
-      lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      isDeleted: isDeleted ?? this.isDeleted,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -946,41 +1631,29 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
     if (type.present) {
       map['type'] = Variable<int>(type.value);
     }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
     if (classification.present) {
-      map['classification'] = Variable<int>(classification.value);
+      map['classification'] = Variable<String>(classification.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
+    if (encryptedDataId.present) {
+      map['encrypted_data_id'] = Variable<String>(encryptedDataId.value);
     }
     if (expireTime.present) {
-      map['expire_time'] = Variable<String>(expireTime.value);
+      map['expire_time'] = Variable<DateTime>(expireTime.value);
     }
-    if (username.present) {
-      map['username'] = Variable<String>(username.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
-    if (uri.present) {
-      map['uri'] = Variable<String>(uri.value);
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
-    if (remark.present) {
-      map['remark'] = Variable<String>(remark.value);
-    }
-    if (isFavorite.present) {
-      map['is_favorite'] = Variable<int>(isFavorite.value);
-    }
-    if (categoryId.present) {
-      map['category_id'] = Variable<int>(categoryId.value);
-    }
-    if (createTime.present) {
-      map['create_time'] = Variable<String>(createTime.value);
-    }
-    if (lastUpdateTime.present) {
-      map['last_update_time'] = Variable<String>(lastUpdateTime.value);
-    }
-    if (isDeleted.present) {
-      map['is_deleted'] = Variable<int>(isDeleted.value);
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -990,32 +1663,29 @@ class PasswordsCompanion extends UpdateCompanion<PasswordEntity> {
 
   @override
   String toString() {
-    return (StringBuffer('PasswordsCompanion(')
+    return (StringBuffer('TPasswordCompanion(')
           ..write('id: $id, ')
           ..write('type: $type, ')
+          ..write('categoryId: $categoryId, ')
           ..write('classification: $classification, ')
           ..write('title: $title, ')
-          ..write('value: $value, ')
+          ..write('encryptedDataId: $encryptedDataId, ')
           ..write('expireTime: $expireTime, ')
-          ..write('username: $username, ')
-          ..write('uri: $uri, ')
-          ..write('remark: $remark, ')
-          ..write('isFavorite: $isFavorite, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isDeleted: $isDeleted, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class Attributes extends Table with TableInfo<Attributes, Attribute> {
+class TPasswordAttribute extends Table
+    with TableInfo<TPasswordAttribute, TPasswordAttributeData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Attributes(this.attachedDatabase, [this._alias]);
+  TPasswordAttribute(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
@@ -1023,10 +1693,10 @@ class Attributes extends Table with TableInfo<Attributes, Attribute> {
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
-  static const VerificationMeta _resourceIdMeta =
-      const VerificationMeta('resourceId');
-  late final GeneratedColumn<String> resourceId = GeneratedColumn<String>(
-      'resource_id', aliasedName, false,
+  static const VerificationMeta _passwordIdMeta =
+      const VerificationMeta('passwordId');
+  late final GeneratedColumn<String> passwordId = GeneratedColumn<String>(
+      'password_id', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
@@ -1050,43 +1720,61 @@ class Attributes extends Table with TableInfo<Attributes, Attribute> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  static const VerificationMeta _createTimeMeta =
-      const VerificationMeta('createTime');
-  late final GeneratedColumn<String> createTime = GeneratedColumn<String>(
-      'create_time', aliasedName, false,
+  static const VerificationMeta _encryptedDataIdMeta =
+      const VerificationMeta('encryptedDataId');
+  late final GeneratedColumn<String> encryptedDataId = GeneratedColumn<String>(
+      'encrypted_data_id', aliasedName, true,
       type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _lastUpdateTimeMeta =
-      const VerificationMeta('lastUpdateTime');
-  late final GeneratedColumn<String> lastUpdateTime = GeneratedColumn<String>(
-      'last_update_time', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, resourceId, dateType, name, value, createTime, lastUpdateTime];
+  List<GeneratedColumn> get $columns => [
+        id,
+        passwordId,
+        dateType,
+        name,
+        value,
+        encryptedDataId,
+        createdAt,
+        updatedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'attributes';
+  static const String $name = 't_password_attribute';
   @override
-  VerificationContext validateIntegrity(Insertable<Attribute> instance,
+  VerificationContext validateIntegrity(
+      Insertable<TPasswordAttributeData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('resource_id')) {
+    if (data.containsKey('password_id')) {
       context.handle(
-          _resourceIdMeta,
-          resourceId.isAcceptableOrUnknown(
-              data['resource_id']!, _resourceIdMeta));
+          _passwordIdMeta,
+          passwordId.isAcceptableOrUnknown(
+              data['password_id']!, _passwordIdMeta));
     } else if (isInserting) {
-      context.missing(_resourceIdMeta);
+      context.missing(_passwordIdMeta);
     }
     if (data.containsKey('date_type')) {
       context.handle(_dateTypeMeta,
@@ -1102,21 +1790,19 @@ class Attributes extends Table with TableInfo<Attributes, Attribute> {
       context.handle(
           _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
     }
-    if (data.containsKey('create_time')) {
+    if (data.containsKey('encrypted_data_id')) {
       context.handle(
-          _createTimeMeta,
-          createTime.isAcceptableOrUnknown(
-              data['create_time']!, _createTimeMeta));
-    } else if (isInserting) {
-      context.missing(_createTimeMeta);
+          _encryptedDataIdMeta,
+          encryptedDataId.isAcceptableOrUnknown(
+              data['encrypted_data_id']!, _encryptedDataIdMeta));
     }
-    if (data.containsKey('last_update_time')) {
-      context.handle(
-          _lastUpdateTimeMeta,
-          lastUpdateTime.isAcceptableOrUnknown(
-              data['last_update_time']!, _lastUpdateTimeMeta));
-    } else if (isInserting) {
-      context.missing(_lastUpdateTimeMeta);
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
     }
     return context;
   }
@@ -1124,90 +1810,105 @@ class Attributes extends Table with TableInfo<Attributes, Attribute> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Attribute map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TPasswordAttributeData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Attribute(
+    return TPasswordAttributeData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      resourceId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}resource_id'])!,
+      passwordId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}password_id'])!,
       dateType: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}date_type'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       value: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}value']),
-      createTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}create_time'])!,
-      lastUpdateTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}last_update_time'])!,
+      encryptedDataId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}encrypted_data_id']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
   }
 
   @override
-  Attributes createAlias(String alias) {
-    return Attributes(attachedDatabase, alias);
+  TPasswordAttribute createAlias(String alias) {
+    return TPasswordAttribute(attachedDatabase, alias);
   }
 
+  @override
+  List<String> get customConstraints =>
+      const ['FOREIGN KEY(encrypted_data_id)REFERENCES t_encrypted_data(id)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
-class Attribute extends DataClass implements Insertable<Attribute> {
+class TPasswordAttributeData extends DataClass
+    implements Insertable<TPasswordAttributeData> {
   final int id;
-  final String resourceId;
+  final String passwordId;
   final int dateType;
   final String name;
   final String? value;
-  final String createTime;
-  final String lastUpdateTime;
-  const Attribute(
+  final String? encryptedDataId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const TPasswordAttributeData(
       {required this.id,
-      required this.resourceId,
+      required this.passwordId,
       required this.dateType,
       required this.name,
       this.value,
-      required this.createTime,
-      required this.lastUpdateTime});
+      this.encryptedDataId,
+      required this.createdAt,
+      required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['resource_id'] = Variable<String>(resourceId);
+    map['password_id'] = Variable<String>(passwordId);
     map['date_type'] = Variable<int>(dateType);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || value != null) {
       map['value'] = Variable<String>(value);
     }
-    map['create_time'] = Variable<String>(createTime);
-    map['last_update_time'] = Variable<String>(lastUpdateTime);
+    if (!nullToAbsent || encryptedDataId != null) {
+      map['encrypted_data_id'] = Variable<String>(encryptedDataId);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
-  AttributesCompanion toCompanion(bool nullToAbsent) {
-    return AttributesCompanion(
+  TPasswordAttributeCompanion toCompanion(bool nullToAbsent) {
+    return TPasswordAttributeCompanion(
       id: Value(id),
-      resourceId: Value(resourceId),
+      passwordId: Value(passwordId),
       dateType: Value(dateType),
       name: Value(name),
       value:
           value == null && nullToAbsent ? const Value.absent() : Value(value),
-      createTime: Value(createTime),
-      lastUpdateTime: Value(lastUpdateTime),
+      encryptedDataId: encryptedDataId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(encryptedDataId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
-  factory Attribute.fromJson(Map<String, dynamic> json,
+  factory TPasswordAttributeData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Attribute(
+    return TPasswordAttributeData(
       id: serializer.fromJson<int>(json['id']),
-      resourceId: serializer.fromJson<String>(json['resource_id']),
+      passwordId: serializer.fromJson<String>(json['password_id']),
       dateType: serializer.fromJson<int>(json['date_type']),
       name: serializer.fromJson<String>(json['name']),
       value: serializer.fromJson<String?>(json['value']),
-      createTime: serializer.fromJson<String>(json['create_time']),
-      lastUpdateTime: serializer.fromJson<String>(json['last_update_time']),
+      encryptedDataId: serializer.fromJson<String?>(json['encrypted_data_id']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+      updatedAt: serializer.fromJson<DateTime>(json['updated_at']),
     );
   }
   @override
@@ -1215,143 +1916,156 @@ class Attribute extends DataClass implements Insertable<Attribute> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'resource_id': serializer.toJson<String>(resourceId),
+      'password_id': serializer.toJson<String>(passwordId),
       'date_type': serializer.toJson<int>(dateType),
       'name': serializer.toJson<String>(name),
       'value': serializer.toJson<String?>(value),
-      'create_time': serializer.toJson<String>(createTime),
-      'last_update_time': serializer.toJson<String>(lastUpdateTime),
+      'encrypted_data_id': serializer.toJson<String?>(encryptedDataId),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+      'updated_at': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  Attribute copyWith(
+  TPasswordAttributeData copyWith(
           {int? id,
-          String? resourceId,
+          String? passwordId,
           int? dateType,
           String? name,
           Value<String?> value = const Value.absent(),
-          String? createTime,
-          String? lastUpdateTime}) =>
-      Attribute(
+          Value<String?> encryptedDataId = const Value.absent(),
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      TPasswordAttributeData(
         id: id ?? this.id,
-        resourceId: resourceId ?? this.resourceId,
+        passwordId: passwordId ?? this.passwordId,
         dateType: dateType ?? this.dateType,
         name: name ?? this.name,
         value: value.present ? value.value : this.value,
-        createTime: createTime ?? this.createTime,
-        lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+        encryptedDataId: encryptedDataId.present
+            ? encryptedDataId.value
+            : this.encryptedDataId,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
-  Attribute copyWithCompanion(AttributesCompanion data) {
-    return Attribute(
+  TPasswordAttributeData copyWithCompanion(TPasswordAttributeCompanion data) {
+    return TPasswordAttributeData(
       id: data.id.present ? data.id.value : this.id,
-      resourceId:
-          data.resourceId.present ? data.resourceId.value : this.resourceId,
+      passwordId:
+          data.passwordId.present ? data.passwordId.value : this.passwordId,
       dateType: data.dateType.present ? data.dateType.value : this.dateType,
       name: data.name.present ? data.name.value : this.name,
       value: data.value.present ? data.value.value : this.value,
-      createTime:
-          data.createTime.present ? data.createTime.value : this.createTime,
-      lastUpdateTime: data.lastUpdateTime.present
-          ? data.lastUpdateTime.value
-          : this.lastUpdateTime,
+      encryptedDataId: data.encryptedDataId.present
+          ? data.encryptedDataId.value
+          : this.encryptedDataId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Attribute(')
+    return (StringBuffer('TPasswordAttributeData(')
           ..write('id: $id, ')
-          ..write('resourceId: $resourceId, ')
+          ..write('passwordId: $passwordId, ')
           ..write('dateType: $dateType, ')
           ..write('name: $name, ')
           ..write('value: $value, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime')
+          ..write('encryptedDataId: $encryptedDataId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, resourceId, dateType, name, value, createTime, lastUpdateTime);
+  int get hashCode => Object.hash(id, passwordId, dateType, name, value,
+      encryptedDataId, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Attribute &&
+      (other is TPasswordAttributeData &&
           other.id == this.id &&
-          other.resourceId == this.resourceId &&
+          other.passwordId == this.passwordId &&
           other.dateType == this.dateType &&
           other.name == this.name &&
           other.value == this.value &&
-          other.createTime == this.createTime &&
-          other.lastUpdateTime == this.lastUpdateTime);
+          other.encryptedDataId == this.encryptedDataId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
-class AttributesCompanion extends UpdateCompanion<Attribute> {
+class TPasswordAttributeCompanion
+    extends UpdateCompanion<TPasswordAttributeData> {
   final Value<int> id;
-  final Value<String> resourceId;
+  final Value<String> passwordId;
   final Value<int> dateType;
   final Value<String> name;
   final Value<String?> value;
-  final Value<String> createTime;
-  final Value<String> lastUpdateTime;
-  const AttributesCompanion({
+  final Value<String?> encryptedDataId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const TPasswordAttributeCompanion({
     this.id = const Value.absent(),
-    this.resourceId = const Value.absent(),
+    this.passwordId = const Value.absent(),
     this.dateType = const Value.absent(),
     this.name = const Value.absent(),
     this.value = const Value.absent(),
-    this.createTime = const Value.absent(),
-    this.lastUpdateTime = const Value.absent(),
+    this.encryptedDataId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   });
-  AttributesCompanion.insert({
+  TPasswordAttributeCompanion.insert({
     this.id = const Value.absent(),
-    required String resourceId,
+    required String passwordId,
     this.dateType = const Value.absent(),
     required String name,
     this.value = const Value.absent(),
-    required String createTime,
-    required String lastUpdateTime,
-  })  : resourceId = Value(resourceId),
-        name = Value(name),
-        createTime = Value(createTime),
-        lastUpdateTime = Value(lastUpdateTime);
-  static Insertable<Attribute> custom({
+    this.encryptedDataId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  })  : passwordId = Value(passwordId),
+        name = Value(name);
+  static Insertable<TPasswordAttributeData> custom({
     Expression<int>? id,
-    Expression<String>? resourceId,
+    Expression<String>? passwordId,
     Expression<int>? dateType,
     Expression<String>? name,
     Expression<String>? value,
-    Expression<String>? createTime,
-    Expression<String>? lastUpdateTime,
+    Expression<String>? encryptedDataId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (resourceId != null) 'resource_id': resourceId,
+      if (passwordId != null) 'password_id': passwordId,
       if (dateType != null) 'date_type': dateType,
       if (name != null) 'name': name,
       if (value != null) 'value': value,
-      if (createTime != null) 'create_time': createTime,
-      if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
+      if (encryptedDataId != null) 'encrypted_data_id': encryptedDataId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
-  AttributesCompanion copyWith(
+  TPasswordAttributeCompanion copyWith(
       {Value<int>? id,
-      Value<String>? resourceId,
+      Value<String>? passwordId,
       Value<int>? dateType,
       Value<String>? name,
       Value<String?>? value,
-      Value<String>? createTime,
-      Value<String>? lastUpdateTime}) {
-    return AttributesCompanion(
+      Value<String?>? encryptedDataId,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt}) {
+    return TPasswordAttributeCompanion(
       id: id ?? this.id,
-      resourceId: resourceId ?? this.resourceId,
+      passwordId: passwordId ?? this.passwordId,
       dateType: dateType ?? this.dateType,
       name: name ?? this.name,
       value: value ?? this.value,
-      createTime: createTime ?? this.createTime,
-      lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
+      encryptedDataId: encryptedDataId ?? this.encryptedDataId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -1361,8 +2075,8 @@ class AttributesCompanion extends UpdateCompanion<Attribute> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (resourceId.present) {
-      map['resource_id'] = Variable<String>(resourceId.value);
+    if (passwordId.present) {
+      map['password_id'] = Variable<String>(passwordId.value);
     }
     if (dateType.present) {
       map['date_type'] = Variable<int>(dateType.value);
@@ -1373,25 +2087,305 @@ class AttributesCompanion extends UpdateCompanion<Attribute> {
     if (value.present) {
       map['value'] = Variable<String>(value.value);
     }
-    if (createTime.present) {
-      map['create_time'] = Variable<String>(createTime.value);
+    if (encryptedDataId.present) {
+      map['encrypted_data_id'] = Variable<String>(encryptedDataId.value);
     }
-    if (lastUpdateTime.present) {
-      map['last_update_time'] = Variable<String>(lastUpdateTime.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('AttributesCompanion(')
+    return (StringBuffer('TPasswordAttributeCompanion(')
           ..write('id: $id, ')
-          ..write('resourceId: $resourceId, ')
+          ..write('passwordId: $passwordId, ')
           ..write('dateType: $dateType, ')
           ..write('name: $name, ')
           ..write('value: $value, ')
-          ..write('createTime: $createTime, ')
-          ..write('lastUpdateTime: $lastUpdateTime')
+          ..write('encryptedDataId: $encryptedDataId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class TPasswordHistory extends Table
+    with TableInfo<TPasswordHistory, TPasswordHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  TPasswordHistory(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT');
+  static const VerificationMeta _passwordIdMeta =
+      const VerificationMeta('passwordId');
+  late final GeneratedColumn<String> passwordId = GeneratedColumn<String>(
+      'password_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _encryptedDataIdMeta =
+      const VerificationMeta('encryptedDataId');
+  late final GeneratedColumn<String> encryptedDataId = GeneratedColumn<String>(
+      'encrypted_data_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, passwordId, encryptedDataId, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 't_password_history';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<TPasswordHistoryData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('password_id')) {
+      context.handle(
+          _passwordIdMeta,
+          passwordId.isAcceptableOrUnknown(
+              data['password_id']!, _passwordIdMeta));
+    } else if (isInserting) {
+      context.missing(_passwordIdMeta);
+    }
+    if (data.containsKey('encrypted_data_id')) {
+      context.handle(
+          _encryptedDataIdMeta,
+          encryptedDataId.isAcceptableOrUnknown(
+              data['encrypted_data_id']!, _encryptedDataIdMeta));
+    } else if (isInserting) {
+      context.missing(_encryptedDataIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TPasswordHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TPasswordHistoryData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      passwordId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}password_id'])!,
+      encryptedDataId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}encrypted_data_id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  TPasswordHistory createAlias(String alias) {
+    return TPasswordHistory(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['FOREIGN KEY(password_id)REFERENCES t_password(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class TPasswordHistoryData extends DataClass
+    implements Insertable<TPasswordHistoryData> {
+  final int id;
+  final String passwordId;
+  final String encryptedDataId;
+  final DateTime createdAt;
+  const TPasswordHistoryData(
+      {required this.id,
+      required this.passwordId,
+      required this.encryptedDataId,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['password_id'] = Variable<String>(passwordId);
+    map['encrypted_data_id'] = Variable<String>(encryptedDataId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  TPasswordHistoryCompanion toCompanion(bool nullToAbsent) {
+    return TPasswordHistoryCompanion(
+      id: Value(id),
+      passwordId: Value(passwordId),
+      encryptedDataId: Value(encryptedDataId),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory TPasswordHistoryData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TPasswordHistoryData(
+      id: serializer.fromJson<int>(json['id']),
+      passwordId: serializer.fromJson<String>(json['password_id']),
+      encryptedDataId: serializer.fromJson<String>(json['encrypted_data_id']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'password_id': serializer.toJson<String>(passwordId),
+      'encrypted_data_id': serializer.toJson<String>(encryptedDataId),
+      'created_at': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  TPasswordHistoryData copyWith(
+          {int? id,
+          String? passwordId,
+          String? encryptedDataId,
+          DateTime? createdAt}) =>
+      TPasswordHistoryData(
+        id: id ?? this.id,
+        passwordId: passwordId ?? this.passwordId,
+        encryptedDataId: encryptedDataId ?? this.encryptedDataId,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  TPasswordHistoryData copyWithCompanion(TPasswordHistoryCompanion data) {
+    return TPasswordHistoryData(
+      id: data.id.present ? data.id.value : this.id,
+      passwordId:
+          data.passwordId.present ? data.passwordId.value : this.passwordId,
+      encryptedDataId: data.encryptedDataId.present
+          ? data.encryptedDataId.value
+          : this.encryptedDataId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TPasswordHistoryData(')
+          ..write('id: $id, ')
+          ..write('passwordId: $passwordId, ')
+          ..write('encryptedDataId: $encryptedDataId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, passwordId, encryptedDataId, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TPasswordHistoryData &&
+          other.id == this.id &&
+          other.passwordId == this.passwordId &&
+          other.encryptedDataId == this.encryptedDataId &&
+          other.createdAt == this.createdAt);
+}
+
+class TPasswordHistoryCompanion extends UpdateCompanion<TPasswordHistoryData> {
+  final Value<int> id;
+  final Value<String> passwordId;
+  final Value<String> encryptedDataId;
+  final Value<DateTime> createdAt;
+  const TPasswordHistoryCompanion({
+    this.id = const Value.absent(),
+    this.passwordId = const Value.absent(),
+    this.encryptedDataId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  TPasswordHistoryCompanion.insert({
+    this.id = const Value.absent(),
+    required String passwordId,
+    required String encryptedDataId,
+    this.createdAt = const Value.absent(),
+  })  : passwordId = Value(passwordId),
+        encryptedDataId = Value(encryptedDataId);
+  static Insertable<TPasswordHistoryData> custom({
+    Expression<int>? id,
+    Expression<String>? passwordId,
+    Expression<String>? encryptedDataId,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (passwordId != null) 'password_id': passwordId,
+      if (encryptedDataId != null) 'encrypted_data_id': encryptedDataId,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  TPasswordHistoryCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? passwordId,
+      Value<String>? encryptedDataId,
+      Value<DateTime>? createdAt}) {
+    return TPasswordHistoryCompanion(
+      id: id ?? this.id,
+      passwordId: passwordId ?? this.passwordId,
+      encryptedDataId: encryptedDataId ?? this.encryptedDataId,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (passwordId.present) {
+      map['password_id'] = Variable<String>(passwordId.value);
+    }
+    if (encryptedDataId.present) {
+      map['encrypted_data_id'] = Variable<String>(encryptedDataId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TPasswordHistoryCompanion(')
+          ..write('id: $id, ')
+          ..write('passwordId: $passwordId, ')
+          ..write('encryptedDataId: $encryptedDataId, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -1970,17 +2964,17 @@ class TNoteHistory extends Table
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _changedAtMeta =
-      const VerificationMeta('changedAt');
-  late final GeneratedColumn<DateTime> changedAt = GeneratedColumn<DateTime>(
-      'changed_at', aliasedName, false,
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
       defaultValue: const CustomExpression('CURRENT_TIMESTAMP'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, noteId, contentJson, contentChecksum, contentPlain, changedAt];
+      [id, noteId, contentJson, contentChecksum, contentPlain, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2024,9 +3018,9 @@ class TNoteHistory extends Table
     } else if (isInserting) {
       context.missing(_contentPlainMeta);
     }
-    if (data.containsKey('changed_at')) {
-      context.handle(_changedAtMeta,
-          changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta));
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
     return context;
   }
@@ -2047,8 +3041,8 @@ class TNoteHistory extends Table
           DriftSqlType.string, data['${effectivePrefix}content_checksum'])!,
       contentPlain: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}content_plain'])!,
-      changedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}changed_at'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
   }
 
@@ -2071,14 +3065,14 @@ class TNoteHistoryData extends DataClass
   final String contentJson;
   final String contentChecksum;
   final String contentPlain;
-  final DateTime changedAt;
+  final DateTime createdAt;
   const TNoteHistoryData(
       {required this.id,
       required this.noteId,
       required this.contentJson,
       required this.contentChecksum,
       required this.contentPlain,
-      required this.changedAt});
+      required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2087,7 +3081,7 @@ class TNoteHistoryData extends DataClass
     map['content_json'] = Variable<String>(contentJson);
     map['content_checksum'] = Variable<String>(contentChecksum);
     map['content_plain'] = Variable<String>(contentPlain);
-    map['changed_at'] = Variable<DateTime>(changedAt);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -2098,7 +3092,7 @@ class TNoteHistoryData extends DataClass
       contentJson: Value(contentJson),
       contentChecksum: Value(contentChecksum),
       contentPlain: Value(contentPlain),
-      changedAt: Value(changedAt),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -2111,7 +3105,7 @@ class TNoteHistoryData extends DataClass
       contentJson: serializer.fromJson<String>(json['content_json']),
       contentChecksum: serializer.fromJson<String>(json['content_checksum']),
       contentPlain: serializer.fromJson<String>(json['content_plain']),
-      changedAt: serializer.fromJson<DateTime>(json['changed_at']),
+      createdAt: serializer.fromJson<DateTime>(json['created_at']),
     );
   }
   @override
@@ -2123,7 +3117,7 @@ class TNoteHistoryData extends DataClass
       'content_json': serializer.toJson<String>(contentJson),
       'content_checksum': serializer.toJson<String>(contentChecksum),
       'content_plain': serializer.toJson<String>(contentPlain),
-      'changed_at': serializer.toJson<DateTime>(changedAt),
+      'created_at': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -2133,14 +3127,14 @@ class TNoteHistoryData extends DataClass
           String? contentJson,
           String? contentChecksum,
           String? contentPlain,
-          DateTime? changedAt}) =>
+          DateTime? createdAt}) =>
       TNoteHistoryData(
         id: id ?? this.id,
         noteId: noteId ?? this.noteId,
         contentJson: contentJson ?? this.contentJson,
         contentChecksum: contentChecksum ?? this.contentChecksum,
         contentPlain: contentPlain ?? this.contentPlain,
-        changedAt: changedAt ?? this.changedAt,
+        createdAt: createdAt ?? this.createdAt,
       );
   TNoteHistoryData copyWithCompanion(TNoteHistoryCompanion data) {
     return TNoteHistoryData(
@@ -2154,7 +3148,7 @@ class TNoteHistoryData extends DataClass
       contentPlain: data.contentPlain.present
           ? data.contentPlain.value
           : this.contentPlain,
-      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -2166,14 +3160,14 @@ class TNoteHistoryData extends DataClass
           ..write('contentJson: $contentJson, ')
           ..write('contentChecksum: $contentChecksum, ')
           ..write('contentPlain: $contentPlain, ')
-          ..write('changedAt: $changedAt')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      id, noteId, contentJson, contentChecksum, contentPlain, changedAt);
+      id, noteId, contentJson, contentChecksum, contentPlain, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2183,7 +3177,7 @@ class TNoteHistoryData extends DataClass
           other.contentJson == this.contentJson &&
           other.contentChecksum == this.contentChecksum &&
           other.contentPlain == this.contentPlain &&
-          other.changedAt == this.changedAt);
+          other.createdAt == this.createdAt);
 }
 
 class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
@@ -2192,14 +3186,14 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
   final Value<String> contentJson;
   final Value<String> contentChecksum;
   final Value<String> contentPlain;
-  final Value<DateTime> changedAt;
+  final Value<DateTime> createdAt;
   const TNoteHistoryCompanion({
     this.id = const Value.absent(),
     this.noteId = const Value.absent(),
     this.contentJson = const Value.absent(),
     this.contentChecksum = const Value.absent(),
     this.contentPlain = const Value.absent(),
-    this.changedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
   });
   TNoteHistoryCompanion.insert({
     this.id = const Value.absent(),
@@ -2207,7 +3201,7 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
     required String contentJson,
     required String contentChecksum,
     required String contentPlain,
-    this.changedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
   })  : noteId = Value(noteId),
         contentJson = Value(contentJson),
         contentChecksum = Value(contentChecksum),
@@ -2218,7 +3212,7 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
     Expression<String>? contentJson,
     Expression<String>? contentChecksum,
     Expression<String>? contentPlain,
-    Expression<DateTime>? changedAt,
+    Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2226,7 +3220,7 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
       if (contentJson != null) 'content_json': contentJson,
       if (contentChecksum != null) 'content_checksum': contentChecksum,
       if (contentPlain != null) 'content_plain': contentPlain,
-      if (changedAt != null) 'changed_at': changedAt,
+      if (createdAt != null) 'created_at': createdAt,
     });
   }
 
@@ -2236,14 +3230,14 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
       Value<String>? contentJson,
       Value<String>? contentChecksum,
       Value<String>? contentPlain,
-      Value<DateTime>? changedAt}) {
+      Value<DateTime>? createdAt}) {
     return TNoteHistoryCompanion(
       id: id ?? this.id,
       noteId: noteId ?? this.noteId,
       contentJson: contentJson ?? this.contentJson,
       contentChecksum: contentChecksum ?? this.contentChecksum,
       contentPlain: contentPlain ?? this.contentPlain,
-      changedAt: changedAt ?? this.changedAt,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -2265,8 +3259,8 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
     if (contentPlain.present) {
       map['content_plain'] = Variable<String>(contentPlain.value);
     }
-    if (changedAt.present) {
-      map['changed_at'] = Variable<DateTime>(changedAt.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     return map;
   }
@@ -2279,7 +3273,7 @@ class TNoteHistoryCompanion extends UpdateCompanion<TNoteHistoryData> {
           ..write('contentJson: $contentJson, ')
           ..write('contentChecksum: $contentChecksum, ')
           ..write('contentPlain: $contentPlain, ')
-          ..write('changedAt: $changedAt')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -2494,8 +3488,11 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   _$SqliteDb(QueryExecutor e) : super(e);
   $SqliteDbManager get managers => $SqliteDbManager(this);
   late final Categories categories = Categories(this);
-  late final Passwords passwords = Passwords(this);
-  late final Attributes attributes = Attributes(this);
+  late final TDataEncryptKey tDataEncryptKey = TDataEncryptKey(this);
+  late final TEncryptedData tEncryptedData = TEncryptedData(this);
+  late final TPassword tPassword = TPassword(this);
+  late final TPasswordAttribute tPasswordAttribute = TPasswordAttribute(this);
+  late final TPasswordHistory tPasswordHistory = TPasswordHistory(this);
   late final TNote tNote = TNote(this);
   late final TNoteHistory tNoteHistory = TNoteHistory(this);
   late final TNoteIdx tNoteIdx = TNoteIdx(this);
@@ -2508,118 +3505,30 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   late final Trigger triOnNoteDeleted = Trigger(
       'CREATE TRIGGER tri_on_note_deleted AFTER UPDATE ON t_note WHEN new.deleted_at IS NOT NULL BEGIN INSERT INTO t_note_idx (t_note_idx, "rowid", title, content_plain) VALUES (\'delete\', old."rowid", old.title, old.content_plain);END',
       'tri_on_note_deleted');
-  Selectable<ActivePasswordsResult> activePasswords() {
+  Selectable<SelectPasswordsResult> selectPasswords(
+      SelectPasswords$order order) {
+    var $arrayStartIndex = 1;
+    final generatedorder = $write(
+        order?.call(this.tPassword) ?? const OrderBy.nothing(),
+        startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedorder.amountOfVariables;
     return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0',
-        variables: [],
-        readsFrom: {
-          passwords,
-        }).map((QueryRow row) => ActivePasswordsResult(
-          id: row.read<String>('id'),
-          type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
-  Selectable<PasswordsByClassificationResult> passwordsByClassification(
-      int var1) {
-    return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND classification = ?1',
+        'SELECT id, type, classification, title, expire_time, category_id, created_at, updated_at FROM t_password WHERE deleted_at IS NULL ${generatedorder.sql}',
         variables: [
-          Variable<int>(var1)
+          ...generatedorder.introducedVariables
         ],
         readsFrom: {
-          passwords,
-        }).map((QueryRow row) => PasswordsByClassificationResult(
+          tPassword,
+          ...generatedorder.watchedTables,
+        }).map((QueryRow row) => SelectPasswordsResult(
           id: row.read<String>('id'),
           type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
+          classification: row.read<String>('classification'),
+          title: row.readNullable<String>('title'),
+          expireTime: row.readNullable<DateTime>('expire_time'),
           categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
-  Selectable<PasswordsByCategoryResult> passwordsByCategory(int var1) {
-    return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND category_id = ?1',
-        variables: [
-          Variable<int>(var1)
-        ],
-        readsFrom: {
-          passwords,
-        }).map((QueryRow row) => PasswordsByCategoryResult(
-          id: row.read<String>('id'),
-          type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
-  Selectable<PasswordsByTypeResult> passwordsByType(int var1) {
-    return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND type = ?1',
-        variables: [
-          Variable<int>(var1)
-        ],
-        readsFrom: {
-          passwords,
-        }).map((QueryRow row) => PasswordsByTypeResult(
-          id: row.read<String>('id'),
-          type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
-  Selectable<FavoritePasswordsResult> favoritePasswords() {
-    return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 0 AND is_favorite = 1',
-        variables: [],
-        readsFrom: {
-          passwords,
-        }).map((QueryRow row) => FavoritePasswordsResult(
-          id: row.read<String>('id'),
-          type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
-        ));
-  }
-
-  Selectable<DeletedPasswordsResult> deletedPasswords() {
-    return customSelect(
-        'SELECT id, type, classification, title, expire_time, category_id, create_time, last_update_time FROM passwords WHERE is_deleted = 1',
-        variables: [],
-        readsFrom: {
-          passwords,
-        }).map((QueryRow row) => DeletedPasswordsResult(
-          id: row.read<String>('id'),
-          type: row.read<int>('type'),
-          classification: row.read<int>('classification'),
-          title: row.read<String>('title'),
-          expireTime: row.readNullable<String>('expire_time'),
-          categoryId: row.read<int>('category_id'),
-          createTime: row.read<String>('create_time'),
-          lastUpdateTime: row.read<String>('last_update_time'),
+          createdAt: row.read<DateTime>('created_at'),
+          updatedAt: row.read<DateTime>('updated_at'),
         ));
   }
 
@@ -2672,8 +3581,11 @@ abstract class _$SqliteDb extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         categories,
-        passwords,
-        attributes,
+        tDataEncryptKey,
+        tEncryptedData,
+        tPassword,
+        tPasswordAttribute,
+        tPasswordHistory,
         tNote,
         tNoteHistory,
         tNoteIdx,
@@ -2870,43 +3782,456 @@ typedef $CategoriesProcessedTableManager = ProcessedTableManager<
     (CategoryEntity, BaseReferences<_$SqliteDb, Categories, CategoryEntity>),
     CategoryEntity,
     PrefetchHooks Function()>;
-typedef $PasswordsCreateCompanionBuilder = PasswordsCompanion Function({
+typedef $TDataEncryptKeyCreateCompanionBuilder = TDataEncryptKeyCompanion
+    Function({
   required String id,
-  Value<int> type,
-  Value<int> classification,
-  required String title,
-  required String value,
-  Value<String?> expireTime,
-  Value<String?> username,
-  Value<String?> uri,
-  Value<String?> remark,
-  Value<int> isFavorite,
-  Value<int> categoryId,
-  required String createTime,
-  required String lastUpdateTime,
-  Value<int> isDeleted,
+  required String data,
+  required String nonce,
+  required String authTag,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
   Value<int> rowid,
 });
-typedef $PasswordsUpdateCompanionBuilder = PasswordsCompanion Function({
+typedef $TDataEncryptKeyUpdateCompanionBuilder = TDataEncryptKeyCompanion
+    Function({
   Value<String> id,
-  Value<int> type,
-  Value<int> classification,
-  Value<String> title,
-  Value<String> value,
-  Value<String?> expireTime,
-  Value<String?> username,
-  Value<String?> uri,
-  Value<String?> remark,
-  Value<int> isFavorite,
-  Value<int> categoryId,
-  Value<String> createTime,
-  Value<String> lastUpdateTime,
-  Value<int> isDeleted,
+  Value<String> data,
+  Value<String> nonce,
+  Value<String> authTag,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
   Value<int> rowid,
 });
 
-class $PasswordsFilterComposer extends Composer<_$SqliteDb, Passwords> {
-  $PasswordsFilterComposer({
+class $TDataEncryptKeyFilterComposer
+    extends Composer<_$SqliteDb, TDataEncryptKey> {
+  $TDataEncryptKeyFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nonce => $composableBuilder(
+      column: $table.nonce, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get authTag => $composableBuilder(
+      column: $table.authTag, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $TDataEncryptKeyOrderingComposer
+    extends Composer<_$SqliteDb, TDataEncryptKey> {
+  $TDataEncryptKeyOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get data => $composableBuilder(
+      column: $table.data, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nonce => $composableBuilder(
+      column: $table.nonce, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get authTag => $composableBuilder(
+      column: $table.authTag, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $TDataEncryptKeyAnnotationComposer
+    extends Composer<_$SqliteDb, TDataEncryptKey> {
+  $TDataEncryptKeyAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+
+  GeneratedColumn<String> get nonce =>
+      $composableBuilder(column: $table.nonce, builder: (column) => column);
+
+  GeneratedColumn<String> get authTag =>
+      $composableBuilder(column: $table.authTag, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $TDataEncryptKeyTableManager extends RootTableManager<
+    _$SqliteDb,
+    TDataEncryptKey,
+    TDataEncryptKeyData,
+    $TDataEncryptKeyFilterComposer,
+    $TDataEncryptKeyOrderingComposer,
+    $TDataEncryptKeyAnnotationComposer,
+    $TDataEncryptKeyCreateCompanionBuilder,
+    $TDataEncryptKeyUpdateCompanionBuilder,
+    (
+      TDataEncryptKeyData,
+      BaseReferences<_$SqliteDb, TDataEncryptKey, TDataEncryptKeyData>
+    ),
+    TDataEncryptKeyData,
+    PrefetchHooks Function()> {
+  $TDataEncryptKeyTableManager(_$SqliteDb db, TDataEncryptKey table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TDataEncryptKeyFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TDataEncryptKeyOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TDataEncryptKeyAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> data = const Value.absent(),
+            Value<String> nonce = const Value.absent(),
+            Value<String> authTag = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TDataEncryptKeyCompanion(
+            id: id,
+            data: data,
+            nonce: nonce,
+            authTag: authTag,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String data,
+            required String nonce,
+            required String authTag,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TDataEncryptKeyCompanion.insert(
+            id: id,
+            data: data,
+            nonce: nonce,
+            authTag: authTag,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TDataEncryptKeyProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    TDataEncryptKey,
+    TDataEncryptKeyData,
+    $TDataEncryptKeyFilterComposer,
+    $TDataEncryptKeyOrderingComposer,
+    $TDataEncryptKeyAnnotationComposer,
+    $TDataEncryptKeyCreateCompanionBuilder,
+    $TDataEncryptKeyUpdateCompanionBuilder,
+    (
+      TDataEncryptKeyData,
+      BaseReferences<_$SqliteDb, TDataEncryptKey, TDataEncryptKeyData>
+    ),
+    TDataEncryptKeyData,
+    PrefetchHooks Function()>;
+typedef $TEncryptedDataCreateCompanionBuilder = TEncryptedDataCompanion
+    Function({
+  required String id,
+  required String dekId,
+  required Uint8List content,
+  required String algorithmId,
+  required String authTag,
+  required String nonce,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+typedef $TEncryptedDataUpdateCompanionBuilder = TEncryptedDataCompanion
+    Function({
+  Value<String> id,
+  Value<String> dekId,
+  Value<Uint8List> content,
+  Value<String> algorithmId,
+  Value<String> authTag,
+  Value<String> nonce,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+
+class $TEncryptedDataFilterComposer
+    extends Composer<_$SqliteDb, TEncryptedData> {
+  $TEncryptedDataFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dekId => $composableBuilder(
+      column: $table.dekId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<Uint8List> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get authTag => $composableBuilder(
+      column: $table.authTag, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nonce => $composableBuilder(
+      column: $table.nonce, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $TEncryptedDataOrderingComposer
+    extends Composer<_$SqliteDb, TEncryptedData> {
+  $TEncryptedDataOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dekId => $composableBuilder(
+      column: $table.dekId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<Uint8List> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get authTag => $composableBuilder(
+      column: $table.authTag, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nonce => $composableBuilder(
+      column: $table.nonce, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $TEncryptedDataAnnotationComposer
+    extends Composer<_$SqliteDb, TEncryptedData> {
+  $TEncryptedDataAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get dekId =>
+      $composableBuilder(column: $table.dekId, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get algorithmId => $composableBuilder(
+      column: $table.algorithmId, builder: (column) => column);
+
+  GeneratedColumn<String> get authTag =>
+      $composableBuilder(column: $table.authTag, builder: (column) => column);
+
+  GeneratedColumn<String> get nonce =>
+      $composableBuilder(column: $table.nonce, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $TEncryptedDataTableManager extends RootTableManager<
+    _$SqliteDb,
+    TEncryptedData,
+    TEncryptedDataData,
+    $TEncryptedDataFilterComposer,
+    $TEncryptedDataOrderingComposer,
+    $TEncryptedDataAnnotationComposer,
+    $TEncryptedDataCreateCompanionBuilder,
+    $TEncryptedDataUpdateCompanionBuilder,
+    (
+      TEncryptedDataData,
+      BaseReferences<_$SqliteDb, TEncryptedData, TEncryptedDataData>
+    ),
+    TEncryptedDataData,
+    PrefetchHooks Function()> {
+  $TEncryptedDataTableManager(_$SqliteDb db, TEncryptedData table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TEncryptedDataFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TEncryptedDataOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TEncryptedDataAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> dekId = const Value.absent(),
+            Value<Uint8List> content = const Value.absent(),
+            Value<String> algorithmId = const Value.absent(),
+            Value<String> authTag = const Value.absent(),
+            Value<String> nonce = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TEncryptedDataCompanion(
+            id: id,
+            dekId: dekId,
+            content: content,
+            algorithmId: algorithmId,
+            authTag: authTag,
+            nonce: nonce,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String dekId,
+            required Uint8List content,
+            required String algorithmId,
+            required String authTag,
+            required String nonce,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TEncryptedDataCompanion.insert(
+            id: id,
+            dekId: dekId,
+            content: content,
+            algorithmId: algorithmId,
+            authTag: authTag,
+            nonce: nonce,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TEncryptedDataProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    TEncryptedData,
+    TEncryptedDataData,
+    $TEncryptedDataFilterComposer,
+    $TEncryptedDataOrderingComposer,
+    $TEncryptedDataAnnotationComposer,
+    $TEncryptedDataCreateCompanionBuilder,
+    $TEncryptedDataUpdateCompanionBuilder,
+    (
+      TEncryptedDataData,
+      BaseReferences<_$SqliteDb, TEncryptedData, TEncryptedDataData>
+    ),
+    TEncryptedDataData,
+    PrefetchHooks Function()>;
+typedef $TPasswordCreateCompanionBuilder = TPasswordCompanion Function({
+  required String id,
+  Value<int> type,
+  Value<int> categoryId,
+  required String classification,
+  Value<String?> title,
+  required String encryptedDataId,
+  Value<DateTime?> expireTime,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+typedef $TPasswordUpdateCompanionBuilder = TPasswordCompanion Function({
+  Value<String> id,
+  Value<int> type,
+  Value<int> categoryId,
+  Value<String> classification,
+  Value<String?> title,
+  Value<String> encryptedDataId,
+  Value<DateTime?> expireTime,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+
+class $TPasswordFilterComposer extends Composer<_$SqliteDb, TPassword> {
+  $TPasswordFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2919,47 +4244,35 @@ class $PasswordsFilterComposer extends Composer<_$SqliteDb, Passwords> {
   ColumnFilters<int> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get classification => $composableBuilder(
+  ColumnFilters<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get classification => $composableBuilder(
       column: $table.classification,
       builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get value => $composableBuilder(
-      column: $table.value, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get expireTime => $composableBuilder(
-      column: $table.expireTime, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get username => $composableBuilder(
-      column: $table.username, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get uri => $composableBuilder(
-      column: $table.uri, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get remark => $composableBuilder(
-      column: $table.remark, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnFilters<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get isDeleted => $composableBuilder(
-      column: $table.isDeleted, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get expireTime => $composableBuilder(
+      column: $table.expireTime, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $PasswordsOrderingComposer extends Composer<_$SqliteDb, Passwords> {
-  $PasswordsOrderingComposer({
+class $TPasswordOrderingComposer extends Composer<_$SqliteDb, TPassword> {
+  $TPasswordOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2972,47 +4285,35 @@ class $PasswordsOrderingComposer extends Composer<_$SqliteDb, Passwords> {
   ColumnOrderings<int> get type => $composableBuilder(
       column: $table.type, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get classification => $composableBuilder(
+  ColumnOrderings<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get classification => $composableBuilder(
       column: $table.classification,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get value => $composableBuilder(
-      column: $table.value, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get expireTime => $composableBuilder(
-      column: $table.expireTime, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get username => $composableBuilder(
-      column: $table.username, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get uri => $composableBuilder(
-      column: $table.uri, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get remark => $composableBuilder(
-      column: $table.remark, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnOrderings<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get isDeleted => $composableBuilder(
-      column: $table.isDeleted, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get expireTime => $composableBuilder(
+      column: $table.expireTime, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+      column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $PasswordsAnnotationComposer extends Composer<_$SqliteDb, Passwords> {
-  $PasswordsAnnotationComposer({
+class $TPasswordAnnotationComposer extends Composer<_$SqliteDb, TPassword> {
+  $TPasswordAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3025,131 +4326,103 @@ class $PasswordsAnnotationComposer extends Composer<_$SqliteDb, Passwords> {
   GeneratedColumn<int> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
-  GeneratedColumn<int> get classification => $composableBuilder(
+  GeneratedColumn<int> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+
+  GeneratedColumn<String> get classification => $composableBuilder(
       column: $table.classification, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
+  GeneratedColumn<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId, builder: (column) => column);
 
-  GeneratedColumn<String> get expireTime => $composableBuilder(
+  GeneratedColumn<DateTime> get expireTime => $composableBuilder(
       column: $table.expireTime, builder: (column) => column);
 
-  GeneratedColumn<String> get username =>
-      $composableBuilder(column: $table.username, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  GeneratedColumn<String> get uri =>
-      $composableBuilder(column: $table.uri, builder: (column) => column);
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
-  GeneratedColumn<String> get remark =>
-      $composableBuilder(column: $table.remark, builder: (column) => column);
-
-  GeneratedColumn<int> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => column);
-
-  GeneratedColumn<int> get categoryId => $composableBuilder(
-      column: $table.categoryId, builder: (column) => column);
-
-  GeneratedColumn<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => column);
-
-  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime, builder: (column) => column);
-
-  GeneratedColumn<int> get isDeleted =>
-      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
 
-class $PasswordsTableManager extends RootTableManager<
+class $TPasswordTableManager extends RootTableManager<
     _$SqliteDb,
-    Passwords,
-    PasswordEntity,
-    $PasswordsFilterComposer,
-    $PasswordsOrderingComposer,
-    $PasswordsAnnotationComposer,
-    $PasswordsCreateCompanionBuilder,
-    $PasswordsUpdateCompanionBuilder,
-    (PasswordEntity, BaseReferences<_$SqliteDb, Passwords, PasswordEntity>),
-    PasswordEntity,
+    TPassword,
+    TPasswordData,
+    $TPasswordFilterComposer,
+    $TPasswordOrderingComposer,
+    $TPasswordAnnotationComposer,
+    $TPasswordCreateCompanionBuilder,
+    $TPasswordUpdateCompanionBuilder,
+    (TPasswordData, BaseReferences<_$SqliteDb, TPassword, TPasswordData>),
+    TPasswordData,
     PrefetchHooks Function()> {
-  $PasswordsTableManager(_$SqliteDb db, Passwords table)
+  $TPasswordTableManager(_$SqliteDb db, TPassword table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $PasswordsFilterComposer($db: db, $table: table),
+              $TPasswordFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $PasswordsOrderingComposer($db: db, $table: table),
+              $TPasswordOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $PasswordsAnnotationComposer($db: db, $table: table),
+              $TPasswordAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<int> type = const Value.absent(),
-            Value<int> classification = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> value = const Value.absent(),
-            Value<String?> expireTime = const Value.absent(),
-            Value<String?> username = const Value.absent(),
-            Value<String?> uri = const Value.absent(),
-            Value<String?> remark = const Value.absent(),
-            Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
-            Value<String> createTime = const Value.absent(),
-            Value<String> lastUpdateTime = const Value.absent(),
-            Value<int> isDeleted = const Value.absent(),
+            Value<String> classification = const Value.absent(),
+            Value<String?> title = const Value.absent(),
+            Value<String> encryptedDataId = const Value.absent(),
+            Value<DateTime?> expireTime = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              PasswordsCompanion(
+              TPasswordCompanion(
             id: id,
             type: type,
+            categoryId: categoryId,
             classification: classification,
             title: title,
-            value: value,
+            encryptedDataId: encryptedDataId,
             expireTime: expireTime,
-            username: username,
-            uri: uri,
-            remark: remark,
-            isFavorite: isFavorite,
-            categoryId: categoryId,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
-            isDeleted: isDeleted,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
             Value<int> type = const Value.absent(),
-            Value<int> classification = const Value.absent(),
-            required String title,
-            required String value,
-            Value<String?> expireTime = const Value.absent(),
-            Value<String?> username = const Value.absent(),
-            Value<String?> uri = const Value.absent(),
-            Value<String?> remark = const Value.absent(),
-            Value<int> isFavorite = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
-            required String createTime,
-            required String lastUpdateTime,
-            Value<int> isDeleted = const Value.absent(),
+            required String classification,
+            Value<String?> title = const Value.absent(),
+            required String encryptedDataId,
+            Value<DateTime?> expireTime = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<DateTime?> deletedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              PasswordsCompanion.insert(
+              TPasswordCompanion.insert(
             id: id,
             type: type,
+            categoryId: categoryId,
             classification: classification,
             title: title,
-            value: value,
+            encryptedDataId: encryptedDataId,
             expireTime: expireTime,
-            username: username,
-            uri: uri,
-            remark: remark,
-            isFavorite: isFavorite,
-            categoryId: categoryId,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
-            isDeleted: isDeleted,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            deletedAt: deletedAt,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3159,39 +4432,44 @@ class $PasswordsTableManager extends RootTableManager<
         ));
 }
 
-typedef $PasswordsProcessedTableManager = ProcessedTableManager<
+typedef $TPasswordProcessedTableManager = ProcessedTableManager<
     _$SqliteDb,
-    Passwords,
-    PasswordEntity,
-    $PasswordsFilterComposer,
-    $PasswordsOrderingComposer,
-    $PasswordsAnnotationComposer,
-    $PasswordsCreateCompanionBuilder,
-    $PasswordsUpdateCompanionBuilder,
-    (PasswordEntity, BaseReferences<_$SqliteDb, Passwords, PasswordEntity>),
-    PasswordEntity,
+    TPassword,
+    TPasswordData,
+    $TPasswordFilterComposer,
+    $TPasswordOrderingComposer,
+    $TPasswordAnnotationComposer,
+    $TPasswordCreateCompanionBuilder,
+    $TPasswordUpdateCompanionBuilder,
+    (TPasswordData, BaseReferences<_$SqliteDb, TPassword, TPasswordData>),
+    TPasswordData,
     PrefetchHooks Function()>;
-typedef $AttributesCreateCompanionBuilder = AttributesCompanion Function({
+typedef $TPasswordAttributeCreateCompanionBuilder = TPasswordAttributeCompanion
+    Function({
   Value<int> id,
-  required String resourceId,
+  required String passwordId,
   Value<int> dateType,
   required String name,
   Value<String?> value,
-  required String createTime,
-  required String lastUpdateTime,
+  Value<String?> encryptedDataId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
-typedef $AttributesUpdateCompanionBuilder = AttributesCompanion Function({
+typedef $TPasswordAttributeUpdateCompanionBuilder = TPasswordAttributeCompanion
+    Function({
   Value<int> id,
-  Value<String> resourceId,
+  Value<String> passwordId,
   Value<int> dateType,
   Value<String> name,
   Value<String?> value,
-  Value<String> createTime,
-  Value<String> lastUpdateTime,
+  Value<String?> encryptedDataId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
 
-class $AttributesFilterComposer extends Composer<_$SqliteDb, Attributes> {
-  $AttributesFilterComposer({
+class $TPasswordAttributeFilterComposer
+    extends Composer<_$SqliteDb, TPasswordAttribute> {
+  $TPasswordAttributeFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3201,8 +4479,8 @@ class $AttributesFilterComposer extends Composer<_$SqliteDb, Attributes> {
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get resourceId => $composableBuilder(
-      column: $table.resourceId, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get dateType => $composableBuilder(
       column: $table.dateType, builder: (column) => ColumnFilters(column));
@@ -3213,16 +4491,20 @@ class $AttributesFilterComposer extends Composer<_$SqliteDb, Attributes> {
   ColumnFilters<String> get value => $composableBuilder(
       column: $table.value, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnFilters<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
       builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $AttributesOrderingComposer extends Composer<_$SqliteDb, Attributes> {
-  $AttributesOrderingComposer({
+class $TPasswordAttributeOrderingComposer
+    extends Composer<_$SqliteDb, TPasswordAttribute> {
+  $TPasswordAttributeOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3232,8 +4514,8 @@ class $AttributesOrderingComposer extends Composer<_$SqliteDb, Attributes> {
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get resourceId => $composableBuilder(
-      column: $table.resourceId, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get dateType => $composableBuilder(
       column: $table.dateType, builder: (column) => ColumnOrderings(column));
@@ -3244,16 +4526,20 @@ class $AttributesOrderingComposer extends Composer<_$SqliteDb, Attributes> {
   ColumnOrderings<String> get value => $composableBuilder(
       column: $table.value, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime,
+  ColumnOrderings<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $AttributesAnnotationComposer extends Composer<_$SqliteDb, Attributes> {
-  $AttributesAnnotationComposer({
+class $TPasswordAttributeAnnotationComposer
+    extends Composer<_$SqliteDb, TPasswordAttribute> {
+  $TPasswordAttributeAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3263,8 +4549,8 @@ class $AttributesAnnotationComposer extends Composer<_$SqliteDb, Attributes> {
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get resourceId => $composableBuilder(
-      column: $table.resourceId, builder: (column) => column);
+  GeneratedColumn<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => column);
 
   GeneratedColumn<int> get dateType =>
       $composableBuilder(column: $table.dateType, builder: (column) => column);
@@ -3275,70 +4561,80 @@ class $AttributesAnnotationComposer extends Composer<_$SqliteDb, Attributes> {
   GeneratedColumn<String> get value =>
       $composableBuilder(column: $table.value, builder: (column) => column);
 
-  GeneratedColumn<String> get createTime => $composableBuilder(
-      column: $table.createTime, builder: (column) => column);
+  GeneratedColumn<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId, builder: (column) => column);
 
-  GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
-      column: $table.lastUpdateTime, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $AttributesTableManager extends RootTableManager<
+class $TPasswordAttributeTableManager extends RootTableManager<
     _$SqliteDb,
-    Attributes,
-    Attribute,
-    $AttributesFilterComposer,
-    $AttributesOrderingComposer,
-    $AttributesAnnotationComposer,
-    $AttributesCreateCompanionBuilder,
-    $AttributesUpdateCompanionBuilder,
-    (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
-    Attribute,
+    TPasswordAttribute,
+    TPasswordAttributeData,
+    $TPasswordAttributeFilterComposer,
+    $TPasswordAttributeOrderingComposer,
+    $TPasswordAttributeAnnotationComposer,
+    $TPasswordAttributeCreateCompanionBuilder,
+    $TPasswordAttributeUpdateCompanionBuilder,
+    (
+      TPasswordAttributeData,
+      BaseReferences<_$SqliteDb, TPasswordAttribute, TPasswordAttributeData>
+    ),
+    TPasswordAttributeData,
     PrefetchHooks Function()> {
-  $AttributesTableManager(_$SqliteDb db, Attributes table)
+  $TPasswordAttributeTableManager(_$SqliteDb db, TPasswordAttribute table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $AttributesFilterComposer($db: db, $table: table),
+              $TPasswordAttributeFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $AttributesOrderingComposer($db: db, $table: table),
+              $TPasswordAttributeOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $AttributesAnnotationComposer($db: db, $table: table),
+              $TPasswordAttributeAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            Value<String> resourceId = const Value.absent(),
+            Value<String> passwordId = const Value.absent(),
             Value<int> dateType = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String?> value = const Value.absent(),
-            Value<String> createTime = const Value.absent(),
-            Value<String> lastUpdateTime = const Value.absent(),
+            Value<String?> encryptedDataId = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
-              AttributesCompanion(
+              TPasswordAttributeCompanion(
             id: id,
-            resourceId: resourceId,
+            passwordId: passwordId,
             dateType: dateType,
             name: name,
             value: value,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
+            encryptedDataId: encryptedDataId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            required String resourceId,
+            required String passwordId,
             Value<int> dateType = const Value.absent(),
             required String name,
             Value<String?> value = const Value.absent(),
-            required String createTime,
-            required String lastUpdateTime,
+            Value<String?> encryptedDataId = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
-              AttributesCompanion.insert(
+              TPasswordAttributeCompanion.insert(
             id: id,
-            resourceId: resourceId,
+            passwordId: passwordId,
             dateType: dateType,
             name: name,
             value: value,
-            createTime: createTime,
-            lastUpdateTime: lastUpdateTime,
+            encryptedDataId: encryptedDataId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -3347,17 +4643,174 @@ class $AttributesTableManager extends RootTableManager<
         ));
 }
 
-typedef $AttributesProcessedTableManager = ProcessedTableManager<
+typedef $TPasswordAttributeProcessedTableManager = ProcessedTableManager<
     _$SqliteDb,
-    Attributes,
-    Attribute,
-    $AttributesFilterComposer,
-    $AttributesOrderingComposer,
-    $AttributesAnnotationComposer,
-    $AttributesCreateCompanionBuilder,
-    $AttributesUpdateCompanionBuilder,
-    (Attribute, BaseReferences<_$SqliteDb, Attributes, Attribute>),
-    Attribute,
+    TPasswordAttribute,
+    TPasswordAttributeData,
+    $TPasswordAttributeFilterComposer,
+    $TPasswordAttributeOrderingComposer,
+    $TPasswordAttributeAnnotationComposer,
+    $TPasswordAttributeCreateCompanionBuilder,
+    $TPasswordAttributeUpdateCompanionBuilder,
+    (
+      TPasswordAttributeData,
+      BaseReferences<_$SqliteDb, TPasswordAttribute, TPasswordAttributeData>
+    ),
+    TPasswordAttributeData,
+    PrefetchHooks Function()>;
+typedef $TPasswordHistoryCreateCompanionBuilder = TPasswordHistoryCompanion
+    Function({
+  Value<int> id,
+  required String passwordId,
+  required String encryptedDataId,
+  Value<DateTime> createdAt,
+});
+typedef $TPasswordHistoryUpdateCompanionBuilder = TPasswordHistoryCompanion
+    Function({
+  Value<int> id,
+  Value<String> passwordId,
+  Value<String> encryptedDataId,
+  Value<DateTime> createdAt,
+});
+
+class $TPasswordHistoryFilterComposer
+    extends Composer<_$SqliteDb, TPasswordHistory> {
+  $TPasswordHistoryFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $TPasswordHistoryOrderingComposer
+    extends Composer<_$SqliteDb, TPasswordHistory> {
+  $TPasswordHistoryOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $TPasswordHistoryAnnotationComposer
+    extends Composer<_$SqliteDb, TPasswordHistory> {
+  $TPasswordHistoryAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get passwordId => $composableBuilder(
+      column: $table.passwordId, builder: (column) => column);
+
+  GeneratedColumn<String> get encryptedDataId => $composableBuilder(
+      column: $table.encryptedDataId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $TPasswordHistoryTableManager extends RootTableManager<
+    _$SqliteDb,
+    TPasswordHistory,
+    TPasswordHistoryData,
+    $TPasswordHistoryFilterComposer,
+    $TPasswordHistoryOrderingComposer,
+    $TPasswordHistoryAnnotationComposer,
+    $TPasswordHistoryCreateCompanionBuilder,
+    $TPasswordHistoryUpdateCompanionBuilder,
+    (
+      TPasswordHistoryData,
+      BaseReferences<_$SqliteDb, TPasswordHistory, TPasswordHistoryData>
+    ),
+    TPasswordHistoryData,
+    PrefetchHooks Function()> {
+  $TPasswordHistoryTableManager(_$SqliteDb db, TPasswordHistory table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $TPasswordHistoryFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $TPasswordHistoryOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $TPasswordHistoryAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> passwordId = const Value.absent(),
+            Value<String> encryptedDataId = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              TPasswordHistoryCompanion(
+            id: id,
+            passwordId: passwordId,
+            encryptedDataId: encryptedDataId,
+            createdAt: createdAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String passwordId,
+            required String encryptedDataId,
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              TPasswordHistoryCompanion.insert(
+            id: id,
+            passwordId: passwordId,
+            encryptedDataId: encryptedDataId,
+            createdAt: createdAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $TPasswordHistoryProcessedTableManager = ProcessedTableManager<
+    _$SqliteDb,
+    TPasswordHistory,
+    TPasswordHistoryData,
+    $TPasswordHistoryFilterComposer,
+    $TPasswordHistoryOrderingComposer,
+    $TPasswordHistoryAnnotationComposer,
+    $TPasswordHistoryCreateCompanionBuilder,
+    $TPasswordHistoryUpdateCompanionBuilder,
+    (
+      TPasswordHistoryData,
+      BaseReferences<_$SqliteDb, TPasswordHistory, TPasswordHistoryData>
+    ),
+    TPasswordHistoryData,
     PrefetchHooks Function()>;
 typedef $TNoteCreateCompanionBuilder = TNoteCompanion Function({
   required String id,
@@ -3607,7 +5060,7 @@ typedef $TNoteHistoryCreateCompanionBuilder = TNoteHistoryCompanion Function({
   required String contentJson,
   required String contentChecksum,
   required String contentPlain,
-  Value<DateTime> changedAt,
+  Value<DateTime> createdAt,
 });
 typedef $TNoteHistoryUpdateCompanionBuilder = TNoteHistoryCompanion Function({
   Value<int> id,
@@ -3615,7 +5068,7 @@ typedef $TNoteHistoryUpdateCompanionBuilder = TNoteHistoryCompanion Function({
   Value<String> contentJson,
   Value<String> contentChecksum,
   Value<String> contentPlain,
-  Value<DateTime> changedAt,
+  Value<DateTime> createdAt,
 });
 
 class $TNoteHistoryFilterComposer extends Composer<_$SqliteDb, TNoteHistory> {
@@ -3642,8 +5095,8 @@ class $TNoteHistoryFilterComposer extends Composer<_$SqliteDb, TNoteHistory> {
   ColumnFilters<String> get contentPlain => $composableBuilder(
       column: $table.contentPlain, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get changedAt => $composableBuilder(
-      column: $table.changedAt, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
 }
 
 class $TNoteHistoryOrderingComposer extends Composer<_$SqliteDb, TNoteHistory> {
@@ -3671,8 +5124,8 @@ class $TNoteHistoryOrderingComposer extends Composer<_$SqliteDb, TNoteHistory> {
       column: $table.contentPlain,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get changedAt => $composableBuilder(
-      column: $table.changedAt, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
 
 class $TNoteHistoryAnnotationComposer
@@ -3699,8 +5152,8 @@ class $TNoteHistoryAnnotationComposer
   GeneratedColumn<String> get contentPlain => $composableBuilder(
       column: $table.contentPlain, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get changedAt =>
-      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
 
 class $TNoteHistoryTableManager extends RootTableManager<
@@ -3734,7 +5187,7 @@ class $TNoteHistoryTableManager extends RootTableManager<
             Value<String> contentJson = const Value.absent(),
             Value<String> contentChecksum = const Value.absent(),
             Value<String> contentPlain = const Value.absent(),
-            Value<DateTime> changedAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
           }) =>
               TNoteHistoryCompanion(
             id: id,
@@ -3742,7 +5195,7 @@ class $TNoteHistoryTableManager extends RootTableManager<
             contentJson: contentJson,
             contentChecksum: contentChecksum,
             contentPlain: contentPlain,
-            changedAt: changedAt,
+            createdAt: createdAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -3750,7 +5203,7 @@ class $TNoteHistoryTableManager extends RootTableManager<
             required String contentJson,
             required String contentChecksum,
             required String contentPlain,
-            Value<DateTime> changedAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
           }) =>
               TNoteHistoryCompanion.insert(
             id: id,
@@ -3758,7 +5211,7 @@ class $TNoteHistoryTableManager extends RootTableManager<
             contentJson: contentJson,
             contentChecksum: contentChecksum,
             contentPlain: contentPlain,
-            changedAt: changedAt,
+            createdAt: createdAt,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -3906,10 +5359,16 @@ class $SqliteDbManager {
   $SqliteDbManager(this._db);
   $CategoriesTableManager get categories =>
       $CategoriesTableManager(_db, _db.categories);
-  $PasswordsTableManager get passwords =>
-      $PasswordsTableManager(_db, _db.passwords);
-  $AttributesTableManager get attributes =>
-      $AttributesTableManager(_db, _db.attributes);
+  $TDataEncryptKeyTableManager get tDataEncryptKey =>
+      $TDataEncryptKeyTableManager(_db, _db.tDataEncryptKey);
+  $TEncryptedDataTableManager get tEncryptedData =>
+      $TEncryptedDataTableManager(_db, _db.tEncryptedData);
+  $TPasswordTableManager get tPassword =>
+      $TPasswordTableManager(_db, _db.tPassword);
+  $TPasswordAttributeTableManager get tPasswordAttribute =>
+      $TPasswordAttributeTableManager(_db, _db.tPasswordAttribute);
+  $TPasswordHistoryTableManager get tPasswordHistory =>
+      $TPasswordHistoryTableManager(_db, _db.tPasswordHistory);
   $TNoteTableManager get tNote => $TNoteTableManager(_db, _db.tNote);
   $TNoteHistoryTableManager get tNoteHistory =>
       $TNoteHistoryTableManager(_db, _db.tNoteHistory);
@@ -3917,131 +5376,28 @@ class $SqliteDbManager {
       $TNoteIdxTableManager(_db, _db.tNoteIdx);
 }
 
-class ActivePasswordsResult {
+class SelectPasswordsResult {
   final String id;
   final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
+  final String classification;
+  final String? title;
+  final DateTime? expireTime;
   final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  ActivePasswordsResult({
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  SelectPasswordsResult({
     required this.id,
     required this.type,
     required this.classification,
-    required this.title,
+    this.title,
     this.expireTime,
     required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
+    required this.createdAt,
+    required this.updatedAt,
   });
 }
 
-class PasswordsByClassificationResult {
-  final String id;
-  final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  PasswordsByClassificationResult({
-    required this.id,
-    required this.type,
-    required this.classification,
-    required this.title,
-    this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
-
-class PasswordsByCategoryResult {
-  final String id;
-  final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  PasswordsByCategoryResult({
-    required this.id,
-    required this.type,
-    required this.classification,
-    required this.title,
-    this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
-
-class PasswordsByTypeResult {
-  final String id;
-  final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  PasswordsByTypeResult({
-    required this.id,
-    required this.type,
-    required this.classification,
-    required this.title,
-    this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
-
-class FavoritePasswordsResult {
-  final String id;
-  final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  FavoritePasswordsResult({
-    required this.id,
-    required this.type,
-    required this.classification,
-    required this.title,
-    this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
-
-class DeletedPasswordsResult {
-  final String id;
-  final int type;
-  final int classification;
-  final String title;
-  final String? expireTime;
-  final int categoryId;
-  final String createTime;
-  final String lastUpdateTime;
-  DeletedPasswordsResult({
-    required this.id,
-    required this.type,
-    required this.classification,
-    required this.title,
-    this.expireTime,
-    required this.categoryId,
-    required this.createTime,
-    required this.lastUpdateTime,
-  });
-}
+typedef SelectPasswords$order = OrderBy Function(TPassword t_password);
 
 class SelectNotesResult {
   final String id;

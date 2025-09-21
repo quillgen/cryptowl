@@ -16,7 +16,12 @@ import '../crypto/protected_value.dart';
 // run `dart run build_runner build` to generate
 part 'database.g.dart';
 
-@DriftDatabase(include: {'common.drift', 'note.drift', 'tables.drift'})
+@DriftDatabase(include: {
+  'common.drift',
+  'encrypted_data.drift',
+  'note.drift',
+  'password.drift'
+})
 class SqliteDb extends _$SqliteDb {
   SqliteDb.from(QueryExecutor e) : super(e);
   SqliteDb.open(String file, ProtectedValue key)
@@ -138,6 +143,7 @@ QueryExecutor _openDatabase(String file, ProtectedValue key) {
         print("pragma key = \"x'${hex.encode(key.binaryValue)}'\";");
 
         rawDb.execute("pragma key = \"x'${hex.encode(key.binaryValue)}'\";");
+        rawDb.execute("PRAGMA foreign_keys;");
         rawDb.execute('select count(*) from sqlite_master');
 
         rawDb.execute("select enable_jieba('$dictPath')");

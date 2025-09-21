@@ -97,7 +97,6 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "Username",
                 readonly: true,
-                value: password.username,
               ),
               FormInput(
                 name: "Password",
@@ -109,13 +108,11 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "URI",
                 readonly: true,
-                value: password.uri,
               ),
               SizedBox(height: 20),
               FormInput(
                 name: "Remark",
                 readonly: true,
-                value: password.remark,
               ),
               SizedBox(
                 height: 20,
@@ -127,7 +124,7 @@ class PasswordDetailPage extends ConsumerWidget {
                 ),
               ),
               Text(
-                "Updated at ${formatter.format(password.lastUpdateTime)}",
+                "Updated at ${formatter.format(password.updatedAt)}",
                 style: TextStyle(
                   fontSize: 10,
                 ),

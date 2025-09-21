@@ -7,16 +7,16 @@ class NoteAbstract {
   String? title;
   String? abstract;
   Classification classification;
-  DateTime createTime;
-  DateTime lastUpdateTime;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   NoteAbstract({
     required this.id,
     this.title,
     required this.abstract,
     required this.classification,
-    required this.createTime,
-    required this.lastUpdateTime,
+    required this.createdAt,
+    required this.updatedAt,
   });
 }
 

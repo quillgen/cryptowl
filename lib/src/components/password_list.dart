@@ -47,8 +47,8 @@ class PasswordList extends HookConsumerWidget {
         final item = items[index];
         return ListItem(
           title: item.title,
-          content: MaterialLocalizations.of(context)
-              .formatShortDate(item.lastUpdateTime),
+          content:
+              MaterialLocalizations.of(context).formatShortDate(item.updatedAt),
           onTap: () {
             context.goNamed(
               PasswordDetailPage.name,

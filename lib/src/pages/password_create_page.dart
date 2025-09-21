@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../components/dropdown_formfield.dart';
 import '../components/form_input.dart';
 import '../crypto/protected_value.dart';
-import '../domain/password.dart';
 
 class PasswordCreatePage extends ConsumerStatefulWidget {
   const PasswordCreatePage({super.key});
@@ -25,11 +24,10 @@ const formTextStyle = TextStyle(fontSize: 14);
 typedef IconEntry = DropdownMenuEntry<ClassificationLabel>;
 
 enum ClassificationLabel {
-  confidential('Confidential', Icon(Icons.notes, color: Colors.green, size: 18),
-      CONFIDENTIAL),
-  secret('Secret', Icon(Icons.notes, color: Colors.orange, size: 18), SECRET),
-  topSecret(
-      'Top Secret', Icon(Icons.notes, color: Colors.red, size: 18), TOP_SECRET);
+  confidential(
+      'Confidential', Icon(Icons.notes, color: Colors.green, size: 18), 1),
+  secret('Secret', Icon(Icons.notes, color: Colors.orange, size: 18), 0),
+  topSecret('Top Secret', Icon(Icons.notes, color: Colors.red, size: 18), 99);
 
   const ClassificationLabel(this.label, this.icon, this.level);
 
@@ -46,9 +44,9 @@ enum ClassificationLabel {
 
   static ClassificationLabel from(int level) {
     switch (level) {
-      case TOP_SECRET:
+      case 1:
         return ClassificationLabel.topSecret;
-      case CONFIDENTIAL:
+      case 0:
         return ClassificationLabel.confidential;
       default:
         return ClassificationLabel.secret;

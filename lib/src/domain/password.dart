@@ -1,94 +1,71 @@
-import 'package:drift/drift.dart';
+import 'package:cryptowl/src/common/classification.dart';
 
 import '../crypto/protected_value.dart';
 import '../database/database.dart';
-
-const CONFIDENTIAL = -1;
-const SECRET = 0;
-const TOP_SECRET = 99;
 
 class PasswordBasic {
   String id;
   int type;
   int categoryId;
   String title;
-  int classification;
+  Classification classification;
   DateTime? expireTime;
-  DateTime createTime;
-  DateTime lastUpdateTime;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   PasswordBasic({
     required this.id,
     required this.type,
     required this.categoryId,
     required this.title,
-    this.classification = SECRET,
+    this.classification = Classification.secret,
     this.expireTime,
-    required this.createTime,
-    required this.lastUpdateTime,
+    required this.createdAt,
+    required this.updatedAt,
   });
+}
+
+class PasswordAttribute {
+  String name;
+  bool isProtected;
+  ProtectedValue value;
+
+  PasswordAttribute(
+      {required this.name, required this.isProtected, required this.value});
 }
 
 class Password {
   String id;
   int type;
-  int classification;
+  Classification classification;
   int categoryId;
-  String title;
+  String? title;
   DateTime? expireTime;
   ProtectedValue value;
-  String? username;
-  String? uri;
-  String? remark;
-  DateTime createTime;
-  DateTime lastUpdateTime;
+  List<PasswordAttribute>? attributes;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Password(
       {required this.id,
       required this.type,
-      this.classification = SECRET,
+      this.classification = Classification.secret,
       required this.title,
       this.expireTime,
       required this.value,
-      this.username,
-      this.uri,
-      this.remark,
+      this.attributes,
       required this.categoryId,
-      required this.createTime,
-      required this.lastUpdateTime});
+      required this.createdAt,
+      required this.updatedAt});
 
-  PasswordsCompanion toCompanion() {
-    return PasswordsCompanion(
-      id: Value.absentIfNull(id),
-      type: Value(type),
-      classification: Value(classification),
-      title: Value(title),
-      value: Value(value.getText()),
-      username: Value.absentIfNull(username),
-      uri: Value.absentIfNull(uri),
-      remark: Value.absentIfNull(remark),
-      expireTime: Value.absentIfNull(expireTime?.toIso8601String()),
-      createTime: Value(createTime.toIso8601String()),
-      lastUpdateTime: Value(lastUpdateTime.toIso8601String()),
-      categoryId: Value(categoryId),
-    );
-  }
-
-  static Password fromEntity(PasswordEntity entity) {
+  static Password fromEntity(TPasswordData e) {
     return Password(
-      id: entity.id,
-      type: entity.type,
-      classification: entity.classification,
-      categoryId: entity.categoryId,
-      title: entity.title,
-      username: entity.username,
-      uri: entity.uri,
-      remark: entity.remark,
-      expireTime:
-          entity.expireTime == null ? null : DateTime.parse(entity.expireTime!),
-      value: ProtectedValue.fromString(entity.value),
-      createTime: DateTime.parse(entity.createTime),
-      lastUpdateTime: DateTime.parse(entity.lastUpdateTime),
-    );
+        id: e.id,
+        type: e.type,
+        title: e.title,
+        value: ProtectedValue.fromString("tbd"),
+        categoryId: e.categoryId,
+        createdAt: e.createdAt,
+        updatedAt: e.updatedAt);
   }
 }

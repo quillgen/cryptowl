@@ -47,8 +47,8 @@ class NoteList extends ConsumerWidget {
         final item = items[index];
         return ListItem(
           title: item.abstract ?? "",
-          content: MaterialLocalizations.of(context)
-              .formatShortDate(item.lastUpdateTime),
+          content:
+              MaterialLocalizations.of(context).formatShortDate(item.updatedAt),
           onTap: () {
             context.goNamed(
               NoteDetailPage.name,

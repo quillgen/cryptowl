@@ -11,7 +11,7 @@ CREATE TABLE t_data_encrypt_key (
 
 CREATE TABLE t_encrypted_data (
     id CHAR(36) NOT NULL PRIMARY KEY,
-    dek_id TEXT NOT NULL,
+    dek_id CHAR(36) NOT NULL,
     content BLOB NOT NULL,
     algorithm_id TEXT NOT NULL,
     auth_tag TEXT NOT NULL,
