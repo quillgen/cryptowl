@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cryptowl/src/config/app_config.dart';
-import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/service/config_service.dart';
@@ -85,33 +83,33 @@ class AppService {
     final data = await configFile.readAsBytes();
     final config = await configService.loadConfig(utf8.decode(data));
 
+    final secretKeyLocation = _secretKeyId(config.data.instanceId);
+    final secretKey = await configService.readSecureStore(secretKeyLocation);
+    if (secretKey == null) {
+      throw CorruptedConfigException(
+          "Secret key not found for instance:${config.data.instanceId}");
+    }
+    ProtectedValue encryptionKey;
     try {
-      final symmetricKey = await _decryptSymmetricKey(password, config);
+      final symmetricKey =
+          await kdfService.decryptSymmetricKey(password, secretKey, config);
+      encryptionKey = ProtectedValue.fromBinary(
+          Uint8List.sublistView(symmetricKey.binaryValue, 0, 32));
     } catch (e) {
       logger.warning("Failed to decrypt symmetric key: $e");
       throw IncorrectPasswordException();
     }
+    logger.info("Successfully decrypted symmetric key");
 
     try {
-      final sqlite = SqliteDb.open("fixme", ProtectedValue.fromString("fixMe"));
-      final SqliteConfig dbConfig = SqliteConfig("1", "1", "1");
+      final sqlite =
+          SqliteDb.open("${config.data.instanceId}.enc", encryptionKey);
+
       await sqlite.select(sqlite.passwords).get();
-      return Session(dbConfig, sqlite);
+      return Session(sqlite);
     } catch (e) {
       throw IncorrectPasswordException();
     }
-  }
-
-  Future<ProtectedValue> _decryptSymmetricKey(
-      ProtectedValue masterPassword, AppConfig config) async {
-    final configData = config.data;
-    final secretKeyLocation = _secretKeyId(configData.instanceId);
-    final secretKey = await configService.readSecureStore(secretKeyLocation);
-    if (secretKey == null) {
-      throw CorruptedConfigException(
-          "Secret key not found for instance:${configData.instanceId}");
-    }
-    return kdfService.decryptSymmetricKey(masterPassword, secretKey, config);
   }
 
   String _secretKeyId(String instanceId) {
@@ -120,16 +118,5 @@ class AppService {
 
   String _hintId(String instanceId) {
     return "HINT:$instanceId";
-  }
-
-  Future<AuthEncryptedResult> _encryptSymmetricKey(
-      ProtectedValue symmetricKey,
-      ProtectedValue stretchedMasterKey,
-      Uint8List nonce,
-      Uint8List instanceId) async {
-    print("stretched master key:${stretchedMasterKey.getText()}");
-    final key = Uint8List.sublistView(stretchedMasterKey.binaryValue, 0, 32);
-    return aeadCrypto.encrypt(
-        symmetricKey, ProtectedValue.fromBinary(key), nonce, instanceId);
   }
 }
