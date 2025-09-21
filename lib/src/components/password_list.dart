@@ -4,10 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../main.dart';
 import '../domain/password.dart';
-import '../pages/password_create_page.dart';
 import '../pages/password_detail_page.dart';
 import '../providers/providers.dart';
 import 'empty.dart';
+import 'list_item.dart';
 
 enum FilterMenu {
   all,
@@ -45,22 +45,16 @@ class PasswordList extends HookConsumerWidget {
       itemCount: items.length,
       itemBuilder: (_, index) {
         final item = items[index];
-        return ListTile(
-          dense: true,
-          contentPadding: EdgeInsets.only(left: 10, right: 10),
-          leading: ClassificationLabel.from(item.classification).icon,
-          title: Text(item.title),
+        return ListItem(
+          title: item.title,
+          content: MaterialLocalizations.of(context)
+              .formatShortDate(item.lastUpdateTime),
           onTap: () {
             context.goNamed(
               PasswordDetailPage.name,
               pathParameters: <String, String>{'id': item.id},
             );
           },
-          shape: Border(
-            bottom: BorderSide(
-              color: const Color.fromARGB(255, 233, 231, 231),
-            ),
-          ),
         );
       },
     );
