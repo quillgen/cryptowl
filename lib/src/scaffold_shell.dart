@@ -12,9 +12,9 @@ import 'package:vector_graphics/vector_graphics.dart';
 
 import 'localization/app_localizations.dart';
 import 'pages/notes_page.dart';
+import 'pages/passwords.dart';
 import 'pages/photos_page.dart';
 import 'pages/settings_page.dart';
-import 'pages/valut_page.dart';
 import 'providers/providers.dart';
 
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
@@ -102,7 +102,7 @@ class ScaffoldShell extends ConsumerWidget {
             NotesPage.name => NavigationDestination(
                 icon: Icon(RemixIcons.list_check_3),
                 label: AppLocalizations.of(context)!.notes),
-            ValutPage.name => NavigationDestination(
+            PasswordsPage.name => NavigationDestination(
                 icon: Icon(RemixIcons.shield_keyhole_line),
                 label: AppLocalizations.of(context)!.passwords),
             _ => throw UnimplementedError(

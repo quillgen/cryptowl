@@ -17,10 +17,10 @@ import 'pages/onboarding_page.dart';
 import 'pages/password_create_page.dart';
 import 'pages/password_detail_page.dart';
 import 'pages/password_edit_page.dart';
+import 'pages/passwords.dart';
 import 'pages/photos_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/splash_page.dart';
-import 'pages/valut_page.dart';
 import 'providers/providers.dart';
 import 'scaffold_shell.dart';
 import 'theme.dart';
@@ -34,8 +34,8 @@ final GlobalKey<NavigatorState> photosNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'photos');
 final GlobalKey<NavigatorState> notesNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'notes');
-final GlobalKey<NavigatorState> valutNavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'valut');
+final GlobalKey<NavigatorState> passwordsNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'passwords');
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onboardingState = ref.watch(onboardingProvider);
@@ -160,49 +160,53 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       StatefulShellBranch(
-        navigatorKey: valutNavigatorKey,
+        navigatorKey: passwordsNavigatorKey,
         routes: <RouteBase>[
           GoRoute(
-            name: ValutPage.name,
-            path: ValutPage.path,
-            pageBuilder: (BuildContext context, GoRouterState state) {
-              return const NoTransitionPage<void>(
-                child: ValutPage(),
-              );
-            },
+            name: PasswordsPage.name,
+            path: PasswordsPage.path,
+            pageBuilder: (BuildContext context, GoRouterState state) =>
+                NoTransitionPage(
+              child: AppScaffold(
+                body: PasswordsPage(),
+              ),
+            ),
             routes: <RouteBase>[
               GoRoute(
                 name: PasswordDetailPage.name,
                 path: PasswordDetailPage.path,
-                parentNavigatorKey: rootNavigatorKey,
-                pageBuilder: (BuildContext context, GoRouterState state) {
-                  return const MaterialPage<void>(
-                    //fullscreenDialog: true,
-                    child: PasswordDetailPage(),
-                  );
-                },
+                parentNavigatorKey: passwordsNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) =>
+                    NoTransitionPage(
+                  child: AppScaffold(
+                    body: PasswordsPage(),
+                    secondaryBody: PasswordDetailPage(),
+                  ),
+                ),
               ),
               GoRoute(
                 name: PasswordEditPage.name,
                 path: PasswordEditPage.path,
-                parentNavigatorKey: rootNavigatorKey,
-                pageBuilder: (BuildContext context, GoRouterState state) {
-                  return const MaterialPage<void>(
-                    //fullscreenDialog: true,
-                    child: PasswordEditPage(),
-                  );
-                },
+                parentNavigatorKey: passwordsNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) =>
+                    NoTransitionPage(
+                  child: AppScaffold(
+                    body: PasswordsPage(),
+                    secondaryBody: PasswordEditPage(),
+                  ),
+                ),
               ),
               GoRoute(
                 name: PasswordCreatePage.name,
                 path: PasswordCreatePage.path,
-                parentNavigatorKey: rootNavigatorKey,
-                pageBuilder: (BuildContext context, GoRouterState state) {
-                  return const MaterialPage<void>(
-                    //fullscreenDialog: true,
-                    child: PasswordCreatePage(),
-                  );
-                },
+                parentNavigatorKey: passwordsNavigatorKey,
+                pageBuilder: (BuildContext context, GoRouterState state) =>
+                    NoTransitionPage(
+                  child: AppScaffold(
+                    body: PasswordsPage(),
+                    secondaryBody: PasswordCreatePage(),
+                  ),
+                ),
               ),
             ],
           ),

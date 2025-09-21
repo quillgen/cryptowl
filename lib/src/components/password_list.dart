@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../main.dart';
 import '../domain/password.dart';
@@ -15,8 +15,30 @@ enum FilterMenu {
   deleted,
 }
 
-class PasswordList extends ConsumerWidget {
+class PasswordList extends HookConsumerWidget {
   const PasswordList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final passwords = ref.watch(passwordsProvider);
+
+    return passwords.when(
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (e, _) {
+        logger.severe(e);
+        return ErrorWidget(e);
+      },
+      data: (items) => items.isEmpty
+          ? Empty()
+          : RefreshIndicator(
+              child: _buildList(context, items),
+              onRefresh: () async {
+                ref.invalidate(passwordsProvider);
+              }),
+    );
+  }
 
   Widget _buildList(BuildContext context, List<PasswordBasic> items) {
     return ListView.builder(
@@ -41,28 +63,6 @@ class PasswordList extends ConsumerWidget {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final passwords = ref.watch(passwordsProvider);
-
-    return passwords.when(
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (e, _) {
-        logger.severe(e);
-        return ErrorWidget(e);
-      },
-      data: (items) => items.isEmpty
-          ? Empty()
-          : RefreshIndicator(
-              child: _buildList(context, items),
-              onRefresh: () async {
-                ref.invalidate(passwordsProvider);
-              }),
     );
   }
 }
