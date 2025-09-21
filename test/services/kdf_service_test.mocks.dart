@@ -4,12 +4,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i8;
-import 'dart:typed_data' as _i9;
+import 'dart:typed_data' as _i10;
 
 import 'package:cryptowl/src/config/app_config.dart' as _i6;
-import 'package:cryptowl/src/crypto/aead_crypto.dart' as _i10;
+import 'package:cryptowl/src/crypto/aead_crypto.dart' as _i11;
 import 'package:cryptowl/src/crypto/hmac.dart' as _i4;
-import 'package:cryptowl/src/crypto/protected_value.dart' as _i11;
+import 'package:cryptowl/src/crypto/protected_value.dart' as _i9;
 import 'package:cryptowl/src/service/config_service.dart' as _i7;
 import 'package:cryptowl/src/service/version_service.dart' as _i5;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i3;
@@ -163,13 +163,30 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
       ) as _i8.Future<_i6.AppConfig>);
 
   @override
+  _i8.Future<bool> verifyConfig(
+    _i6.AppConfig? config,
+    _i9.ProtectedValue? macKey,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #verifyConfig,
+          [
+            config,
+            macKey,
+          ],
+        ),
+        returnValue: _i8.Future<bool>.value(false),
+        returnValueForMissingStub: _i8.Future<bool>.value(false),
+      ) as _i8.Future<bool>);
+
+  @override
   _i8.Future<_i6.AppConfig> createConfig(
     String? instanceId,
-    _i9.Uint8List? transformSeed,
-    _i9.Uint8List? masterSeed,
-    _i10.AuthEncryptedResult? symmetricKey,
-    _i11.ProtectedValue? macKey,
-    _i9.Uint8List? nonce,
+    _i10.Uint8List? transformSeed,
+    _i10.Uint8List? masterSeed,
+    _i11.AuthEncryptedResult? protectedSymmetricKey,
+    _i9.ProtectedValue? macKey,
+    _i10.Uint8List? nonce,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -178,7 +195,7 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
             instanceId,
             transformSeed,
             masterSeed,
-            symmetricKey,
+            protectedSymmetricKey,
             macKey,
             nonce,
           ],
@@ -191,7 +208,7 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
               instanceId,
               transformSeed,
               masterSeed,
-              symmetricKey,
+              protectedSymmetricKey,
               macKey,
               nonce,
             ],
@@ -206,7 +223,7 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
               instanceId,
               transformSeed,
               masterSeed,
-              symmetricKey,
+              protectedSymmetricKey,
               macKey,
               nonce,
             ],
@@ -238,20 +255,20 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
       ) as _i8.Future<String>);
 
   @override
-  _i8.Future<_i11.ProtectedValue?> readSecureStore(String? key) =>
+  _i8.Future<_i9.ProtectedValue?> readSecureStore(String? key) =>
       (super.noSuchMethod(
         Invocation.method(
           #readSecureStore,
           [key],
         ),
-        returnValue: _i8.Future<_i11.ProtectedValue?>.value(),
-        returnValueForMissingStub: _i8.Future<_i11.ProtectedValue?>.value(),
-      ) as _i8.Future<_i11.ProtectedValue?>);
+        returnValue: _i8.Future<_i9.ProtectedValue?>.value(),
+        returnValueForMissingStub: _i8.Future<_i9.ProtectedValue?>.value(),
+      ) as _i8.Future<_i9.ProtectedValue?>);
 
   @override
   _i8.Future<void> saveSecureStore(
     String? key,
-    _i11.ProtectedValue? data,
+    _i9.ProtectedValue? data,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -266,16 +283,16 @@ class MockConfigService extends _i1.Mock implements _i7.ConfigService {
       ) as _i8.Future<void>);
 
   @override
-  _i8.Future<_i9.Uint8List> generateEmergencyKit(String? secretKey) =>
+  _i8.Future<_i10.Uint8List> generateEmergencyKit(String? secretKey) =>
       (super.noSuchMethod(
         Invocation.method(
           #generateEmergencyKit,
           [secretKey],
         ),
-        returnValue: _i8.Future<_i9.Uint8List>.value(_i9.Uint8List(0)),
+        returnValue: _i8.Future<_i10.Uint8List>.value(_i10.Uint8List(0)),
         returnValueForMissingStub:
-            _i8.Future<_i9.Uint8List>.value(_i9.Uint8List(0)),
-      ) as _i8.Future<_i9.Uint8List>);
+            _i8.Future<_i10.Uint8List>.value(_i10.Uint8List(0)),
+      ) as _i8.Future<_i10.Uint8List>);
 }
 
 /// A class which mocks [VersionService].

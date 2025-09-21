@@ -1,4 +1,3 @@
-import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
@@ -9,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-@GenerateMocks([Ref, SqliteConfig])
+@GenerateMocks([Ref])
 import 'category_repository_test.mocks.dart';
 import 'test_util.dart';
 
@@ -66,7 +65,7 @@ void main() {
 
   test('should get all categories', () async {
     when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
+        .thenAnswer((_) async => Session(database));
 
     final list = await repository.list();
     expect(list.length, 5); // category 1 is default and migrated

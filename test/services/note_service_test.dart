@@ -1,4 +1,3 @@
-import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
@@ -10,7 +9,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import '../repositories/test_util.dart';
-@GenerateMocks([Ref, SqliteConfig])
+@GenerateMocks([Ref])
 import 'note_service_test.mocks.dart';
 
 void main() {
@@ -29,7 +28,7 @@ void main() {
     provideDummy<Future<Session?>>(Future.value(null));
 
     when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
+        .thenAnswer((_) async => Session(database));
   });
 
   tearDown(() async {

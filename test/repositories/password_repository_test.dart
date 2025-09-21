@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/password.dart';
@@ -16,7 +15,7 @@ import 'package:mockito/mockito.dart';
 import 'package:native_sqlcipher/native_sqlcipher.dart';
 import 'package:sqlite3/open.dart';
 
-@GenerateMocks([Ref, SqliteConfig])
+@GenerateMocks([Ref])
 import 'password_repository_test.mocks.dart';
 import 'test_util.dart';
 
@@ -56,7 +55,7 @@ void main() {
     provideDummy<Future<Session?>>(Future.value(null));
 
     when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
+        .thenAnswer((_) async => Session(database));
   });
 
   tearDown(() async {

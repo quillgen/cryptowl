@@ -1,5 +1,4 @@
 import 'package:cryptowl/src/common/classification.dart';
-import 'package:cryptowl/src/config/sqlite.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/domain/user.dart';
@@ -10,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-@GenerateMocks([Ref, SqliteConfig])
+@GenerateMocks([Ref])
 import 'note_repository_test.mocks.dart';
 import 'test_util.dart';
 
@@ -61,7 +60,7 @@ void main() {
     provideDummy<Future<Session?>>(Future.value(null));
 
     when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(MockSqliteConfig(), database));
+        .thenAnswer((_) async => Session(database));
   });
 
   tearDown(() async {

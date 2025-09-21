@@ -3,7 +3,6 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:cryptowl/src/config/sqlite.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i3;
 import 'package:riverpod/src/internals.dart' as _i2;
@@ -273,41 +272,4 @@ class MockRef<State extends Object?> extends _i1.Mock
           ),
         ),
       ) as _i2.ProviderSubscription<T>);
-}
-
-/// A class which mocks [SqliteConfig].
-///
-/// See the documentation for Mockito's code generation for more information.
-// ignore: must_be_immutable
-class MockSqliteConfig extends _i1.Mock implements _i4.SqliteConfig {
-  MockSqliteConfig() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String get version => (super.noSuchMethod(
-        Invocation.getter(#version),
-        returnValue: _i3.dummyValue<String>(
-          this,
-          Invocation.getter(#version),
-        ),
-      ) as String);
-
-  @override
-  String get instance => (super.noSuchMethod(
-        Invocation.getter(#instance),
-        returnValue: _i3.dummyValue<String>(
-          this,
-          Invocation.getter(#instance),
-        ),
-      ) as String);
-
-  @override
-  String get kdfParameters => (super.noSuchMethod(
-        Invocation.getter(#kdfParameters),
-        returnValue: _i3.dummyValue<String>(
-          this,
-          Invocation.getter(#kdfParameters),
-        ),
-      ) as String);
 }
