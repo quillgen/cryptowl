@@ -114,7 +114,6 @@ class KdfService {
     final stretchedMasterKey = await createStretchedMasterKey(
         transformedMasterKey, instanceIdBytes, masterSeed.binaryValue);
 
-    print("stretched master key=${stretchedMasterKey.getText()}");
     final encryptedSymmetricKey =
         CrockfordBase32.decode(configData.encryptedKey);
     final authTag = CrockfordBase32.decode(configData.authTag);

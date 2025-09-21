@@ -38,7 +38,7 @@ class ConfigService {
       String instanceId,
       Uint8List transformSeed,
       Uint8List masterSeed,
-      AuthEncryptedResult symmetricKey,
+      AuthEncryptedResult protectedSymmetricKey,
       ProtectedValue macKey,
       Uint8List nonce) async {
     final now = DateTime.now();
@@ -48,9 +48,9 @@ class ConfigService {
       updatedAt: now,
       kdf: KdfParams(algorithm: "argon2id", m: 19, t: 2, p: 1),
       transformSeed: CrockfordBase32.encode(transformSeed),
-      masterSeed: CrockfordBase32.encode(transformSeed),
-      encryptedKey: CrockfordBase32.encode(symmetricKey.cipherData),
-      authTag: CrockfordBase32.encode(symmetricKey.authTag),
+      masterSeed: CrockfordBase32.encode(masterSeed),
+      encryptedKey: CrockfordBase32.encode(protectedSymmetricKey.cipherData),
+      authTag: CrockfordBase32.encode(protectedSymmetricKey.authTag),
       nonce: CrockfordBase32.encode(nonce),
     );
 
