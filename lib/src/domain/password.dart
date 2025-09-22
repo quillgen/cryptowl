@@ -42,7 +42,7 @@ class PasswordAttribute {
 class Password {
   String id;
   int type;
-  Classification classification;
+  bool isTopSecret;
   int categoryId;
   String? title;
   DateTime? expireTime;
@@ -54,7 +54,7 @@ class Password {
   Password(
       {required this.id,
       required this.type,
-      this.classification = Classification.secret,
+      required this.isTopSecret,
       required this.title,
       this.expireTime,
       required this.value,
@@ -69,6 +69,7 @@ class Password {
     return Password(
         id: RandomUtil.generateUUID(),
         type: 0,
+        isTopSecret: isTopSecret,
         title: title,
         value: password,
         categoryId: 0,
@@ -92,6 +93,7 @@ class Password {
         id: e.id,
         type: e.type,
         title: e.title,
+        isTopSecret: false,
         value: ProtectedValue.fromString("tbd"),
         categoryId: e.categoryId,
         createdAt: e.createdAt,

@@ -1,4 +1,5 @@
 import 'package:cryptowl/src/common/classification.dart';
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/note.dart';
 import 'package:cryptowl/src/domain/user.dart';
@@ -59,8 +60,8 @@ void main() {
     await createNotes();
     provideDummy<Future<Session?>>(Future.value(null));
 
-    when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(database));
+    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
+        (_) async => Session(database, ProtectedValue.fromString("fake key")));
   });
 
   tearDown(() async {

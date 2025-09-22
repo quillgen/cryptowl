@@ -1,3 +1,4 @@
+import 'package:cryptowl/src/crypto/protected_value.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/user.dart';
 import 'package:cryptowl/src/providers/credentials.dart';
@@ -64,8 +65,8 @@ void main() {
   }, skip: true);
 
   test('should get all categories', () async {
-    when(mockRef.read(asyncLoginProvider.future))
-        .thenAnswer((_) async => Session(database));
+    when(mockRef.read(asyncLoginProvider.future)).thenAnswer(
+        (_) async => Session(database, ProtectedValue.fromString("fake key")));
 
     final list = await repository.list();
     expect(list.length, 5); // category 1 is default and migrated

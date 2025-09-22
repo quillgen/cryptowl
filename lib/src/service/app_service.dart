@@ -89,9 +89,9 @@ class AppService {
       throw CorruptedConfigException(
           "Secret key not found for instance:${config.data.instanceId}");
     }
-    ProtectedValue encryptionKey;
+    ProtectedValue symmetricKey, encryptionKey;
     try {
-      final symmetricKey =
+      symmetricKey =
           await kdfService.decryptSymmetricKey(password, secretKey, config);
       encryptionKey = ProtectedValue.fromBinary(
           Uint8List.sublistView(symmetricKey.binaryValue, 0, 32));
@@ -106,7 +106,7 @@ class AppService {
           SqliteDb.open("${config.data.instanceId}.enc", encryptionKey);
 
       await sqlite.select(sqlite.tPassword).get();
-      return Session(sqlite);
+      return Session(sqlite, symmetricKey);
     } catch (e) {
       logger.severe("Failed to open sqlcipher: $e");
       throw InternalException("Failed to open sqlcihper: ${e}");

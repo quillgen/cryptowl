@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/providers/providers.dart';
 import 'package:flutter/material.dart' hide DropdownMenuFormField;
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,7 +17,8 @@ class PasswordCreatePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final passwordRepository = ref.watch(passwordRepositoryProvider);
+    final session = ref.watch(asyncLoginProvider);
+    final passwordService = ref.watch(passwordServiceProvider);
 
     final formKey = useMemoized(() => GlobalKey<FormState>());
     final titleController = useTextEditingController();
@@ -32,12 +36,16 @@ class PasswordCreatePage extends HookConsumerWidget {
 
     void submitForm() async {
       if (formKey.currentState!.validate()) {
-        await passwordRepository.create(
+        final password = Password.create(
             titleController.text,
             ProtectedValue.fromString(passwordController.text),
             isTopSecret.value,
             userController.text,
             remarkController.text);
+        final kek = ProtectedValue.fromBinary(Uint8List.sublistView(
+            session.value!.symmetricKey.binaryValue, 0, 32));
+        await passwordService.createPassword(password, kek);
+        ref.invalidate(passwordsProvider);
         if (context.mounted) {
           context.pop();
         }

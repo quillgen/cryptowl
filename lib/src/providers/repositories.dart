@@ -9,6 +9,7 @@ import 'package:cryptowl/src/service/version_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../service/note_service.dart';
+import '../service/password_service.dart';
 
 final categoryRepositoryProvider = Provider((ref) {
   return CategoryRepository(ref);
@@ -41,6 +42,13 @@ final configServiceProvider = Provider((ref) {
 final noteServiceProvider = Provider((ref) {
   return NoteService(
     ref.read(noteRepositoryProvider),
+  );
+});
+
+final passwordServiceProvider = Provider((ref) {
+  return PasswordService(
+    ref.read(kdfServiceProvider),
+    ref.read(passwordRepositoryProvider),
   );
 });
 

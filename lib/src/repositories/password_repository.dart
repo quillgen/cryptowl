@@ -1,4 +1,5 @@
 import 'package:cryptowl/src/crypto/protected_value.dart';
+import 'package:cryptowl/src/database/database.dart';
 import 'package:drift/drift.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
@@ -7,7 +8,7 @@ import '../domain/password.dart';
 import 'base_repository.dart';
 
 class PasswordRepository extends SqlcipherRepository {
-  final _logger = Logger("PasswordRepository");
+  final logger = Logger("PasswordRepository");
   final uuid = Uuid();
 
   PasswordRepository(super.ref);
@@ -44,10 +45,17 @@ class PasswordRepository extends SqlcipherRepository {
     return true;
   }
 
-  Future<void> create(String title, ProtectedValue protectedValue,
-      bool isTopSecret, String? user, String? remark) async {
+  Future<void> create(
+      TPasswordData passwordEntity,
+      TDataEncryptKeyData dekEntity,
+      TEncryptedDataData encryptedDataEntity) async {
     final db = await requireDb();
-    return db.transaction(() async {});
+    return db.transaction(() async {
+      logger.info("Saving password: ${passwordEntity.id}");
+      await db.into(db.tDataEncryptKey).insert(dekEntity);
+      await db.into(db.tEncryptedData).insert(encryptedDataEntity);
+      await db.into(db.tPassword).insert(passwordEntity);
+    });
   }
 
   Future<void> update(String id,
