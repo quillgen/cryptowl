@@ -60,6 +60,7 @@ class PasswordService {
     final passwordEntity = TPasswordData(
         id: passwordId,
         type: DEFAULT,
+        title: password.title,
         categoryId: DEFAULT,
         classification: classification.value,
         encryptedDataId: encryptedDataId,

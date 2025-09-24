@@ -10,29 +10,16 @@ import 'package:cryptowl/src/service/version_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:native_argon2/native_argon2.dart';
 import 'package:path/path.dart' as path;
 
+import '../repositories/test_util.dart';
 @GenerateNiceMocks([MockSpec<VersionService>()])
 import 'config_service_test.mocks.dart';
 
 void main() {
   final mockVersionService = MockVersionService();
   setUp(() {
-    String testLibPath;
-
-    if (Platform.isMacOS) {
-      testLibPath = 'deps/native_argon2/src/build/libnative_argon2.dylib';
-    } else if (Platform.isLinux) {
-      testLibPath = 'deps/native_argon2/src/build/libnative_argon2.so';
-    } else if (Platform.isWindows) {
-      testLibPath = 'deps/native_argon2/src/build/libnative_argon2.dll';
-    } else {
-      throw UnsupportedError(
-        'Tests on ${Platform.operatingSystem} not supported',
-      );
-    }
-    Argon2LibraryLoader.instance.configure(libraryPath: testLibPath);
+    setupArgon2();
   });
 
   test('should return config object with hash', () async {

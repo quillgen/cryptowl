@@ -4,7 +4,25 @@ import 'dart:io';
 import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:native_argon2/native_argon2.dart';
 import 'package:sqlite3/open.dart';
+
+void setupArgon2() {
+  String testLibPath;
+
+  if (Platform.isMacOS) {
+    testLibPath = 'deps/native_argon2/src/build/libnative_argon2.dylib';
+  } else if (Platform.isLinux) {
+    testLibPath = 'deps/native_argon2/src/build/libnative_argon2.so';
+  } else if (Platform.isWindows) {
+    testLibPath = 'deps/native_argon2/src/build/libnative_argon2.dll';
+  } else {
+    throw UnsupportedError(
+      'Tests on ${Platform.operatingSystem} not supported',
+    );
+  }
+  Argon2LibraryLoader.instance.configure(libraryPath: testLibPath);
+}
 
 DynamicLibrary openTestSqlcipher() {
   String testLibPath;
