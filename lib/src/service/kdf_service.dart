@@ -70,6 +70,10 @@ class KdfService {
         symmetricKey, stretchedMasterKey, nonce, instanceId);
   }
 
+  Future<String> generateUUID() async {
+    return RandomUtil.generateUUID();
+  }
+
   Future<ProtectedValue> generateRandomBytes({int length = 32}) async {
     return ProtectedValue.fromBinary(RandomUtil.generateSecureBytes(length));
   }

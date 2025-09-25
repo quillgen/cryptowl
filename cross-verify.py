@@ -103,3 +103,20 @@ if __name__ == "__main__":
     print(f"strectched_master_key: {strectched_master_key}")
     print(f"protected_symmetric_Key: {encrypted_symmetric_Key}")
     print(f"auth_tag: {auth_tag}")
+
+    print("-----------")
+    dek = "3f09ea13ceffb8e867a4af3ab17854f9f5f152591653c737a8962b94356e2c0f"
+    dek_nonce = "b27f6e2bd596308c190c4f1d"
+    dek_id = "41964e60-5fc3-472c-8b87-71363c71b03c"
+    kek = "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f"
+    
+    encrypted_dek, dek_auth_tag = encrypt_aes256gcm_hex(kek, dek, dek_nonce, dek_id)
+    print(f"encrypted_dek: {encrypted_dek}")
+    print(f"dek_auth_tag: {dek_auth_tag}")
+    print("-----------")
+    password = "123456@google.com"
+    encrypt_nonce = "87ab2c66744df1f6ae8fbd8a"
+    encrypt_id = "41964e60-5fc3-472c-8b87-71363c71b03d"
+    encrypted_data, encrypted_data_auth_tag = encrypt_aes256gcm_hex(dek, binascii.hexlify(password.encode('utf-8')), encrypt_nonce, encrypt_id)
+    print(f"encrypted_data: {encrypted_data}")
+    print(f"encrypted_data_auth_tag: {encrypted_data_auth_tag}")

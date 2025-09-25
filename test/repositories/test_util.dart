@@ -1,6 +1,8 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:convert/convert.dart';
+import 'package:cryptowl/src/crypto/crockford_base32.dart';
 import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -103,4 +105,8 @@ QueryExecutor openTestDatabase({String? file, bool? useRandomFile}) {
       return openFileDb(File(file));
     }
   });
+}
+
+String crockford32ToHex(String crockford32) {
+  return hex.encode(CrockfordBase32.decode(crockford32).binaryValue);
 }

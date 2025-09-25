@@ -48,13 +48,17 @@ class PasswordRepository extends SqlcipherRepository {
   Future<void> create(
       TPasswordData passwordEntity,
       TDataEncryptKeyData dekEntity,
-      TEncryptedDataData encryptedDataEntity) async {
+      TEncryptedDataData encryptedDataEntity,
+      List<TPasswordAttributeCompanion> attributeEntities) async {
     final db = await requireDb();
     return db.transaction(() async {
       logger.info("Saving password: ${passwordEntity.id}");
       await db.into(db.tDataEncryptKey).insert(dekEntity);
       await db.into(db.tEncryptedData).insert(encryptedDataEntity);
       await db.into(db.tPassword).insert(passwordEntity);
+      for (var a in attributeEntities) {
+        await db.into(db.tPasswordAttribute).insert(a);
+      }
     });
   }
 

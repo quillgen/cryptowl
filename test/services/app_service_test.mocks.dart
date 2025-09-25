@@ -411,6 +411,29 @@ class MockKdfService extends _i1.Mock implements _i15.KdfService {
       ) as _i14.Future<_i5.AuthEncryptedResult>);
 
   @override
+  _i14.Future<String> generateUUID() => (super.noSuchMethod(
+        Invocation.method(
+          #generateUUID,
+          [],
+        ),
+        returnValue: _i14.Future<String>.value(_i17.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateUUID,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i14.Future<String>.value(_i17.dummyValue<String>(
+          this,
+          Invocation.method(
+            #generateUUID,
+            [],
+          ),
+        )),
+      ) as _i14.Future<String>);
+
+  @override
   _i14.Future<_i7.ProtectedValue> generateRandomBytes({int? length = 32}) =>
       (super.noSuchMethod(
         Invocation.method(

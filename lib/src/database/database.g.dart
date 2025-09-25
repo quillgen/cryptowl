@@ -1700,14 +1700,14 @@ class TPasswordAttribute extends Table
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _dateTypeMeta =
-      const VerificationMeta('dateType');
-  late final GeneratedColumn<int> dateType = GeneratedColumn<int>(
-      'date_type', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'NOT NULL DEFAULT 1',
-      defaultValue: const CustomExpression('1'));
+  static const VerificationMeta _classificationMeta =
+      const VerificationMeta('classification');
+  late final GeneratedColumn<String> classification = GeneratedColumn<String>(
+      'classification', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints:
+          'NOT NULL CHECK (classification IN (\'C\', \'S\', \'T\'))');
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
@@ -1747,7 +1747,7 @@ class TPasswordAttribute extends Table
   List<GeneratedColumn> get $columns => [
         id,
         passwordId,
-        dateType,
+        classification,
         name,
         value,
         encryptedDataId,
@@ -1776,9 +1776,13 @@ class TPasswordAttribute extends Table
     } else if (isInserting) {
       context.missing(_passwordIdMeta);
     }
-    if (data.containsKey('date_type')) {
-      context.handle(_dateTypeMeta,
-          dateType.isAcceptableOrUnknown(data['date_type']!, _dateTypeMeta));
+    if (data.containsKey('classification')) {
+      context.handle(
+          _classificationMeta,
+          classification.isAcceptableOrUnknown(
+              data['classification']!, _classificationMeta));
+    } else if (isInserting) {
+      context.missing(_classificationMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -1817,8 +1821,8 @@ class TPasswordAttribute extends Table
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       passwordId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}password_id'])!,
-      dateType: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}date_type'])!,
+      classification: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}classification'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       value: attachedDatabase.typeMapping
@@ -1848,7 +1852,7 @@ class TPasswordAttributeData extends DataClass
     implements Insertable<TPasswordAttributeData> {
   final int id;
   final String passwordId;
-  final int dateType;
+  final String classification;
   final String name;
   final String? value;
   final String? encryptedDataId;
@@ -1857,7 +1861,7 @@ class TPasswordAttributeData extends DataClass
   const TPasswordAttributeData(
       {required this.id,
       required this.passwordId,
-      required this.dateType,
+      required this.classification,
       required this.name,
       this.value,
       this.encryptedDataId,
@@ -1868,7 +1872,7 @@ class TPasswordAttributeData extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['password_id'] = Variable<String>(passwordId);
-    map['date_type'] = Variable<int>(dateType);
+    map['classification'] = Variable<String>(classification);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || value != null) {
       map['value'] = Variable<String>(value);
@@ -1885,7 +1889,7 @@ class TPasswordAttributeData extends DataClass
     return TPasswordAttributeCompanion(
       id: Value(id),
       passwordId: Value(passwordId),
-      dateType: Value(dateType),
+      classification: Value(classification),
       name: Value(name),
       value:
           value == null && nullToAbsent ? const Value.absent() : Value(value),
@@ -1903,7 +1907,7 @@ class TPasswordAttributeData extends DataClass
     return TPasswordAttributeData(
       id: serializer.fromJson<int>(json['id']),
       passwordId: serializer.fromJson<String>(json['password_id']),
-      dateType: serializer.fromJson<int>(json['date_type']),
+      classification: serializer.fromJson<String>(json['classification']),
       name: serializer.fromJson<String>(json['name']),
       value: serializer.fromJson<String?>(json['value']),
       encryptedDataId: serializer.fromJson<String?>(json['encrypted_data_id']),
@@ -1917,7 +1921,7 @@ class TPasswordAttributeData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'password_id': serializer.toJson<String>(passwordId),
-      'date_type': serializer.toJson<int>(dateType),
+      'classification': serializer.toJson<String>(classification),
       'name': serializer.toJson<String>(name),
       'value': serializer.toJson<String?>(value),
       'encrypted_data_id': serializer.toJson<String?>(encryptedDataId),
@@ -1929,7 +1933,7 @@ class TPasswordAttributeData extends DataClass
   TPasswordAttributeData copyWith(
           {int? id,
           String? passwordId,
-          int? dateType,
+          String? classification,
           String? name,
           Value<String?> value = const Value.absent(),
           Value<String?> encryptedDataId = const Value.absent(),
@@ -1938,7 +1942,7 @@ class TPasswordAttributeData extends DataClass
       TPasswordAttributeData(
         id: id ?? this.id,
         passwordId: passwordId ?? this.passwordId,
-        dateType: dateType ?? this.dateType,
+        classification: classification ?? this.classification,
         name: name ?? this.name,
         value: value.present ? value.value : this.value,
         encryptedDataId: encryptedDataId.present
@@ -1952,7 +1956,9 @@ class TPasswordAttributeData extends DataClass
       id: data.id.present ? data.id.value : this.id,
       passwordId:
           data.passwordId.present ? data.passwordId.value : this.passwordId,
-      dateType: data.dateType.present ? data.dateType.value : this.dateType,
+      classification: data.classification.present
+          ? data.classification.value
+          : this.classification,
       name: data.name.present ? data.name.value : this.name,
       value: data.value.present ? data.value.value : this.value,
       encryptedDataId: data.encryptedDataId.present
@@ -1968,7 +1974,7 @@ class TPasswordAttributeData extends DataClass
     return (StringBuffer('TPasswordAttributeData(')
           ..write('id: $id, ')
           ..write('passwordId: $passwordId, ')
-          ..write('dateType: $dateType, ')
+          ..write('classification: $classification, ')
           ..write('name: $name, ')
           ..write('value: $value, ')
           ..write('encryptedDataId: $encryptedDataId, ')
@@ -1979,7 +1985,7 @@ class TPasswordAttributeData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, passwordId, dateType, name, value,
+  int get hashCode => Object.hash(id, passwordId, classification, name, value,
       encryptedDataId, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
@@ -1987,7 +1993,7 @@ class TPasswordAttributeData extends DataClass
       (other is TPasswordAttributeData &&
           other.id == this.id &&
           other.passwordId == this.passwordId &&
-          other.dateType == this.dateType &&
+          other.classification == this.classification &&
           other.name == this.name &&
           other.value == this.value &&
           other.encryptedDataId == this.encryptedDataId &&
@@ -1999,7 +2005,7 @@ class TPasswordAttributeCompanion
     extends UpdateCompanion<TPasswordAttributeData> {
   final Value<int> id;
   final Value<String> passwordId;
-  final Value<int> dateType;
+  final Value<String> classification;
   final Value<String> name;
   final Value<String?> value;
   final Value<String?> encryptedDataId;
@@ -2008,7 +2014,7 @@ class TPasswordAttributeCompanion
   const TPasswordAttributeCompanion({
     this.id = const Value.absent(),
     this.passwordId = const Value.absent(),
-    this.dateType = const Value.absent(),
+    this.classification = const Value.absent(),
     this.name = const Value.absent(),
     this.value = const Value.absent(),
     this.encryptedDataId = const Value.absent(),
@@ -2018,18 +2024,19 @@ class TPasswordAttributeCompanion
   TPasswordAttributeCompanion.insert({
     this.id = const Value.absent(),
     required String passwordId,
-    this.dateType = const Value.absent(),
+    required String classification,
     required String name,
     this.value = const Value.absent(),
     this.encryptedDataId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : passwordId = Value(passwordId),
+        classification = Value(classification),
         name = Value(name);
   static Insertable<TPasswordAttributeData> custom({
     Expression<int>? id,
     Expression<String>? passwordId,
-    Expression<int>? dateType,
+    Expression<String>? classification,
     Expression<String>? name,
     Expression<String>? value,
     Expression<String>? encryptedDataId,
@@ -2039,7 +2046,7 @@ class TPasswordAttributeCompanion
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (passwordId != null) 'password_id': passwordId,
-      if (dateType != null) 'date_type': dateType,
+      if (classification != null) 'classification': classification,
       if (name != null) 'name': name,
       if (value != null) 'value': value,
       if (encryptedDataId != null) 'encrypted_data_id': encryptedDataId,
@@ -2051,7 +2058,7 @@ class TPasswordAttributeCompanion
   TPasswordAttributeCompanion copyWith(
       {Value<int>? id,
       Value<String>? passwordId,
-      Value<int>? dateType,
+      Value<String>? classification,
       Value<String>? name,
       Value<String?>? value,
       Value<String?>? encryptedDataId,
@@ -2060,7 +2067,7 @@ class TPasswordAttributeCompanion
     return TPasswordAttributeCompanion(
       id: id ?? this.id,
       passwordId: passwordId ?? this.passwordId,
-      dateType: dateType ?? this.dateType,
+      classification: classification ?? this.classification,
       name: name ?? this.name,
       value: value ?? this.value,
       encryptedDataId: encryptedDataId ?? this.encryptedDataId,
@@ -2078,8 +2085,8 @@ class TPasswordAttributeCompanion
     if (passwordId.present) {
       map['password_id'] = Variable<String>(passwordId.value);
     }
-    if (dateType.present) {
-      map['date_type'] = Variable<int>(dateType.value);
+    if (classification.present) {
+      map['classification'] = Variable<String>(classification.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -2104,7 +2111,7 @@ class TPasswordAttributeCompanion
     return (StringBuffer('TPasswordAttributeCompanion(')
           ..write('id: $id, ')
           ..write('passwordId: $passwordId, ')
-          ..write('dateType: $dateType, ')
+          ..write('classification: $classification, ')
           ..write('name: $name, ')
           ..write('value: $value, ')
           ..write('encryptedDataId: $encryptedDataId, ')
@@ -4448,7 +4455,7 @@ typedef $TPasswordAttributeCreateCompanionBuilder = TPasswordAttributeCompanion
     Function({
   Value<int> id,
   required String passwordId,
-  Value<int> dateType,
+  required String classification,
   required String name,
   Value<String?> value,
   Value<String?> encryptedDataId,
@@ -4459,7 +4466,7 @@ typedef $TPasswordAttributeUpdateCompanionBuilder = TPasswordAttributeCompanion
     Function({
   Value<int> id,
   Value<String> passwordId,
-  Value<int> dateType,
+  Value<String> classification,
   Value<String> name,
   Value<String?> value,
   Value<String?> encryptedDataId,
@@ -4482,8 +4489,9 @@ class $TPasswordAttributeFilterComposer
   ColumnFilters<String> get passwordId => $composableBuilder(
       column: $table.passwordId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get dateType => $composableBuilder(
-      column: $table.dateType, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnFilters(column));
@@ -4517,8 +4525,9 @@ class $TPasswordAttributeOrderingComposer
   ColumnOrderings<String> get passwordId => $composableBuilder(
       column: $table.passwordId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get dateType => $composableBuilder(
-      column: $table.dateType, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get classification => $composableBuilder(
+      column: $table.classification,
+      builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => ColumnOrderings(column));
@@ -4552,8 +4561,8 @@ class $TPasswordAttributeAnnotationComposer
   GeneratedColumn<String> get passwordId => $composableBuilder(
       column: $table.passwordId, builder: (column) => column);
 
-  GeneratedColumn<int> get dateType =>
-      $composableBuilder(column: $table.dateType, builder: (column) => column);
+  GeneratedColumn<String> get classification => $composableBuilder(
+      column: $table.classification, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -4599,7 +4608,7 @@ class $TPasswordAttributeTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> passwordId = const Value.absent(),
-            Value<int> dateType = const Value.absent(),
+            Value<String> classification = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String?> value = const Value.absent(),
             Value<String?> encryptedDataId = const Value.absent(),
@@ -4609,7 +4618,7 @@ class $TPasswordAttributeTableManager extends RootTableManager<
               TPasswordAttributeCompanion(
             id: id,
             passwordId: passwordId,
-            dateType: dateType,
+            classification: classification,
             name: name,
             value: value,
             encryptedDataId: encryptedDataId,
@@ -4619,7 +4628,7 @@ class $TPasswordAttributeTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String passwordId,
-            Value<int> dateType = const Value.absent(),
+            required String classification,
             required String name,
             Value<String?> value = const Value.absent(),
             Value<String?> encryptedDataId = const Value.absent(),
@@ -4629,7 +4638,7 @@ class $TPasswordAttributeTableManager extends RootTableManager<
               TPasswordAttributeCompanion.insert(
             id: id,
             passwordId: passwordId,
-            dateType: dateType,
+            classification: classification,
             name: name,
             value: value,
             encryptedDataId: encryptedDataId,

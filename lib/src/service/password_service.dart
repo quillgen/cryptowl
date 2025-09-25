@@ -4,11 +4,11 @@ import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/crypto/aead_crypto.dart';
 import 'package:cryptowl/src/crypto/crockford_base32.dart';
 import 'package:cryptowl/src/crypto/protected_value.dart';
-import 'package:cryptowl/src/crypto/random_util.dart';
 import 'package:cryptowl/src/database/database.dart';
 import 'package:cryptowl/src/domain/password.dart';
 import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
+import 'package:drift/drift.dart';
 
 const AES_GCM = "0x31c1f2e6bf714350be5805216afc5aff";
 const CHACHA20 = "0xD6038A2B8B6F4CB5A524339A31DBB59A";
@@ -31,7 +31,7 @@ class PasswordService {
     final dek = await kdfService.generateRandomBytes(length: 32);
     final dekNonce = await kdfService.generateRandomBytes(length: 12);
     final now = DateTime.now();
-    final dekId = RandomUtil.generateUUID();
+    final dekId = await kdfService.generateUUID();
     final encryptedDek = await aesGcm.encrypt(
         dek, kek, dekNonce.binaryValue, utf8.encode(dekId));
     final keyEntity = TDataEncryptKeyData(
@@ -41,8 +41,8 @@ class PasswordService {
         authTag: CrockfordBase32.encode(encryptedDek.authTag),
         createdAt: now,
         updatedAt: now);
-    final encryptedDataId = RandomUtil.generateUUID();
-    final passwordId = RandomUtil.generateUUID();
+    final encryptedDataId = await kdfService.generateUUID();
+    final passwordId = await kdfService.generateUUID();
     final dataNonce = await kdfService.generateRandomBytes(length: 12);
     final encryptedData = await crypto.encrypt(password.value, dek,
         dataNonce.binaryValue, utf8.encode(encryptedDataId));
@@ -66,8 +66,19 @@ class PasswordService {
         encryptedDataId: encryptedDataId,
         createdAt: now,
         updatedAt: now);
+    final attributes = password.attributes
+        .map((a) => TPasswordAttributeCompanion(
+            passwordId: Value(passwordId),
+            classification: Value(a.isProtected
+                ? Classification.secret.value
+                : Classification.confidential.value),
+            value: Value(utf8.decode(a.value.binaryValue)),
+            name: Value(a.name),
+            createdAt: Value(now),
+            updatedAt: Value(now)))
+        .toList();
 
     return passwordRepository.create(
-        passwordEntity, keyEntity, encryptedDataEntity);
+        passwordEntity, keyEntity, encryptedDataEntity, attributes);
   }
 }
