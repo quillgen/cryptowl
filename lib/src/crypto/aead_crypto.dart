@@ -3,6 +3,22 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart' as cg;
 import 'package:cryptowl/src/crypto/protected_value.dart';
 
+enum Algorithm {
+  aes256Gcm("2ad0737c-01a8-4d74-998f-9dfe855171fb", 32, 12),
+  chacha20Poly1305("824b7f4a-3882-4194-8936-600d7d493ddb", 32, 12),
+  xchacha20Poly1305("8c378b87-5d19-4ef4-9848-561c533d9e04", 32, 24);
+
+  final String id;
+  final int keySize;
+  final int nonceSize;
+
+  const Algorithm(this.id, this.keySize, this.nonceSize);
+
+  factory Algorithm.parse(String id) {
+    return Algorithm.values.firstWhere((element) => element.id == id);
+  }
+}
+
 class AuthEncryptedResult {
   final Uint8List cipherData;
   final Uint8List authTag;

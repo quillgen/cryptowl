@@ -10,20 +10,6 @@ import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:drift/drift.dart';
 
-enum Algorithm {
-  aes256Gcm("2ad0737c-01a8-4d74-998f-9dfe855171fb"),
-  chacha20Poly1305("824b7f4a-3882-4194-8936-600d7d493ddb"),
-  xchacha20Poly1305("8c378b87-5d19-4ef4-9848-561c533d9e04");
-
-  final String id;
-
-  const Algorithm(this.id);
-
-  factory Algorithm.parse(String id) {
-    return Algorithm.values.firstWhere((element) => element.id == id);
-  }
-}
-
 const DEFAULT = 0;
 
 class PasswordService {
