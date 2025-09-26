@@ -36,7 +36,7 @@ final passwordsProvider =
 final passwordDetailProvider =
     FutureProvider.autoDispose.family<Password, String>((ref, id) async {
   _logger.fine("Fetching password detail for $id");
-  return ref.read(passwordRepositoryProvider).findById(id);
+  return ref.read(passwordServiceProvider).getPasswordDetail(id);
 });
 
 enum PasswordFilter { topSecret, secret, confidential, deleted }

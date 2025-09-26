@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cryptowl/src/common/classification.dart';
 import 'package:cryptowl/src/common/string.dart';
 import 'package:cryptowl/src/crypto/random_util.dart';
@@ -27,6 +29,8 @@ class PasswordBasic {
   });
 }
 
+final fakeValue = ProtectedValue.fromString("PROTECTED");
+
 const ATTR_USER = "user";
 const ATTR_REMARK = "remark";
 
@@ -37,6 +41,21 @@ class PasswordAttribute {
 
   PasswordAttribute(
       {required this.name, required this.isProtected, required this.value});
+
+  static PasswordAttribute fromEntity(TPasswordAttributeData entity) {
+    final isProtected = Classification.parse(entity.classification) !=
+        Classification.confidential;
+    ProtectedValue value = fakeValue;
+    if (!isProtected) {
+      value = ProtectedValue.fromString(entity.value!);
+    }
+    return PasswordAttribute(
+        name: entity.name, isProtected: isProtected, value: value);
+  }
+
+  String plainValue() {
+    return utf8.decode(value.binaryValue);
+  }
 }
 
 class Password {
@@ -63,6 +82,14 @@ class Password {
       required this.createdAt,
       required this.updatedAt});
 
+  PasswordAttribute? getUser() {
+    return attributes.where((a) => a.name == ATTR_USER).firstOrNull;
+  }
+
+  PasswordAttribute? getRemark() {
+    return attributes.where((a) => a.name == ATTR_REMARK).firstOrNull;
+  }
+
   factory Password.create(String title, ProtectedValue password,
       bool isTopSecret, String? user, String? remark) {
     final now = DateTime.now();
@@ -81,23 +108,25 @@ class Password {
                 value: ProtectedValue.fromString(user!)),
           if (remark.isNotBlank)
             PasswordAttribute(
-                name: ATTR_USER,
+                name: ATTR_REMARK,
                 isProtected: false,
                 value: ProtectedValue.fromString(remark!)),
         ],
         createdAt: now,
         updatedAt: now);
   }
-  static Password fromEntity(TPasswordData e) {
+  static Password fromEntity(
+      TPasswordData e, List<TPasswordAttributeData> attributes) {
     return Password(
         id: e.id,
         type: e.type,
         title: e.title,
         isTopSecret: false,
-        value: ProtectedValue.fromString("tbd"),
+        value: fakeValue,
         categoryId: e.categoryId,
         createdAt: e.createdAt,
-        attributes: [],
+        attributes:
+            attributes.map((a) => PasswordAttribute.fromEntity(a)).toList(),
         updatedAt: e.updatedAt);
   }
 }

@@ -16,22 +16,21 @@ class PasswordService {
   final KdfService kdfService;
   final PasswordRepository passwordRepository;
   final aesGcm = CryptographyAesGcm();
-  final chacha20 = CryptographyChaCha20();
+  final xchacha20 = CryptographyXChaCha20();
 
   PasswordService(this.kdfService, this.passwordRepository);
 
   Future<void> createPassword(Password password, ProtectedValue kek) async {
-    final crypto =
-        password.isTopSecret == Classification.topSecret ? chacha20 : aesGcm;
-    final algorithmId = password.isTopSecret == Classification.topSecret
-        ? Algorithm.xchacha20Poly1305.id
-        : Algorithm.aes256Gcm.id;
-    final dek = await kdfService.generateRandomBytes(length: 32);
+    final crypto = password.isTopSecret ? xchacha20 : aesGcm;
+    final algorithmId = crypto.type.id;
+    final dek =
+        await kdfService.generateRandomBytes(length: crypto.type.keySize);
     final dekNonce = await kdfService.generateRandomBytes(length: 12);
     final now = DateTime.now();
     final dekId = await kdfService.generateUUID();
     final encryptedDek = await aesGcm.encrypt(
         dek, kek, dekNonce.binaryValue, utf8.encode(dekId));
+
     final keyEntity = TDataEncryptKeyData(
         id: dekId,
         data: CrockfordBase32.encode(encryptedDek.cipherData),
@@ -41,7 +40,8 @@ class PasswordService {
         updatedAt: now);
     final encryptedDataId = await kdfService.generateUUID();
     final passwordId = await kdfService.generateUUID();
-    final dataNonce = await kdfService.generateRandomBytes(length: 12);
+    final dataNonce =
+        await kdfService.generateRandomBytes(length: crypto.type.nonceSize);
     final encryptedData = await crypto.encrypt(password.value, dek,
         dataNonce.binaryValue, utf8.encode(encryptedDataId));
     final encryptedDataEntity = TEncryptedDataData(
@@ -78,5 +78,11 @@ class PasswordService {
 
     return passwordRepository.create(
         passwordEntity, keyEntity, encryptedDataEntity, attributes);
+  }
+
+  Future<Password> getPasswordDetail(String id) async {
+    final passwordEntity = await passwordRepository.findPasswordById(id);
+    final attributes = await passwordRepository.findPasswordAttributes(id);
+    return Password.fromEntity(passwordEntity, attributes);
   }
 }

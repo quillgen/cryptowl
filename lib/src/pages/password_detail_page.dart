@@ -97,6 +97,7 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "Username",
                 readonly: true,
+                value: password.getUser()?.plainValue(),
               ),
               FormInput(
                 name: "Password",
@@ -113,6 +114,7 @@ class PasswordDetailPage extends ConsumerWidget {
               FormInput(
                 name: "Remark",
                 readonly: true,
+                value: password.getRemark()?.plainValue(),
               ),
               SizedBox(
                 height: 20,
