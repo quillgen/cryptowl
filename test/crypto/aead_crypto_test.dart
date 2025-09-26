@@ -31,6 +31,17 @@ void main() {
     expect(hex.encode(r1.authTag), "c1c0b8cc288dafddc4389b1b85125fe7");
   });
 
+  test('should return encoded key with auth tag via xchacha20', () async {
+    final xchacha20 = CryptographyXChaCha20();
+    final nonce = hex.decode("b27f6e2bd596308c190c4f1db27f6e2bd596308c190c4f1d")
+        as Uint8List;
+    final r1 = await xchacha20.encrypt(ProtectedValue.fromBinary(data),
+        ProtectedValue.fromBinary(key), nonce, info);
+    // TODO: this output is not cross verified
+    expect(hex.encode(r1.cipherData), "3482330ca8061aa1160443cc");
+    expect(hex.encode(r1.authTag), "ccda4a95f5d19a010e9c32d91c9e9a77");
+  });
+
   test('should return decryted data given key and other info correct',
       () async {
     final data = hex.decode("33335861071ff401989294fa") as Uint8List;

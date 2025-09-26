@@ -10,8 +10,19 @@ import 'package:cryptowl/src/repositories/password_repository.dart';
 import 'package:cryptowl/src/service/kdf_service.dart';
 import 'package:drift/drift.dart';
 
-const AES_GCM = "0x31c1f2e6bf714350be5805216afc5aff";
-const CHACHA20 = "0xD6038A2B8B6F4CB5A524339A31DBB59A";
+enum Algorithm {
+  aes256Gcm("2ad0737c-01a8-4d74-998f-9dfe855171fb"),
+  chacha20Poly1305("824b7f4a-3882-4194-8936-600d7d493ddb"),
+  xchacha20Poly1305("8c378b87-5d19-4ef4-9848-561c533d9e04");
+
+  final String id;
+
+  const Algorithm(this.id);
+
+  factory Algorithm.parse(String id) {
+    return Algorithm.values.firstWhere((element) => element.id == id);
+  }
+}
 
 const DEFAULT = 0;
 
@@ -26,8 +37,9 @@ class PasswordService {
   Future<void> createPassword(Password password, ProtectedValue kek) async {
     final crypto =
         password.isTopSecret == Classification.topSecret ? chacha20 : aesGcm;
-    final algorithmId =
-        password.isTopSecret == Classification.topSecret ? CHACHA20 : AES_GCM;
+    final algorithmId = password.isTopSecret == Classification.topSecret
+        ? Algorithm.xchacha20Poly1305.id
+        : Algorithm.aes256Gcm.id;
     final dek = await kdfService.generateRandomBytes(length: 32);
     final dekNonce = await kdfService.generateRandomBytes(length: 12);
     final now = DateTime.now();

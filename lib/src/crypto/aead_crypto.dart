@@ -71,3 +71,7 @@ class CryptographyAesGcm extends _BaseAeadCrypto {
 class CryptographyChaCha20 extends _BaseAeadCrypto {
   CryptographyChaCha20() : super(cg.Chacha20.poly1305Aead());
 }
+
+class CryptographyXChaCha20 extends _BaseAeadCrypto {
+  CryptographyXChaCha20() : super(cg.Xchacha20.poly1305Aead());
+}

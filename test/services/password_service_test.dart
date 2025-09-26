@@ -108,6 +108,7 @@ void main() {
         "5dd05d8d4fbf28670e65aa4f89965f9b9a");
     expect(crockford32ToHex(encryptedData.authTag),
         "740af7dfe47237d407725fec02f6ce96");
+    expect(encryptedData.algorithmId, "2ad0737c-01a8-4d74-998f-9dfe855171fb");
 
     expect(passwordEntity.title, equals("google"));
     expect(passwordEntity.classification, "S");
