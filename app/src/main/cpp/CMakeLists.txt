@@ -24,9 +24,23 @@ project("cryptowl")
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
+# Official Argon2 reference implementation (PHC winner, v20190702).
+# Vendored under argon2/ (Apache-2.0 / CC0, see argon2/LICENSE).
+add_library(argon2 STATIC
+        argon2/src/argon2.c
+        argon2/src/core.c
+        argon2/src/encoding.c
+        argon2/src/ref.c
+        argon2/src/thread.c
+        argon2/src/blake2/blake2b.c)
+target_include_directories(argon2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/argon2/include)
+target_compile_definitions(argon2 PRIVATE _GNU_SOURCE)
+set_target_properties(argon2 PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp)
+        native-lib.cpp
+        argon2-jni.cpp)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
@@ -34,4 +48,5 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
-        log)
+        log
+        argon2)
