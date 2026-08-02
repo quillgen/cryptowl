@@ -42,14 +42,53 @@ class ChatViewModel : ViewModel() {
     var generating by mutableStateOf(false)
         private set
 
+    var backendName by mutableStateOf(BACKEND_GPU_LABEL)
+        private set
+
+    private var backend: Backend = Backend.GPU()
+    private var modelDirectory: File? = null
     private var engine: Engine? = null
     private var conversation: Conversation? = null
 
     fun initializeModel(modelDirectory: File) {
+        this.modelDirectory = modelDirectory
         viewModelScope.launch(Dispatchers.Default) {
             status = loadModel(modelDirectory)
             ready = conversation != null
         }
+    }
+
+    /**
+     * Gemma 4 E2B has a known GPU precision-corruption issue on some GPUs
+     * (garbled tokens, e.g. devanagari/corrupt fragments mid-response) — see
+     * google-ai-edge/LiteRT-LM#2202; the documented workaround is the CPU
+     * backend. Tapping the status line switches backends.
+     */
+    fun toggleBackend() {
+        if (generating) return
+        backend = if (backend is Backend.GPU) Backend.CPU() else Backend.GPU()
+        backendName = if (backend is Backend.GPU) BACKEND_GPU_LABEL else BACKEND_CPU_LABEL
+        val directory = modelDirectory ?: return
+        viewModelScope.launch(Dispatchers.Default) {
+            closeEngine()
+            status = loadModel(directory)
+            ready = conversation != null
+        }
+    }
+
+    private fun closeEngine() {
+        try {
+            conversation?.close()
+        } catch (e: Exception) {
+            Log.w(TAG, "Conversation close failed", e)
+        }
+        try {
+            engine?.close()
+        } catch (e: Exception) {
+            Log.w(TAG, "Engine close failed", e)
+        }
+        engine = null
+        conversation = null
     }
 
     @OptIn(ExperimentalApi::class)
@@ -62,12 +101,14 @@ class ChatViewModel : ViewModel() {
             ExperimentalFlags.enableSpeculativeDecoding = false
             var loaded: Engine? = null
             try {
-                loaded = Engine(engineConfig(modelFile, Backend.GPU()))
+                loaded = Engine(engineConfig(modelFile, backend))
                 loaded.initialize()
             } catch (e: Exception) {
-                Log.w(TAG, "GPU backend failed, falling back to CPU", e)
+                Log.w(TAG, "${backendName} backend failed, falling back to CPU", e)
                 runCatching { loaded?.close() }
-                loaded = Engine(engineConfig(modelFile, Backend.CPU()))
+                backend = Backend.CPU()
+                backendName = BACKEND_CPU_LABEL
+                loaded = Engine(engineConfig(modelFile, backend))
                 loaded.initialize()
             }
             ExperimentalFlags.enableSpeculativeDecoding = false
@@ -80,7 +121,7 @@ class ChatViewModel : ViewModel() {
                 ),
             )
             ExperimentalFlags.enableConversationConstrainedDecoding = false
-            "Model ready: ${modelFile.name}"
+            "Model ready: ${modelFile.name} ($backendName)"
         } catch (e: Exception) {
             Log.e(TAG, "Model load failed", e)
             "Model load failed: ${e.message}"
@@ -90,6 +131,10 @@ class ChatViewModel : ViewModel() {
     private fun engineConfig(modelFile: File, backend: Backend) = EngineConfig(
         modelPath = modelFile.absolutePath,
         backend = backend,
+        // Gemma 4 E2B is multimodal; the gallery enables vision+audio backends
+        // for it even in chat (llmSupportImage/llmSupportAudio).
+        visionBackend = Backend.GPU(),
+        audioBackend = Backend.CPU(),
         maxNumTokens = MAX_TOKENS,
     )
 
@@ -136,23 +181,14 @@ class ChatViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        try {
-            conversation?.close()
-        } catch (e: Exception) {
-            Log.w(TAG, "Conversation close failed", e)
-        }
-        try {
-            engine?.close()
-        } catch (e: Exception) {
-            Log.w(TAG, "Engine close failed", e)
-        }
-        engine = null
-        conversation = null
+        closeEngine()
     }
 
     companion object {
         private const val TAG = "ChatViewModel"
         private const val MODEL_EXT = "litertlm"
+        private const val BACKEND_GPU_LABEL = "GPU"
+        private const val BACKEND_CPU_LABEL = "CPU"
 
         // Gemma-4-E2B-it defaults from the gallery model allowlist
         // (model_allowlists/1_0_15.json): topK=64, topP=0.95, temperature=1.0,

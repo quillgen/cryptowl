@@ -2,6 +2,7 @@ package com.riguz.cryptowl
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -113,11 +114,12 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
             .imePadding(),
     ) {
         Text(
-            text = viewModel.status,
+            text = viewModel.status + "\nTap to switch backend (${viewModel.backendName})",
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(12.dp),
+                .padding(12.dp)
+                .clickable { viewModel.toggleBackend() },
         )
 
         LazyColumn(
