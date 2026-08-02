@@ -76,7 +76,7 @@ class ChatViewModel : ViewModel() {
             ExperimentalFlags.enableConversationConstrainedDecoding = false
             conversation = loaded.createConversation(
                 ConversationConfig(
-                    samplerConfig = SamplerConfig(topK = 40, topP = 0.95, temperature = 0.8),
+                    samplerConfig = SamplerConfig(topK = TOP_K, topP = TOP_P, temperature = TEMPERATURE),
                 ),
             )
             ExperimentalFlags.enableConversationConstrainedDecoding = false
@@ -153,6 +153,13 @@ class ChatViewModel : ViewModel() {
     companion object {
         private const val TAG = "ChatViewModel"
         private const val MODEL_EXT = "litertlm"
-        private const val MAX_TOKENS = 1024
+
+        // Gemma-4-E2B-it defaults from the gallery model allowlist
+        // (model_allowlists/1_0_15.json): topK=64, topP=0.95, temperature=1.0,
+        // maxTokens=4000. Thinking and MTP stay off (gallery defaults).
+        private const val TOP_K = 64
+        private const val TOP_P = 0.95
+        private const val TEMPERATURE = 1.0
+        private const val MAX_TOKENS = 4000
     }
 }

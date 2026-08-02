@@ -26,6 +26,6 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val MODEL_DIR = "model"
-        private const val AGENT_NAME = "Gemma 4 E2B"
+        private const val AGENT_NAME = "Model"
     }
 }
