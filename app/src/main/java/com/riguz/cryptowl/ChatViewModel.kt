@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.edge.litertlm.Backend
+import com.google.ai.edge.litertlm.Capabilities
 import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.Conversation
@@ -58,8 +59,15 @@ class ChatViewModel : ViewModel() {
     var maxTokens by mutableStateOf(4000)
         private set
 
+    /** Accelerator ("gpu"/"cpu"), gallery ACCELERATOR segmented config. */
+    var accelerator by mutableStateOf(ACCELERATOR_GPU)
+        private set
+
     /** Thinking mode (gallery ENABLE_THINKING toggle; Gemma 4 supports it). */
     var thinking by mutableStateOf(false)
+
+    /** Speculative decoding / MTP (gallery ENABLE_SPECULATIVE_DECODING toggle). */
+    var speculativeDecoding by mutableStateOf(false)
 
     private var backend: Backend = Backend.GPU()
     private var modelDirectory: File? = null
@@ -74,33 +82,42 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Gemma 4 E2B has a known GPU precision-corruption issue on some GPUs
-     * (garbled tokens, e.g. devanagari/corrupt fragments mid-response) — see
-     * google-ai-edge/LiteRT-LM#2202; the documented workaround is the CPU
-     * backend. Tapping the status line switches backends.
-     */
-    fun toggleBackend() {
-        if (generating) return
-        backend = if (backend is Backend.GPU) Backend.CPU() else Backend.GPU()
-        backendName = if (backend is Backend.GPU) BACKEND_GPU_LABEL else BACKEND_CPU_LABEL
-        val directory = modelDirectory ?: return
-        viewModelScope.launch(Dispatchers.Default) {
-            closeEngine()
-            status = loadModel(directory)
-            ready = conversation != null
-        }
-    }
-
-    /** Applies new sampler parameters and starts a fresh conversation (gallery resetSession). */
-    fun updateParameters(newTopK: Int, newTopP: Float, newTemperature: Float, newMaxTokens: Int) {
+    /** Applies all settings from the config dialog; reloads the engine when the backend changed. */
+    fun updateSettings(
+        newTopK: Int,
+        newTopP: Float,
+        newTemperature: Float,
+        newMaxTokens: Int,
+        newAccelerator: String,
+        newThinking: Boolean,
+        newSpeculativeDecoding: Boolean,
+    ) {
         if (generating) return
         topK = newTopK
         topP = newTopP
         temperature = newTemperature
         maxTokens = newMaxTokens
-        resetConversation()
+        thinking = newThinking
+        speculativeDecoding = newSpeculativeDecoding
+
+        if (newAccelerator != accelerator) {
+            accelerator = newAccelerator
+            backend = acceleratorToBackend(newAccelerator)
+            backendName = newAccelerator.uppercase()
+            val directory = modelDirectory ?: return
+            _messages.clear()
+            viewModelScope.launch(Dispatchers.Default) {
+                closeEngine()
+                status = loadModel(directory)
+                ready = conversation != null
+            }
+        } else {
+            resetConversation()
+        }
     }
+
+    private fun acceleratorToBackend(label: String): Backend =
+        if (label == ACCELERATOR_GPU) Backend.GPU() else Backend.CPU()
 
     /** Clears the chat and creates a fresh conversation with the current parameters. */
     fun resetConversation() {
@@ -146,6 +163,20 @@ class ChatViewModel : ViewModel() {
             // Mirror gallery: disable experimental flags explicitly around engine
             // and conversation creation.
             ExperimentalFlags.enableSpeculativeDecoding = false
+
+            // Check if the model file supports speculative decoding (gallery
+            // LlmChatModelHelper: Capabilities(modelPath).hasSpeculativeDecodingSupport()).
+            var supportsSpeculativeDecoding = false
+            try {
+                Capabilities(modelFile.absolutePath).use {
+                    supportsSpeculativeDecoding = it.hasSpeculativeDecodingSupport()
+                }
+            } catch (e: Exception) {
+                // Ignore exceptions and assume not supported.
+            }
+            val speculativeDecodingEnabled = supportsSpeculativeDecoding && speculativeDecoding
+            ExperimentalFlags.enableSpeculativeDecoding = speculativeDecodingEnabled
+
             var loaded: Engine? = null
             try {
                 loaded = Engine(engineConfig(modelFile, backend))
@@ -197,15 +228,19 @@ class ChatViewModel : ViewModel() {
                 Contents.of(listOf(Content.Text(text))),
                 object : MessageCallback {
                     override fun onMessage(message: Message) {
+                        // Thinking channel is captured regardless of the text token
+                        // (gallery: partialThinking passed even when the text is a
+                        // "<ctrl..." control token).
+                        val thinkingDelta = message.channels[THOUGHT_CHANNEL]
+                        if (!thinkingDelta.isNullOrEmpty()) {
+                            reply.thinkingText += thinkingDelta
+                        }
+
                         val delta = message.toString()
                         if (delta.startsWith("<ctrl")) {
                             return
                         }
                         reply.text += delta
-                        val thinkingDelta = message.channels[THOUGHT_CHANNEL]
-                        if (!thinkingDelta.isNullOrEmpty()) {
-                            reply.thinkingText += thinkingDelta
-                        }
                         tokenCount++
                         val elapsedMs = (System.currentTimeMillis() - start).coerceAtLeast(1)
                         reply.tokenSpeed = tokenCount / (elapsedMs / 1000f)
@@ -250,6 +285,7 @@ class ChatViewModel : ViewModel() {
         private const val MODEL_EXT = "litertlm"
         private const val BACKEND_GPU_LABEL = "GPU"
         private const val BACKEND_CPU_LABEL = "CPU"
+        private const val ACCELERATOR_GPU = "gpu"
 
         // Gallery Consts.kt + LlmChatViewModel.
         private const val THOUGHT_CHANNEL = "thought"

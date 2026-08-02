@@ -56,6 +56,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -428,12 +431,11 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = viewModel.status + "\nTap to switch backend (${viewModel.backendName})",
+                text = viewModel.status,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 12.dp)
-                    .clickable { viewModel.toggleBackend() },
+                    .padding(vertical = 12.dp),
             )
             IconButton(
                 onClick = { viewModel.resetConversation() },
@@ -516,11 +518,12 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
             temperature = viewModel.temperature,
             maxTokens = viewModel.maxTokens,
             thinking = viewModel.thinking,
-            onThinkingChanged = { viewModel.thinking = it },
+            speculativeDecoding = viewModel.speculativeDecoding,
+            accelerator = viewModel.accelerator,
             onDismiss = { showParamsDialog = false },
-            onApply = { newTopK, newTopP, newTemperature, newMaxTokens ->
+            onApply = { newTopK, newTopP, newTemperature, newMaxTokens, newAccelerator, newThinking, newSpecDec ->
                 showParamsDialog = false
-                viewModel.updateParameters(newTopK, newTopP, newTemperature, newMaxTokens)
+                viewModel.updateSettings(newTopK, newTopP, newTemperature, newMaxTokens, newAccelerator, newThinking, newSpecDec)
             },
         )
     }
@@ -544,43 +547,90 @@ private fun ParametersDialog(
     temperature: Float,
     maxTokens: Int,
     thinking: Boolean,
-    onThinkingChanged: (Boolean) -> Unit,
+    speculativeDecoding: Boolean,
+    accelerator: String,
     onDismiss: () -> Unit,
-    onApply: (Int, Float, Float, Int) -> Unit,
+    onApply: (Int, Float, Float, Int, String, Boolean, Boolean) -> Unit,
 ) {
     var curTopK by remember { mutableStateOf(topK) }
     var curTopP by remember { mutableStateOf(topP) }
     var curTemperature by remember { mutableStateOf(temperature) }
     var curMaxTokens by remember { mutableStateOf(maxTokens) }
     var curThinking by remember { mutableStateOf(thinking) }
+    var curSpeculativeDecoding by remember { mutableStateOf(speculativeDecoding) }
+    var curAccelerator by remember { mutableStateOf(accelerator) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Parameters") },
         text = {
             Column {
+                // Max tokens: gallery NumberSliderConfig(2000..maxContextLength=32000, default 4000).
+                Text("Max tokens (2000-32000)", style = MaterialTheme.typography.titleSmall)
+                Slider(
+                    value = curMaxTokens.toFloat(),
+                    onValueChange = { curMaxTokens = it.toInt() },
+                    valueRange = 2000f..32000f,
+                )
+                // Top-K: gallery NumberSliderConfig(1..100, default 64).
+                Text("Top-K (1-100)", style = MaterialTheme.typography.titleSmall)
+                Slider(
+                    value = curTopK.toFloat(),
+                    onValueChange = { curTopK = it.toInt() },
+                    valueRange = 1f..100f,
+                )
+                // Top-P: gallery NumberSliderConfig(0..1, default 0.95).
+                Text("Top-P (0-1)", style = MaterialTheme.typography.titleSmall)
+                Slider(
+                    value = curTopP,
+                    onValueChange = { curTopP = it },
+                    valueRange = 0f..1f,
+                )
+                // Temperature: gallery NumberSliderConfig(0..2, default 1.0).
+                Text("Temperature (0-2)", style = MaterialTheme.typography.titleSmall)
+                Slider(
+                    value = curTemperature,
+                    onValueChange = { curTemperature = it },
+                    valueRange = 0f..2f,
+                )
+                // Accelerator: gallery SegmentedButtonConfig (gpu/cpu).
+                Text("Accelerator", style = MaterialTheme.typography.titleSmall)
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    listOf("gpu", "cpu").forEachIndexed { index, label ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = 2),
+                            selected = curAccelerator == label,
+                            onClick = { curAccelerator = label },
+                        ) {
+                            Text(label.uppercase())
+                        }
+                    }
+                }
+                // Thinking: gallery BooleanSwitchConfig (Gemma 4 supports it).
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Thinking mode")
+                    Text("Enable thinking", style = MaterialTheme.typography.titleSmall)
                     Switch(checked = curThinking, onCheckedChange = { curThinking = it })
                 }
-                Text("Temperature (${"%.2f".format(curTemperature)})")
-                Slider(value = curTemperature, onValueChange = { curTemperature = it }, valueRange = 0f..2f)
-                Text("Top-K ($curTopK)")
-                Slider(value = curTopK.toFloat(), onValueChange = { curTopK = it.toInt() }, valueRange = 1f..200f)
-                Text("Top-P (${"%.2f".format(curTopP)})")
-                Slider(value = curTopP, onValueChange = { curTopP = it }, valueRange = 0.1f..1f)
-                Text("Max tokens ($curMaxTokens)")
-                Slider(value = curMaxTokens.toFloat(), onValueChange = { curMaxTokens = it.toInt() }, valueRange = 256f..8192f)
+                // Speculative decoding / MTP: gallery BooleanSwitchConfig.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Enable speculative decoding", style = MaterialTheme.typography.titleSmall)
+                    Switch(checked = curSpeculativeDecoding, onCheckedChange = { curSpeculativeDecoding = it })
+                }
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                onThinkingChanged(curThinking)
-                onApply(curTopK, curTopP, curTemperature, curMaxTokens)
+                onApply(curTopK, curTopP, curTemperature, curMaxTokens, curAccelerator, curThinking, curSpeculativeDecoding)
             }) {
                 Text("Apply")
             }
