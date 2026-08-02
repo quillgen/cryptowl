@@ -9,6 +9,7 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 - AGP 9.3.1 + Gradle 9.5 + Java 11; **AGP 9 built-in Kotlin** — do NOT add the `kotlin-android` plugin
 - KSP 2.3.10 (standalone KSP2 versioning, compatible with AGP built-in Kotlin)
 - Room 2.8.4 + sqlcipher-android 4.17.0 (`@aar`) + androidx.sqlite 2.6.2
+- **UI: Jetpack Compose** (Material3, compose BOM 2026.02.00) — use Compose for all UI, no View/XML layouts. Markdown rendering via `com.halilibo.compose-richtext` (richtext-commonmark + richtext-ui-material3), same as the AI Edge Gallery reference app
 - JNI/CMake (CMake 3.22.1, NDK 28), vendored phc-winner-argon2 v20190702 in `app/src/main/cpp/argon2/`
 
 ## Commands
