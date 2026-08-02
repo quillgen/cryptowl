@@ -26,6 +26,7 @@ import kotlinx.coroutines.withContext
 
 data class ChatMessage(val isUser: Boolean) {
     var text by mutableStateOf("")
+    var thinkingText by mutableStateOf("")
     var tokenSpeed by mutableStateOf(0f)
     var latencyMs by mutableStateOf(-1f)
 }
@@ -56,6 +57,9 @@ class ChatViewModel : ViewModel() {
         private set
     var maxTokens by mutableStateOf(4000)
         private set
+
+    /** Thinking mode (gallery ENABLE_THINKING toggle; Gemma 4 supports it). */
+    var thinking by mutableStateOf(false)
 
     private var backend: Backend = Backend.GPU()
     private var modelDirectory: File? = null
@@ -187,6 +191,8 @@ class ChatViewModel : ViewModel() {
         var tokenCount = 0
 
         viewModelScope.launch(Dispatchers.Default) {
+            val extraContext =
+                if (thinking) mapOf(THINKING_CONTEXT_KEY to "true") else emptyMap()
             conversation.sendMessageAsync(
                 Contents.of(listOf(Content.Text(text))),
                 object : MessageCallback {
@@ -196,6 +202,10 @@ class ChatViewModel : ViewModel() {
                             return
                         }
                         reply.text += delta
+                        val thinkingDelta = message.channels[THOUGHT_CHANNEL]
+                        if (!thinkingDelta.isNullOrEmpty()) {
+                            reply.thinkingText += thinkingDelta
+                        }
                         tokenCount++
                         val elapsedMs = (System.currentTimeMillis() - start).coerceAtLeast(1)
                         reply.tokenSpeed = tokenCount / (elapsedMs / 1000f)
@@ -226,6 +236,11 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    /** Re-sends a user prompt (gallery runAgain). */
+    fun runAgain(text: String) {
+        sendMessage(text)
+    }
+
     override fun onCleared() {
         closeEngine()
     }
@@ -235,5 +250,9 @@ class ChatViewModel : ViewModel() {
         private const val MODEL_EXT = "litertlm"
         private const val BACKEND_GPU_LABEL = "GPU"
         private const val BACKEND_CPU_LABEL = "CPU"
+
+        // Gallery Consts.kt + LlmChatViewModel.
+        private const val THOUGHT_CHANNEL = "thought"
+        private const val THINKING_CONTEXT_KEY = "enable_thinking"
     }
 }

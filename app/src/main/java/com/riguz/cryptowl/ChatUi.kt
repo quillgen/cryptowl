@@ -1,16 +1,20 @@
 package com.riguz.cryptowl
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,18 +39,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -67,15 +78,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -92,6 +113,156 @@ object ChatColors {
     val agentBubbleBg = Color(0xFFE9EEF6)
     val taskIcon = Color(0xFF3174F1)
     val link = Color(0xFF32628D)
+}
+
+/** Port of the gallery's MessageActionButton: pill with icon + label. */
+@Composable
+private fun MessageActionButton(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val alpha: Float = if (enabled) 1.0f else 0.3f
+    Row(
+        modifier = Modifier
+            .padding(top = 4.dp)
+            .clip(CircleShape)
+            .background(
+                if (enabled) MaterialTheme.colorScheme.secondaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerHigh,
+            )
+            .clickable(enabled = enabled) { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp).offset(x = 6.dp).alpha(alpha),
+        )
+        Text(
+            label,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(start = 10.dp, end = 8.dp, top = 4.dp, bottom = 4.dp).alpha(alpha),
+        )
+    }
+}
+
+/** Port of the gallery's MessageBodyThinking: collapsible thinking panel, auto-expanded while in progress. */
+@Composable
+private fun MessageBodyThinking(
+    thinkingText: String,
+    inProgress: Boolean,
+    onCopyClicked: (String) -> Unit,
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    // Auto-expand while thinking is in progress
+    if (inProgress) {
+        isExpanded = true
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Row(
+            modifier = Modifier.clickable { isExpanded = !isExpanded }.padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = "Show thinking",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                contentDescription = if (isExpanded) "Hide thinking" else "Show thinking",
+            )
+        }
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            val lineColor = MaterialTheme.colorScheme.outlineVariant
+            Column(
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 4.dp, start = 8.dp)
+                    .drawBehind {
+                        drawLine(
+                            color = lineColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 2.dp.toPx(),
+                        )
+                    }
+                    .padding(start = 12.dp),
+            ) {
+                LongPressCopyContainer(copyText = thinkingText, onCopyClicked = onCopyClicked) {
+                    MarkdownText(
+                        text = thinkingText,
+                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Port of the gallery's LongPressCopyContainer: long-press opens a copy menu. */
+@Composable
+private fun LongPressCopyContainer(
+    copyText: String,
+    modifier: Modifier = Modifier,
+    onCopyClicked: (String) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
+    Box(
+        modifier = modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showMenu = true
+                    },
+                )
+            },
+    ) {
+        content()
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            shape = RoundedCornerShape(24.dp),
+            tonalElevation = 8.dp,
+            shadowElevation = 8.dp,
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        "Copy",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface,
+                        ),
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Rounded.ContentCopy,
+                        contentDescription = "Copy",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                onClick = {
+                    showMenu = false
+                    onCopyClicked(copyText)
+                },
+            )
+        }
+    }
 }
 
 /** Port of the gallery's scrollToBottom: scroll to the absolute end (ScrollState.maxValue). */
@@ -242,6 +413,7 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
     }
 
     var showParamsDialog by remember { mutableStateOf(false) }
+    val copyHandler = rememberCopyHandler()
 
     Column(
         modifier = Modifier
@@ -294,6 +466,8 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
                         message = message,
                         agentName = agentName,
                         generating = viewModel.generating && index == messages.size - 1,
+                        onRunAgain = { viewModel.runAgain(it) },
+                        onCopy = copyHandler,
                         modifier = Modifier
                             .fillMaxWidth()
                             .onSizeChanged { size ->
@@ -341,6 +515,8 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
             topP = viewModel.topP,
             temperature = viewModel.temperature,
             maxTokens = viewModel.maxTokens,
+            thinking = viewModel.thinking,
+            onThinkingChanged = { viewModel.thinking = it },
             onDismiss = { showParamsDialog = false },
             onApply = { newTopK, newTopP, newTemperature, newMaxTokens ->
                 showParamsDialog = false
@@ -350,12 +526,25 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
     }
 }
 
+/** Copies text to the clipboard with a toast (gallery copyToClipboard). */
+@Composable
+private fun rememberCopyHandler(): (String) -> Unit {
+    val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
+    return { text ->
+        clipboard.setText(AnnotatedString(text))
+        Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+    }
+}
+
 @Composable
 private fun ParametersDialog(
     topK: Int,
     topP: Float,
     temperature: Float,
     maxTokens: Int,
+    thinking: Boolean,
+    onThinkingChanged: (Boolean) -> Unit,
     onDismiss: () -> Unit,
     onApply: (Int, Float, Float, Int) -> Unit,
 ) {
@@ -363,12 +552,21 @@ private fun ParametersDialog(
     var curTopP by remember { mutableStateOf(topP) }
     var curTemperature by remember { mutableStateOf(temperature) }
     var curMaxTokens by remember { mutableStateOf(maxTokens) }
+    var curThinking by remember { mutableStateOf(thinking) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Parameters") },
         text = {
             Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Thinking mode")
+                    Switch(checked = curThinking, onCheckedChange = { curThinking = it })
+                }
                 Text("Temperature (${"%.2f".format(curTemperature)})")
                 Slider(value = curTemperature, onValueChange = { curTemperature = it }, valueRange = 0f..2f)
                 Text("Top-K ($curTopK)")
@@ -380,7 +578,10 @@ private fun ParametersDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onApply(curTopK, curTopP, curTemperature, curMaxTokens) }) {
+            TextButton(onClick = {
+                onThinkingChanged(curThinking)
+                onApply(curTopK, curTopP, curTemperature, curMaxTokens)
+            }) {
                 Text("Apply")
             }
         },
@@ -395,6 +596,8 @@ private fun ChatMessageItem(
     message: ChatMessage,
     agentName: String,
     generating: Boolean,
+    onRunAgain: (String) -> Unit,
+    onCopy: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isUser = message.isUser
@@ -413,39 +616,84 @@ private fun ChatMessageItem(
         )
 
         if (isUser) {
-            Box(
-                modifier = Modifier
-                    .clip(MessageBubbleShape(radius = 24.dp, hardCornerAtLeftOrRight = false))
-                    .background(ChatColors.userBubbleBg),
-            ) {
-                MarkdownText(
-                    text = message.text,
-                    textColor = Color.White,
-                    linkColor = Color.White,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                )
+            LongPressCopyContainer(copyText = message.text) {
+                Box(
+                    modifier = Modifier
+                        .clip(MessageBubbleShape(radius = 24.dp, hardCornerAtLeftOrRight = false))
+                        .background(ChatColors.userBubbleBg),
+                ) {
+                    MarkdownText(
+                        text = message.text,
+                        textColor = Color.White,
+                        linkColor = Color.White,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+                    )
+                }
             }
+            // Run again button (gallery MessageActionButton on user messages).
+            MessageActionButton(
+                label = "Run again",
+                icon = Icons.Rounded.Refresh,
+                enabled = !generating,
+                onClick = { onRunAgain(message.text) },
+            )
         } else {
             // Agent text: no bubble, like the gallery's agent response rendering.
-            MarkdownText(
-                text = message.text,
-                modifier = Modifier.padding(vertical = 12.dp),
-            )
-            // Token speed while generating; latency + speed when done (gallery LatencyText).
-            if (message.latencyMs >= 0) {
-                Text(
-                    text = "${"%.1f".format(message.tokenSpeed)} t/s · ${message.latencyMs.humanReadableDuration()}",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.alpha(0.5f),
-                )
-            } else if (generating && message.tokenSpeed > 0f) {
-                Text(
-                    text = "${"%.1f".format(message.tokenSpeed)} t/s",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.alpha(0.5f),
-                )
+            LongPressCopyContainer(copyText = message.text) {
+                Column {
+                    // Thinking panel (gallery MessageBodyThinking above the response).
+                    if (message.thinkingText.isNotEmpty()) {
+                        MessageBodyThinking(
+                            thinkingText = message.thinkingText,
+                            inProgress = generating,
+                            onCopyClicked = { onCopy(it) },
+                        )
+                    }
+                    MarkdownText(
+                        text = message.text,
+                        modifier = Modifier.padding(vertical = 12.dp),
+                    )
+                }
+            }
+            // Latency + copy row (gallery ChatPanel agent message actions).
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                LatencyText(message = message)
+                if (!generating && message.text.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onCopy(message.text) },
+                        modifier = Modifier.size(28.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentCopy,
+                            contentDescription = "Copy",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+/** Port of the gallery's LatencyText. */
+@Composable
+private fun LatencyText(message: ChatMessage) {
+    if (message.latencyMs >= 0) {
+        Text(
+            "${"%.1f".format(message.tokenSpeed)} t/s · ${message.latencyMs.humanReadableDuration()}",
+            modifier = Modifier.alpha(0.5f),
+            style = MaterialTheme.typography.labelSmall,
+        )
+    } else if (message.tokenSpeed > 0f) {
+        Text(
+            "${"%.1f".format(message.tokenSpeed)} t/s",
+            modifier = Modifier.alpha(0.5f),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
 }
 
