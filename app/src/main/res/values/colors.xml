@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Gallery chat colors (light theme) -->
+    <color name="user_bubble">#32628D</color>
+    <color name="agent_bubble">#E9EEF6</color>
+    <color name="agent_text">#1C1B1F</color>
+    <color name="outline_variant">#CAC4D0</color>
+    <color name="task_icon">#3174F1</color>
+    <color name="on_surface_variant">#49454F</color>
 </resources>

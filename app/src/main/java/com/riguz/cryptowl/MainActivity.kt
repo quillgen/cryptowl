@@ -1,7 +1,10 @@
 package com.riguz.cryptowl
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -30,7 +33,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val adapter = ChatAdapter()
+    private val adapter = ChatAdapter(AGENT_NAME)
     private var engine: Engine? = null
     private var conversation: Conversation? = null
     private var generating = false
@@ -52,8 +55,24 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerChat.layoutManager = LinearLayoutManager(this)
         binding.recyclerChat.adapter = adapter
         binding.buttonSend.setOnClickListener { sendMessage() }
+        binding.buttonAdd.setOnClickListener {
+            Toast.makeText(this, "Attachments are not supported yet", Toast.LENGTH_SHORT).show()
+        }
+        binding.editMessage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                updateSendButton()
+            }
+        })
 
         initializeModel()
+    }
+
+    private fun updateSendButton() {
+        val enabled = !generating && !binding.editMessage.text.isNullOrBlank() && conversation != null
+        binding.buttonSend.isEnabled = enabled
+        binding.buttonSend.alpha = if (enabled) 1f else 0.3f
     }
 
     @OptIn(ExperimentalApi::class)
@@ -62,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val status = withContext(Dispatchers.Default) { loadModel() }
             binding.textStatus.text = status
-            binding.buttonSend.isEnabled = conversation != null
+            updateSendButton()
         }
     }
 
@@ -116,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         adapter.add(ChatMessage(isUser = true, text = text))
         val reply = adapter.add(ChatMessage(isUser = false, text = ""))
         generating = true
-        binding.buttonSend.isEnabled = false
+        updateSendButton()
         binding.recyclerChat.scrollToPosition(adapter.itemCount - 1)
 
         lifecycleScope.launch {
@@ -135,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                         override fun onDone() {
                             runOnUiThread {
                                 generating = false
-                                binding.buttonSend.isEnabled = true
+                                updateSendButton()
                             }
                         }
 
@@ -145,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                                 reply.text = "Error: ${throwable.message}"
                                 adapter.lastChanged()
                                 generating = false
-                                binding.buttonSend.isEnabled = true
+                                updateSendButton()
                             }
                         }
                     },
@@ -186,5 +205,6 @@ class MainActivity : AppCompatActivity() {
         private const val MODEL_DIR = "model"
         private const val MODEL_EXT = "litertlm"
         private const val MAX_TOKENS = 1024
+        private const val AGENT_NAME = "Gemma 4 E2B"
     }
 }
