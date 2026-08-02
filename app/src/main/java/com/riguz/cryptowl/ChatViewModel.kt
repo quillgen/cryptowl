@@ -258,7 +258,7 @@ class ChatViewModel : ViewModel() {
                         generating = false
                     }
                 },
-                emptyMap(),
+                extraContext,
             )
         }
     }
