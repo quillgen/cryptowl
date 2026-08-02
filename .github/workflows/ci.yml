@@ -72,8 +72,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libpulse0
 
-      - name: Check KVM availability
-        run: ls -l /dev/kvm
+      - name: Enable KVM for emulator
+        run: |
+          ls -l /dev/kvm
+          sudo chmod 666 /dev/kvm
+          ls -l /dev/kvm
 
       - uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -82,5 +85,5 @@ jobs:
           target: google_apis
           ram-size: 4096
           disable-animations: true
-          emulator-options: -no-snapshot -noaudio -no-boot-anim
+          emulator-options: -no-snapshot -noaudio -no-boot-anim -no-window
           script: ./gradlew :app:connectedDebugAndroidTest
