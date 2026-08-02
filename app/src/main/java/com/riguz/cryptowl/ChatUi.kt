@@ -1,6 +1,13 @@
 package com.riguz.cryptowl
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,7 +34,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.Tune
@@ -76,6 +83,37 @@ object ChatColors {
     val agentBubbleBg = Color(0xFFE9EEF6)
     val taskIcon = Color(0xFF3174F1)
     val link = Color(0xFF32628D)
+}
+
+/** Port of the gallery's ScrollToBottomButton: filled circle, outlined down arrow, bouncy fade/scale. */
+@Composable
+private fun ScrollToBottomButton(isAtBottom: Boolean, onClick: () -> Unit) {
+    AnimatedVisibility(
+        visible = !isAtBottom,
+        enter =
+            fadeIn(animationSpec = tween(durationMillis = 300)) +
+                scaleIn(
+                    animationSpec =
+                        spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium,
+                        ),
+                ),
+        exit = fadeOut(animationSpec = tween(durationMillis = 200)),
+    ) {
+        IconButton(
+            onClick = onClick,
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.ArrowDownward,
+                contentDescription = "Scroll to bottom",
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
+    }
 }
 
 /** Port of the gallery's MessageBubbleShape: rounded bubble with one hard top corner. */
@@ -195,18 +233,17 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
                 }
             }
 
-            // Scroll-to-bottom button, shown when not at the bottom (gallery ChatView).
-            if (!isAtBottom && messages.isNotEmpty()) {
-                IconButton(
-                    onClick = { scope.launch { listState.animateScrollToItem(messages.size - 1) } },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp)
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceContainer),
-                ) {
-                    Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Scroll to bottom")
+            // "Scroll to bottom" button, only shown when the list is not at the bottom
+            // (gallery ChatPanel: centered horizontally at the bottom).
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                ScrollToBottomButton(isAtBottom = isAtBottom) {
+                    scope.launch { listState.animateScrollToItem(messages.size - 1) }
                 }
             }
         }
