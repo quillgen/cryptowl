@@ -26,6 +26,8 @@ import kotlinx.coroutines.withContext
 
 data class ChatMessage(val isUser: Boolean) {
     var text by mutableStateOf("")
+    var tokenSpeed by mutableStateOf(0f)
+    var latencyMs by mutableStateOf(-1f)
 }
 
 class ChatViewModel : ViewModel() {
@@ -43,6 +45,16 @@ class ChatViewModel : ViewModel() {
         private set
 
     var backendName by mutableStateOf(BACKEND_GPU_LABEL)
+        private set
+
+    // Sampler parameters (gallery defaults: topK=64, topP=0.95, temperature=1.0, maxTokens=4000).
+    var topK by mutableStateOf(64)
+        private set
+    var topP by mutableStateOf(0.95f)
+        private set
+    var temperature by mutableStateOf(1.0f)
+        private set
+    var maxTokens by mutableStateOf(4000)
         private set
 
     private var backend: Backend = Backend.GPU()
@@ -75,6 +87,37 @@ class ChatViewModel : ViewModel() {
             ready = conversation != null
         }
     }
+
+    /** Applies new sampler parameters and starts a fresh conversation (gallery resetSession). */
+    fun updateParameters(newTopK: Int, newTopP: Float, newTemperature: Float, newMaxTokens: Int) {
+        if (generating) return
+        topK = newTopK
+        topP = newTopP
+        temperature = newTemperature
+        maxTokens = newMaxTokens
+        resetConversation()
+    }
+
+    /** Clears the chat and creates a fresh conversation with the current parameters. */
+    fun resetConversation() {
+        if (generating) return
+        _messages.clear()
+        val engine = engine ?: return
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                conversation?.close()
+            } catch (e: Exception) {
+                Log.w(TAG, "Conversation close failed", e)
+            }
+            conversation = engine.createConversation(createConversationConfig())
+            status = "New conversation ($backendName)"
+        }
+    }
+
+    @OptIn(ExperimentalApi::class)
+    private fun createConversationConfig() = ConversationConfig(
+        samplerConfig = SamplerConfig(topK = topK, topP = topP.toDouble(), temperature = temperature.toDouble()),
+    )
 
     private fun closeEngine() {
         try {
@@ -114,13 +157,7 @@ class ChatViewModel : ViewModel() {
             ExperimentalFlags.enableSpeculativeDecoding = false
 
             engine = loaded
-            ExperimentalFlags.enableConversationConstrainedDecoding = false
-            conversation = loaded.createConversation(
-                ConversationConfig(
-                    samplerConfig = SamplerConfig(topK = TOP_K, topP = TOP_P, temperature = TEMPERATURE),
-                ),
-            )
-            ExperimentalFlags.enableConversationConstrainedDecoding = false
+            conversation = loaded.createConversation(createConversationConfig())
             "Model ready: ${modelFile.name} ($backendName)"
         } catch (e: Exception) {
             Log.e(TAG, "Model load failed", e)
@@ -135,7 +172,7 @@ class ChatViewModel : ViewModel() {
         // for it even in chat (llmSupportImage/llmSupportAudio).
         visionBackend = Backend.GPU(),
         audioBackend = Backend.CPU(),
-        maxNumTokens = MAX_TOKENS,
+        maxNumTokens = maxTokens,
     )
 
     fun sendMessage(text: String) {
@@ -144,6 +181,10 @@ class ChatViewModel : ViewModel() {
         val reply = ChatMessage(isUser = false)
         _messages.add(reply)
         generating = true
+
+        // Token speed + latency, like the gallery's latencyMs bookkeeping.
+        val start = System.currentTimeMillis()
+        var tokenCount = 0
 
         viewModelScope.launch(Dispatchers.Default) {
             conversation.sendMessageAsync(
@@ -155,15 +196,20 @@ class ChatViewModel : ViewModel() {
                             return
                         }
                         reply.text += delta
+                        tokenCount++
+                        val elapsedMs = (System.currentTimeMillis() - start).coerceAtLeast(1)
+                        reply.tokenSpeed = tokenCount / (elapsedMs / 1000f)
                     }
 
                     override fun onDone() {
+                        reply.latencyMs = (System.currentTimeMillis() - start).toFloat()
                         generating = false
                     }
 
                     override fun onError(throwable: Throwable) {
                         Log.e(TAG, "Inference failed", throwable)
                         reply.text = "Error: ${throwable.message}"
+                        reply.latencyMs = (System.currentTimeMillis() - start).toFloat()
                         generating = false
                     }
                 },
@@ -189,13 +235,5 @@ class ChatViewModel : ViewModel() {
         private const val MODEL_EXT = "litertlm"
         private const val BACKEND_GPU_LABEL = "GPU"
         private const val BACKEND_CPU_LABEL = "CPU"
-
-        // Gemma-4-E2B-it defaults from the gallery model allowlist
-        // (model_allowlists/1_0_15.json): topK=64, topP=0.95, temperature=1.0,
-        // maxTokens=4000. Thinking and MTP stay off (gallery defaults).
-        private const val TOP_K = 64
-        private const val TOP_P = 0.95
-        private const val TEMPERATURE = 1.0
-        private const val MAX_TOKENS = 4000
     }
 }

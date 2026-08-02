@@ -1,5 +1,6 @@
 package com.riguz.cryptowl
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,13 +27,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Stop
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -39,9 +47,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
@@ -55,6 +66,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /** Gallery chat colors (light theme), from ui/theme/Theme.kt. */
 object ChatColors {
@@ -100,37 +114,100 @@ class MessageBubbleShape(
 @Composable
 fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     val messages = viewModel.messages
 
+    // Track whether the user is scrolled to the bottom (gallery ChatPanel logic).
+    var isAtBottom by remember { mutableStateOf(true) }
+    LaunchedEffect(listState) {
+        snapshotFlow { !listState.canScrollForward }
+            .collectLatest { rawAtBottom ->
+                if (!rawAtBottom) {
+                    delay(500)
+                }
+                isAtBottom = rawAtBottom
+            }
+    }
+
+    // Auto-scroll to bottom when a new message arrives (gallery: scrollToBottom on
+    // lastUserMessageIndex change).
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
+    }
+
+    // Keep pinned to the bottom while generating and the user is at the bottom.
+    LaunchedEffect(isAtBottom, viewModel.generating, messages.lastOrNull()?.text) {
+        if (isAtBottom && viewModel.generating && messages.isNotEmpty()) {
             listState.scrollToItem(messages.size - 1)
         }
     }
+
+    var showParamsDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .imePadding(),
     ) {
-        Text(
-            text = viewModel.status + "\nTap to switch backend (${viewModel.backendName})",
-            style = MaterialTheme.typography.labelMedium,
+        Row(
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(12.dp)
-                .clickable { viewModel.toggleBackend() },
-        )
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 6.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            items(messages.size, key = { it }) { index ->
-                ChatMessageItem(message = messages[index], agentName = agentName)
+            Text(
+                text = viewModel.status + "\nTap to switch backend (${viewModel.backendName})",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 12.dp)
+                    .clickable { viewModel.toggleBackend() },
+            )
+            IconButton(
+                onClick = { viewModel.resetConversation() },
+                enabled = viewModel.ready && !viewModel.generating,
+            ) {
+                Icon(Icons.Rounded.RestartAlt, contentDescription = "New conversation")
+            }
+            IconButton(
+                onClick = { showParamsDialog = true },
+                enabled = viewModel.ready && !viewModel.generating,
+            ) {
+                Icon(Icons.Rounded.Tune, contentDescription = "Parameters")
+            }
+        }
+
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 6.dp),
+            ) {
+                items(messages.size, key = { it }) { index ->
+                    ChatMessageItem(
+                        message = messages[index],
+                        agentName = agentName,
+                        generating = viewModel.generating && index == messages.size - 1,
+                    )
+                }
+            }
+
+            // Scroll-to-bottom button, shown when not at the bottom (gallery ChatView).
+            if (!isAtBottom && messages.isNotEmpty()) {
+                IconButton(
+                    onClick = { scope.launch { listState.animateScrollToItem(messages.size - 1) } },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceContainer),
+                ) {
+                    Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Scroll to bottom")
+                }
             }
         }
 
@@ -143,10 +220,64 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
             onStop = { viewModel.stopResponse() },
         )
     }
+
+    if (showParamsDialog) {
+        ParametersDialog(
+            topK = viewModel.topK,
+            topP = viewModel.topP,
+            temperature = viewModel.temperature,
+            maxTokens = viewModel.maxTokens,
+            onDismiss = { showParamsDialog = false },
+            onApply = { newTopK, newTopP, newTemperature, newMaxTokens ->
+                showParamsDialog = false
+                viewModel.updateParameters(newTopK, newTopP, newTemperature, newMaxTokens)
+            },
+        )
+    }
 }
 
 @Composable
-private fun ChatMessageItem(message: ChatMessage, agentName: String) {
+private fun ParametersDialog(
+    topK: Int,
+    topP: Float,
+    temperature: Float,
+    maxTokens: Int,
+    onDismiss: () -> Unit,
+    onApply: (Int, Float, Float, Int) -> Unit,
+) {
+    var curTopK by remember { mutableStateOf(topK) }
+    var curTopP by remember { mutableStateOf(topP) }
+    var curTemperature by remember { mutableStateOf(temperature) }
+    var curMaxTokens by remember { mutableStateOf(maxTokens) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Parameters") },
+        text = {
+            Column {
+                Text("Temperature (${"%.2f".format(curTemperature)})")
+                Slider(value = curTemperature, onValueChange = { curTemperature = it }, valueRange = 0f..2f)
+                Text("Top-K ($curTopK)")
+                Slider(value = curTopK.toFloat(), onValueChange = { curTopK = it.toInt() }, valueRange = 1f..200f)
+                Text("Top-P (${"%.2f".format(curTopP)})")
+                Slider(value = curTopP, onValueChange = { curTopP = it }, valueRange = 0.1f..1f)
+                Text("Max tokens ($curMaxTokens)")
+                Slider(value = curMaxTokens.toFloat(), onValueChange = { curMaxTokens = it.toInt() }, valueRange = 256f..8192f)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onApply(curTopK, curTopP, curTemperature, curMaxTokens) }) {
+                Text("Apply")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        },
+    )
+}
+
+@Composable
+private fun ChatMessageItem(message: ChatMessage, agentName: String, generating: Boolean) {
     val isUser = message.isUser
     Column(
         modifier = Modifier
@@ -183,8 +314,36 @@ private fun ChatMessageItem(message: ChatMessage, agentName: String) {
                 text = message.text,
                 modifier = Modifier.padding(vertical = 12.dp),
             )
+            // Token speed while generating; latency + speed when done (gallery LatencyText).
+            if (message.latencyMs >= 0) {
+                Text(
+                    text = "${"%.1f".format(message.tokenSpeed)} t/s · ${message.latencyMs.humanReadableDuration()}",
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.alpha(0.5f),
+                )
+            } else if (generating && message.tokenSpeed > 0f) {
+                Text(
+                    text = "${"%.1f".format(message.tokenSpeed)} t/s",
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.alpha(0.5f),
+                )
+            }
         }
     }
+}
+
+/** Port of the gallery's Float.humanReadableDuration. */
+private fun Float.humanReadableDuration(): String {
+    val milliseconds = this
+    if (milliseconds < 1000) {
+        return "$milliseconds ms"
+    }
+    val seconds = milliseconds / 1000f
+    if (seconds < 60) {
+        return "%.1f s".format(seconds)
+    }
+    val minutes = seconds / 60f
+    return "%.1f min".format(minutes)
 }
 
 @Composable
