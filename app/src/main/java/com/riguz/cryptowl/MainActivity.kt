@@ -17,6 +17,7 @@ import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Engine
 import com.google.ai.edge.litertlm.EngineConfig
 import com.google.ai.edge.litertlm.ExperimentalApi
+import com.google.ai.edge.litertlm.ExperimentalFlags
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.MessageCallback
 import com.google.ai.edge.litertlm.SamplerConfig
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeModel() {
         binding.textStatus.text = "Loading model..."
         lifecycleScope.launch {
-            val status = withContext(Dispatchers.IO) { loadModel() }
+            val status = withContext(Dispatchers.Default) { loadModel() }
             binding.textStatus.text = status
             binding.buttonSend.isEnabled = conversation != null
         }
@@ -67,21 +68,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadModel(): String {
         val modelFile = findModelFile()
-            ?: return "No model found. Push a .litertlm model into:\n${modelDirectory()}\n" +
-                "or ${getExternalFilesDir(null)?.absolutePath}"
+            ?: return "No model found in:\n${modelDirectory()}"
         return try {
-            val loaded = try {
-                Engine(engineConfig(modelFile, Backend.GPU())).also { it.initialize() }
+            // Mirror gallery: disable experimental flags explicitly around engine
+            // and conversation creation.
+            ExperimentalFlags.enableSpeculativeDecoding = false
+            var loaded: Engine? = null
+            try {
+                loaded = Engine(engineConfig(modelFile, Backend.GPU()))
+                loaded.initialize()
             } catch (e: Exception) {
                 Log.w(TAG, "GPU backend failed, falling back to CPU", e)
-                Engine(engineConfig(modelFile, Backend.CPU())).also { it.initialize() }
+                runCatching { loaded?.close() }
+                loaded = Engine(engineConfig(modelFile, Backend.CPU()))
+                loaded.initialize()
             }
+            ExperimentalFlags.enableSpeculativeDecoding = false
+
             engine = loaded
+            ExperimentalFlags.enableConversationConstrainedDecoding = false
             conversation = loaded.createConversation(
                 ConversationConfig(
                     samplerConfig = SamplerConfig(topK = 40, topP = 0.95, temperature = 0.8),
                 ),
             )
+            ExperimentalFlags.enableConversationConstrainedDecoding = false
             "Model ready: ${modelFile.name}"
         } catch (e: Exception) {
             Log.e(TAG, "Model load failed", e)
@@ -108,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerChat.scrollToPosition(adapter.itemCount - 1)
 
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Default) {
                 conversation.sendMessageAsync(
                     Contents.of(listOf(Content.Text(text))),
                     object : MessageCallback {
@@ -147,11 +158,8 @@ class MainActivity : AppCompatActivity() {
         File(getExternalFilesDir(null), MODEL_DIR).absolutePath
 
     private fun findModelFile(): File? {
-        val root = getExternalFilesDir(null) ?: return null
-        val modelDir = File(root, MODEL_DIR)
-        return listOf(modelDir, root)
-            .flatMap { dir -> dir.listFiles { file -> file.extension == MODEL_EXT }?.toList() ?: emptyList() }
-            .firstOrNull()
+        val dir = File(getExternalFilesDir(null), MODEL_DIR)
+        return dir.listFiles { file -> file.extension == MODEL_EXT }?.firstOrNull()
     }
 
     override fun onDestroy() {
