@@ -40,4 +40,36 @@ class ProtectedValueTest {
         value.clear()
         assertArrayEquals(ByteArray(6), value.binaryValue())
     }
+
+    @Test
+    fun `use provides auto-cleared scoped access`() {
+        val value = ProtectedValue.fromString("secret")
+        val length = value.use { bytes ->
+            assertArrayEquals("secret".toByteArray(), bytes)
+            bytes.size
+        }
+        assertEquals(6, length)
+        assertArrayEquals("secret".toByteArray(), value.binaryValue())
+    }
+
+    @Test
+    fun `use after clear yields zeros`() {
+        val value = ProtectedValue.fromString("secret")
+        value.clear()
+        value.use { bytes ->
+            assertEquals(ByteArray(6).toList(), bytes.toList())
+        }
+    }
+
+    @Test
+    fun `toString is masked`() {
+        assertEquals("[ProtectedValue]", ProtectedValue.fromString("secret").toString())
+    }
+
+    @Test
+    fun `getText works via scoped access`() {
+        val value = ProtectedValue.fromString("hello world!")
+        assertEquals("D1JPR-V3F41-VPYWK-CCGGG", value.getText())
+        assertArrayEquals("hello world!".toByteArray(), value.binaryValue())
+    }
 }
