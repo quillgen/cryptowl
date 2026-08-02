@@ -3,6 +3,10 @@ package com.riguz.cryptowl
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.ai.edge.litertlm.Backend
@@ -35,6 +39,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            binding.inputBar.updatePadding(bottom = maxOf(bars.bottom, ime.bottom))
+            binding.textStatus.updatePadding(top = bars.top)
+            WindowInsetsCompat.CONSUMED
+        }
+
         binding.recyclerChat.layoutManager = LinearLayoutManager(this)
         binding.recyclerChat.adapter = adapter
         binding.buttonSend.setOnClickListener { sendMessage() }
@@ -54,7 +67,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadModel(): String {
         val modelFile = findModelFile()
-            ?: return "No model found. Push a .litertlm model into:\n${modelDirectory()}"
+            ?: return "No model found. Push a .litertlm model into:\n${modelDirectory()}\n" +
+                "or ${getExternalFilesDir(null)?.absolutePath}"
         return try {
             val loaded = try {
                 Engine(engineConfig(modelFile, Backend.GPU())).also { it.initialize() }
@@ -133,8 +147,11 @@ class MainActivity : AppCompatActivity() {
         File(getExternalFilesDir(null), MODEL_DIR).absolutePath
 
     private fun findModelFile(): File? {
-        val dir = File(getExternalFilesDir(null), MODEL_DIR)
-        return dir.listFiles { file -> file.extension == MODEL_EXT }?.firstOrNull()
+        val root = getExternalFilesDir(null) ?: return null
+        val modelDir = File(root, MODEL_DIR)
+        return listOf(modelDir, root)
+            .flatMap { dir -> dir.listFiles { file -> file.extension == MODEL_EXT }?.toList() ?: emptyList() }
+            .firstOrNull()
     }
 
     override fun onDestroy() {
