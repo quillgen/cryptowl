@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.riguz.cryptowl"
+    namespace = "com.typedefai.cryptowl"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.riguz.cryptowl"
+        applicationId = "com.typedefai.cryptowl"
         minSdk = 36
         targetSdk = 37
         versionCode = 1

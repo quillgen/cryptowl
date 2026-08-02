@@ -1,0 +1,105 @@
+digraph key_flow {
+    rankdir = LR;
+    splines = polyline;
+    nodesep = 0.45;
+    ranksep = 0.55;
+    fontname = "Helvetica";
+    labelloc = t;
+    label = "cryptowl key derivation & unwrap flow\n(AAD = record id on every AES-256-GCM operation)";
+    fontsize = 16;
+
+    /* node styles */
+    node [shape = box, style = "rounded,filled", fontsize = 11, fontname = "Helvetica"];
+    edge [fontsize = 9.5, fontname = "Helvetica", color = "#666666"];
+
+    /* ---------------- cluster: L0 / login ---------------- */
+    subgraph cluster_l0 {
+        label = "L0 · vault unlock (login) — everything below is plaintext inside the SQLCipher DB";
+        fontsize = 12;
+        color = "#1FA55B";
+        style = "rounded,filled";
+        fillcolor = "#F2FBF5";
+
+        master_pw [label = "master password", shape = cylinder, fillcolor = "#D9F2E3"];
+        secret_key [label = "secretKey\n(Android Keystore, non-exportable)", fillcolor = "#E8F4FD"];
+        prehash [label = "pre-hash", fillcolor = "#D9F2E3"];
+        tmk [label = "TMK", style = "rounded,dashed,filled", fillcolor = "#D9F2E3", tooltip = "in memory only"];
+        smk [label = "SMK", style = "rounded,dashed,filled", fillcolor = "#D9F2E3", tooltip = "in memory only"];
+        vault_key [label = "VaultKey\nt_wrapped_key: role='vault', parent='smk'", fillcolor = "#BFE8CE"];
+
+        master_pw -> prehash [label = "HMAC-SHA256\n(secretKey)"];
+        secret_key -> prehash [dir = none];
+        prehash -> tmk [label = "Argon2id\n(m=19 MiB, t=2, p=1, salt=t_vault.master_salt)"];
+        tmk -> smk [label = "HKDF-SHA256\n(salt=master_seed,\ninfo=instanceId)"];
+        smk -> vault_key [label = "unwrap\nAES-256-GCM"];
+        vault_key -> l1 [label = "decrypts L1 (C)\n· t_moment.content\n· thumbnails (BLOB)\n· DEKs wrapping='vault'"];
+    }
+
+    /* ---------------- cluster: L1 data ---------------- */
+    subgraph cluster_l1 {
+        label = "L1 · readable after login (C classification)";
+        fontsize = 12;
+        color = "#1FA55B";
+        style = "rounded,filled";
+        fillcolor = "#F7FBF4";
+
+        l1 [label = "C items\n· post text / comments\n· media files (whole-file or\n  chunked GCM, DEK wrapping='vault')\n· thumbnails as SQLCipher BLOBs", fillcolor = "#E9F6E8"];
+        l0 [label = "L0 metadata\n· author, type, timestamps\n· like/comment counts\n· plaintext in SQLCipher", fillcolor = "#F3FBF1", shape = note];
+    }
+
+    /* ---------------- cluster: L2 / secret ---------------- */
+    subgraph cluster_l2 {
+        label = "L2 · secret (S) — per-access biometric";
+        fontsize = 12;
+        color = "#3B82F6";
+        style = "rounded,filled";
+        fillcolor = "#F0F5FE";
+
+        bio_prompt [label = "BiometricPrompt", fillcolor = "#DBE8FD"];
+        bio_key [label = "BioKey\n(Keystore, userAuthRequired,\nStrongBox when available)", fillcolor = "#DBE8FD"];
+        kek [label = "KEK\nt_wrapped_key: role='kek', parent='biokey'", fillcolor = "#C4D9FB"];
+        dek_s [label = "item DEK\nt_data_encrypt_key: wrapping='kek'", fillcolor = "#C4D9FB"];
+        data_s [label = "S content\nt_encrypted_data (AAD = row id)\nmedia files (DEK)", fillcolor = "#E3EDFD"];
+
+        bio_prompt -> bio_key [label = "fresh prompt\nper access"];
+        bio_key -> kek [label = "unwrap\nAES-256-GCM"];
+        kek -> dek_s [label = "unwrap\nAES-256-GCM\n(AAD = dek id)"];
+        dek_s -> data_s [label = "decrypt\nAES-256-GCM\n(AAD = payload id)"];
+    }
+
+    /* ---------------- cluster: L3 / top secret ---------------- */
+    subgraph cluster_l3 {
+        label = "L3 · top secret (T) — biometric + secondary password per access";
+        fontsize = 12;
+        color = "#EF4444";
+        style = "rounded,filled";
+        fillcolor = "#FEF1F1";
+
+        sec_pw [label = "secondary password\n(never stored)", shape = cylinder, fillcolor = "#FBDCDC"];
+        bio_prompt3 [label = "BiometricPrompt", fillcolor = "#FBDCDC"];
+        bio_key3 [label = "BioKey\n(Keystore)", fillcolor = "#FBDCDC"];
+        ts_kek [label = "TS-KEK\nt_wrapped_key: role='ts_kek', parent='biokey'", fillcolor = "#F5B9B9"];
+        top_secret_kek [label = "TopSecretKEK\nt_wrapped_key: role='top_secret', parent='ts_kek'", fillcolor = "#F5B9B9"];
+        dek_t [label = "item DEK\nt_data_encrypt_key: wrapping='top_secret'", fillcolor = "#F5B9B9"];
+        data_t [label = "T content\nt_encrypted_data (AAD = row id)\nmedia files (DEK)", fillcolor = "#FDE4E4"];
+
+        sec_pw -> ts_kek [label = "Argon2id\n(salt=t_vault.secondary_salt)"];
+        bio_prompt3 -> bio_key3 [label = "fresh prompt\nper access"];
+        bio_key3 -> ts_kek [label = "unwrap\nAES-256-GCM"];
+        ts_kek -> top_secret_kek [label = "unwrap\nAES-256-GCM"];
+        top_secret_kek -> dek_t [label = "unwrap\nAES-256-GCM\n(AAD = dek id)"];
+        dek_t -> data_t [label = "decrypt\nAES-256-GCM\n(AAD = payload id)"];
+    }
+
+    /* legend */
+    subgraph cluster_legend {
+        label = "Legend";
+        fontsize = 11;
+        color = "#888888";
+        style = "rounded";
+        node [fontsize = 9];
+        mem [label = "in memory only", style = "rounded,dashed", fillcolor = "white"];
+        db [label = "stored in DB (encrypted)", style = "rounded,filled", fillcolor = "#DDD"];
+        ks [label = "Android Keystore", style = "rounded,filled", fillcolor = "#EEE"];
+    }
+}
