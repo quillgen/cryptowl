@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(ExperimentalApi::class)
     private fun loadModel(): String {
         val modelFile = findModelFile()
             ?: return "No model found in:\n${modelDirectory()}"
