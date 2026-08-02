@@ -144,8 +144,12 @@ class MainActivity : AppCompatActivity() {
                     Contents.of(listOf(Content.Text(text))),
                     object : MessageCallback {
                         override fun onMessage(message: Message) {
+                            val delta = message.toString()
+                            if (delta.startsWith("<ctrl")) {
+                                return
+                            }
                             runOnUiThread {
-                                reply.text = message.toString()
+                                reply.text += delta
                                 adapter.lastChanged()
                                 binding.recyclerChat.scrollToPosition(adapter.itemCount - 1)
                             }
