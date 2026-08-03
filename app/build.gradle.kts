@@ -42,6 +42,8 @@ android {
             version = "3.22.1"
         }
     }
+    // NDK r29: r28 maxes out at API 35, minSdk 36 needs 36+ support.
+    ndkVersion = "29.0.14206865"
     buildFeatures {
         compose = true
     }
