@@ -1,0 +1,108 @@
+digraph key_transform {
+    rankdir = TB;
+    splines = polyline;
+    nodesep = 0.25;
+    ranksep = 0.35;
+    fontname = "Helvetica";
+    labelloc = t;
+    label = "cryptowl key transform & encryption (Android-native)\nAAD = record id on every AES-256-GCM op · solid = unwrap/decrypt · dashed = wrap/store";
+    fontsize = 14;
+
+    node [shape = box, style = "rounded,filled", fontsize = 9.5, fontname = "Helvetica", margin = "0.08,0.05"];
+    edge [fontsize = 8, fontname = "Helvetica", color = "#666666"];
+
+    /* ---------- L0 · vault unlock ---------- */
+    subgraph cluster_l0 {
+        label = "L0 · unlock (login) — L0/L1 plaintext inside SQLCipher";
+        fontsize = 10;
+        color = "#1FA55B";
+        style = "rounded,filled";
+        fillcolor = "#F2FBF5";
+
+        mp [label = "master\npassword", shape = cylinder, fillcolor = "#D9F2E3"];
+        sk [label = "secretKey\n(Keystore)", fillcolor = "#E8F4FD"];
+        kdf0 [label = "HMAC(secretKey) → Argon2id → HKDF\n(m=19MiB,t=2,p=1, salt=master_salt)", fillcolor = "#D9F2E3"];
+        smk [label = "SMK", style = "rounded,dashed,filled", fillcolor = "#D9F2E3"];
+        vk [label = "VaultKey\n(role='vault')", fillcolor = "#BFE8CE"];
+        db [label = "SQLCipher *.enc", shape = cylinder, fillcolor = "#BFE8CE"];
+
+        mp -> kdf0 [label = "HMAC"];
+        sk -> kdf0 [dir = none];
+        kdf0 -> smk;
+        smk -> vk [label = "unwrap"];
+        vk -> db [label = "passphrase"];
+    }
+
+    /* ---------- L2 · secret ---------- */
+    subgraph cluster_l2 {
+        label = "L2 · secret (S) — per-access biometric";
+        fontsize = 10;
+        color = "#3B82F6";
+        style = "rounded,filled";
+        fillcolor = "#F0F5FE";
+
+        bio [label = "BiometricPrompt", fillcolor = "#DBE8FD"];
+        biokey [label = "BioKey\n(Keystore, StrongBox)", fillcolor = "#DBE8FD"];
+        kek [label = "KEK\n(role='kek')", fillcolor = "#C4D9FB"];
+        dek2 [label = "DEK\n(wrapping='kek')", fillcolor = "#C4D9FB"];
+        c2 [label = "S content\n(AAD=row id)", fillcolor = "#E3EDFD"];
+
+        bio -> biokey [label = "fresh prompt"];
+        biokey -> kek [label = "unwrap"];
+        kek -> dek2 [label = "unwrap\n(AAD=dek id)"];
+        dek2 -> c2 [label = "decrypt"];
+    }
+
+    /* ---------- L3 · top secret ---------- */
+    subgraph cluster_l3 {
+        label = "L3 · top secret (T) — biometric + secondary password";
+        fontsize = 10;
+        color = "#EF4444";
+        style = "rounded,filled";
+        fillcolor = "#FEF1F1";
+
+        pw [label = "secondary\npassword", shape = cylinder, fillcolor = "#FBDCDC"];
+        bio3 [label = "BiometricPrompt", fillcolor = "#FBDCDC"];
+        ts [label = "TS-KEK\n(Argon2id)", style = "rounded,dashed,filled", fillcolor = "#F5B9B9"];
+        tsk [label = "TopSecretKEK\n(role='top_secret')", fillcolor = "#F5B9B9"];
+        dek3 [label = "DEK\n(wrapping='top_secret')", fillcolor = "#F5B9B9"];
+        c3 [label = "T content\n(AAD=row id)", fillcolor = "#FDE4E4"];
+
+        pw -> ts [label = "Argon2id"];
+        bio3 -> ts [label = "unwrap"];
+        ts -> tsk [label = "unwrap"];
+        tsk -> dek3 [label = "unwrap\n(AAD=dek id)"];
+        dek3 -> c3 [label = "decrypt"];
+    }
+
+    /* ---------- storage ---------- */
+    subgraph cluster_store {
+        label = "at rest (all encrypted)";
+        fontsize = 10;
+        color = "#888888";
+        style = "rounded,filled";
+        fillcolor = "#FAFAFA";
+
+        store [label = "vault DB: t_wrapped_key (vault/kek/ts_kek/top_secret)\nt_data_encrypt_key (DEKs) · t_encrypted_data (ciphertext)", fillcolor = "#EEE"];
+
+        vk -> store [style = dashed, dir = none, label = "wrapped"];
+        kek -> store [style = dashed, dir = none, label = "wrapped"];
+        tsk -> store [style = dashed, dir = none, label = "wrapped"];
+        dek2 -> store [style = dashed, dir = none, label = "wrapped"];
+        dek3 -> store [style = dashed, dir = none, label = "wrapped"];
+        c2 -> store [style = dashed, dir = none, label = "cipher"];
+        c3 -> store [style = dashed, dir = none, label = "cipher"];
+    }
+
+    /* ---------- legend ---------- */
+    subgraph cluster_legend {
+        label = "Legend";
+        fontsize = 9;
+        color = "#888888";
+        style = "rounded";
+        node [fontsize = 8];
+        m [label = "in memory", style = "rounded,dashed", fillcolor = "white"];
+        s [label = "stored (wrapped)", style = "rounded,filled", fillcolor = "#DDD"];
+        k [label = "Keystore", style = "rounded,filled", fillcolor = "#EEE"];
+    }
+}
