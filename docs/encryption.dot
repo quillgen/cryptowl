@@ -1,0 +1,37 @@
+digraph key_transform {
+    node [shape = "record";];
+    masterPassword [label = "{Master password|{Arbitrary Length|Not Stored}}";style = "filled";fillcolor = "#f8d1af";];
+    secretKey [label = "{Secret key|{32 bytes|Keystore}}";style = "filled";fillcolor = "#cbf9d6";];
+    prehash [shape = "underline";label = "HMAC-SHA256";];
+    masterKey [label = "{Master key|{32 bytes|Transient}}";style = "dashed";];
+    transformSeed [label = "{Transform seed|{16 bytes|Config}}";];
+    keyDerivation [shape = "underline";label = "Argon2id";];
+    transformedMasterKey [label = "{Transformed master key|{32 bytes|Transient}}";style = "dashed";];
+    masterSeed [label = "{Master seed|{16 bytes|Config}}";];
+    instanceId [label = "{Instance ID|{UUID|Config}}";];
+    hkdf [shape = "underline";label = "HKDF";];
+    stretchedMasterKey [label = "{Stretched master key|{<k1>32 bytes\nEncryption key|<k2>32 bytes\n MAC key|Transient}}";style = "dashed";];
+    symmetricKey [label = "{Symmetric key|{32 bytes\nEncryption key|32 bytes\n MAC key|Random}}";style = "filled,dashed";fillcolor = "#f0cbf9";];
+    nonce [label = "{Nonce|{12 bytes|Random}}";];
+    symmetricKeyEncryption [shape = "underline";label = "AES256-GCM";];
+    protectedSymmetricKey [label = "{Protected symmetric key|{<k1>32 bytes\nEncryption key|<k2>32 bytes\n MAC key|Random}}";style = "dashed";fillcolor = "#f0cbf9";];
+    sqlcipher [label = "SQLCipher";shape = "cylinder";];
+    
+    
+    masterPassword -> prehash [label = "key";];
+    secretKey -> prehash [label = "message";];
+    prehash -> masterKey;
+    transformSeed -> keyDerivation [label = "salt";];
+    masterKey -> keyDerivation [label = "key";];
+    keyDerivation -> transformedMasterKey;
+    masterSeed -> hkdf [label = "salt";];
+    instanceId -> hkdf [label = "info";];
+    transformedMasterKey -> hkdf [label = "key";];
+    hkdf -> stretchedMasterKey;
+    symmetricKey -> symmetricKeyEncryption [label = "data";];
+    nonce -> symmetricKeyEncryption [label = "nonce";];
+    stretchedMasterKey:k1 -> symmetricKeyEncryption [label = "key";];
+    instanceId -> symmetricKeyEncryption [label = "AAD";];
+    symmetricKeyEncryption -> protectedSymmetricKey [label = "ciphertext";];
+    protectedSymmetricKey:k1 -> sqlcipher [label = "raw key";];
+}

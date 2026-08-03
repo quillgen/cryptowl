@@ -21,15 +21,21 @@ digraph key_transform {
 
         mp [label = "master\npassword", shape = cylinder, fillcolor = "#D9F2E3"];
         sk [label = "secretKey\n(Keystore)", fillcolor = "#E8F4FD"];
-        kdf0 [label = "HMAC(secretKey) → Argon2id → HKDF\n(m=19MiB,t=2,p=1, salt=master_salt)", fillcolor = "#D9F2E3"];
-        smk [label = "SMK", style = "rounded,dashed,filled", fillcolor = "#D9F2E3"];
+        prehash [label = "pre-hash\nHMAC-SHA256", fillcolor = "#D9F2E3"];
+        tmk [label = "TMK\n32 B", style = "rounded,dashed,filled", fillcolor = "#D9F2E3"];
+        argo [label = "Argon2id\n(m=19 MiB, t=2,\np=1, v=19)", fillcolor = "#D9F2E3"];
+        hkdf [label = "HKDF-SHA256\n(out 64 B)", fillcolor = "#D9F2E3"];
+        smk [label = "SMK\n64 B", style = "rounded,dashed,filled", fillcolor = "#D9F2E3"];
         vk [label = "VaultKey\n(role='vault')", fillcolor = "#BFE8CE"];
         db [label = "SQLCipher *.enc", shape = cylinder, fillcolor = "#BFE8CE"];
 
-        mp -> kdf0 [label = "HMAC"];
-        sk -> kdf0 [dir = none];
-        kdf0 -> smk;
-        smk -> vk [label = "unwrap"];
+        mp -> prehash [label = "password"];
+        sk -> prehash [dir = none, label = "key"];
+        prehash -> argo [label = "pre-hash"];
+        argo -> tmk [label = "salt =\nt_vault.master_salt\n(16 B, stored)"];
+        tmk -> hkdf;
+        hkdf -> smk [label = "salt = master_seed\ninfo = instanceId"];
+        smk -> vk [label = "unwrap\nAES-256-GCM"];
         vk -> db [label = "passphrase"];
     }
 
