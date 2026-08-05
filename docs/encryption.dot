@@ -1,37 +1,81 @@
-digraph key_transform {
+digraph encryption_flow {
     node [shape = "record";];
-    masterPassword [label = "{Master password|{Arbitrary Length|Not Stored}}";style = "filled";fillcolor = "#f8d1af";];
-    secretKey [label = "{Secret key|{32 bytes|Keystore}}";style = "filled";fillcolor = "#cbf9d6";];
-    prehash [shape = "underline";label = "HMAC-SHA256";];
-    masterKey [label = "{Master key|{32 bytes|Transient}}";style = "dashed";];
-    transformSeed [label = "{Transform seed|{16 bytes|Config}}";];
-    keyDerivation [shape = "underline";label = "Argon2id";];
-    transformedMasterKey [label = "{Transformed master key|{32 bytes|Transient}}";style = "dashed";];
-    masterSeed [label = "{Master seed|{16 bytes|Config}}";];
-    instanceId [label = "{Instance ID|{UUID|Config}}";];
-    hkdf [shape = "underline";label = "HKDF";];
-    stretchedMasterKey [label = "{Stretched master key|{<k1>32 bytes\nEncryption key|<k2>32 bytes\n MAC key|Transient}}";style = "dashed";];
-    symmetricKey [label = "{Symmetric key|{32 bytes\nEncryption key|32 bytes\n MAC key|Random}}";style = "filled,dashed";fillcolor = "#f0cbf9";];
-    nonce [label = "{Nonce|{12 bytes|Random}}";];
-    symmetricKeyEncryption [shape = "underline";label = "AES256-GCM";];
-    protectedSymmetricKey [label = "{Protected symmetric key|{<k1>32 bytes\nEncryption key|<k2>32 bytes\n MAC key|Random}}";style = "dashed";fillcolor = "#f0cbf9";];
-    sqlcipher [label = "SQLCipher";shape = "cylinder";];
-    
-    
-    masterPassword -> prehash [label = "key";];
-    secretKey -> prehash [label = "message";];
-    prehash -> masterKey;
-    transformSeed -> keyDerivation [label = "salt";];
-    masterKey -> keyDerivation [label = "key";];
-    keyDerivation -> transformedMasterKey;
-    masterSeed -> hkdf [label = "salt";];
-    instanceId -> hkdf [label = "info";];
-    transformedMasterKey -> hkdf [label = "key";];
-    hkdf -> stretchedMasterKey;
-    symmetricKey -> symmetricKeyEncryption [label = "data";];
-    nonce -> symmetricKeyEncryption [label = "nonce";];
-    stretchedMasterKey:k1 -> symmetricKeyEncryption [label = "key";];
-    instanceId -> symmetricKeyEncryption [label = "AAD";];
-    symmetricKeyEncryption -> protectedSymmetricKey [label = "ciphertext";];
-    protectedSymmetricKey:k1 -> sqlcipher [label = "raw key";];
+
+    /* ---------- inputs ---------- */
+    masterPassword [label = "{Master password|{Arbitrary Length|Not Stored}}"; style = "filled"; fillcolor = "#f8d1af";];
+    deviceSecret [label = "{Device Secret|{32 bytes|Android Keystore}}"; style = "filled"; fillcolor = "#cbf9d6";];
+    prehash [shape = "underline"; label = "HMAC-SHA256";];
+
+    /* ---------- derive chain ---------- */
+    argon2Salt [label = "{argon2Salt|{32 bytes|vault.meta (plaintext)}}";];
+    keyDerivation [shape = "underline"; label = "Argon2id\n(m=19 MiB, t=2, p=1)";];
+    tmk [label = "{TMK|{32 bytes|Transient}}"; style = "dashed";];
+    hkdfSalt [label = "{hkdfSalt|{32 bytes|vault.meta (plaintext)}}";];
+    vaultId [label = "{vaultId|{directory name|e.g. personal}}";];
+    hkdf [shape = "underline"; label = "HKDF-SHA256";];
+    smk [label = "{SMK|{<k1>32 bytes\nEncryption key|<k2>32 bytes\nMAC key|Transient}}"; style = "dashed";];
+
+    /* ---------- unwrap VaultKey ---------- */
+    wrappedVaultKey [label = "{Wrapped VaultKey|{SMK copy · BioKey copy|vault.meta}}"; style = "filled"; fillcolor = "#d9d9d9";];
+    unwrapVault [shape = "underline"; label = "unwrap\nAES-256-GCM";];
+    vaultKey [label = "{VaultKey|{32 bytes random|Transient}}"; style = "dashed"; fillcolor = "#f0cbf9";];
+    sqlcipher [label = "SQLCipher"; shape = "cylinder";];
+
+    /* ---------- config integrity ---------- */
+    configMac [shape = "underline"; label = "HMAC-SHA256";];
+    configJson [label = "{config.json|{hash → config.sig}}";];
+
+    /* ---------- C-tier files ---------- */
+    fekDerive [shape = "underline"; label = "HKDF-SHA256\n(info = \"file\")";];
+    fek [label = "{FEK|{32 bytes|Derived}}"; style = "dashed";];
+    cFiles [label = "{C-tier files|{whole-file AES-256-GCM|attachments/}}";];
+
+    /* ---------- fingerprint + S/T tiers ---------- */
+    bioKey [label = "{BioKey|{Keystore|userAuthRequired}}"; style = "filled"; fillcolor = "#cbf9d6";];
+    kek [label = "{KEK|{32 bytes random|wrapped by BioKey}}"; style = "dashed"; fillcolor = "#f0cbf9";];
+    secondaryPassword [label = "{Secondary Password|{Arbitrary Length|Not Stored}}"; style = "filled"; fillcolor = "#f8d1af";];
+    secondarySalt [label = "{secondarySalt|{32 bytes|vault.meta (plaintext)}}";];
+    tsKdf [shape = "underline"; label = "Argon2id\n(m=19 MiB, t=2, p=1)";];
+    tsKek [label = "{TS-KEK|{32 bytes|Derived per access}}"; style = "dashed";];
+    topSecretKek [label = "{TopSecretKEK|{32 bytes random|wrapped by TS-KEK}}"; style = "dashed"; fillcolor = "#f0cbf9";];
+    deks [label = "{Per-item DEKs|{S: wrapped by KEK\nT: wrapped by TopSecretKEK|t_data_encrypt_key}}";];
+
+    /* ---------- edges: derive ---------- */
+    masterPassword -> prehash [label = "message";];
+    deviceSecret -> prehash [label = "key";];
+    prehash -> keyDerivation [label = "P";];
+    argon2Salt -> keyDerivation [label = "salt";];
+    keyDerivation -> tmk;
+    tmk -> hkdf [label = "ikm";];
+    hkdfSalt -> hkdf [label = "salt";];
+    vaultId -> hkdf [label = "info";];
+    hkdf -> smk;
+
+    /* ---------- edges: unwrap VaultKey ---------- */
+    smk:k1 -> unwrapVault [label = "key";];
+    wrappedVaultKey -> unwrapVault [label = "ciphertext";];
+    vaultId -> unwrapVault [label = "AAD";];
+    unwrapVault -> vaultKey [label = "plaintext";];
+    vaultKey -> sqlcipher [label = "raw key";];
+
+    /* ---------- edges: config integrity ---------- */
+    smk:k2 -> configMac [label = "key";];
+    configJson -> configMac [label = "message";];
+    configMac -> configJson [label = "hash";];
+
+    /* ---------- edges: C-tier files ---------- */
+    vaultKey -> fekDerive [label = "ikm";];
+    fekDerive -> fek;
+    fek -> cFiles [label = "key";];
+
+    /* ---------- edges: fingerprint / S / T ---------- */
+    bioKey -> wrappedVaultKey [style = "dotted"; label = "remember-me copy";];
+    bioKey -> kek [style = "dotted"; label = "per-access unwrap";];
+    kek -> deks [label = "wrap (S)";];
+    secondaryPassword -> tsKdf [label = "password";];
+    secondarySalt -> tsKdf [label = "salt";];
+    tsKdf -> tsKek;
+    tsKek -> topSecretKek [label = "unwrap";];
+    topSecretKek -> deks [label = "wrap (T)";];
+    deks -> cFiles [style = "dotted"; dir = "none"; label = "S/T files use the item DEK";];
 }
