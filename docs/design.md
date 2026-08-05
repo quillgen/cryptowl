@@ -1,6 +1,6 @@
 # Cryptowl — Encryption & Vault Design
 
-Local-first encrypted vault for Android (notes, passwords, photos/videos). This document specifies the key hierarchy, per-vault storage layout, content security levels, and operational flows (unlock, rotation, backup, photo capture). Terminology follows KeePass/Bitwarden conventions and matches `README.md` and `docs/encryption.dot`.
+Local-first encrypted vault for Android (notes, passwords, photos/videos). This document specifies the key hierarchy, per-vault storage layout, content security levels, and operational flows (unlock, rotation, backup, photo capture). Terminology follows KeePass/Bitwarden conventions and matches `docs/encryption.dot`.
 
 ![](./encryption.svg)
 
@@ -186,6 +186,46 @@ personal.vbp  (AES-256-GCM encrypted ZIP)
 - `config.json` is signed with HMAC-SHA256 (MAC Key = SMK[32:64]); the signature is stored in `config.sig` and verified on every vault open; mismatch triggers a tamper warning (no silent fallback).
 - Wrapped keys carry their own AEAD auth tags (AAD = wrapped-key id).
 - Atomic writes (write to `.tmp`, then rename) prevent corruption.
+
+## Memory Protection
+
+Encryption at rest is meaningless if keys and plaintext linger in memory. This section specifies how secrets are held, for how long, and what happens to them on lock.
+
+### Threat model
+
+| Threat | Defeated by |
+| --- | --- |
+| Rooted device memory dump / `/proc/pid/mem` read | short key lifetimes, off-heap buffers, no persistent plaintext copies |
+| Crash dumps / tombstone files | no secrets on the heap → nothing to leak into `dumpsys`/ANR traces; `java` exceptions never carry key material |
+| Debugger attach (debuggable builds only) | release builds are `minifyEnabled` + `debuggable=false`; JNI verifies no debugger attach |
+| Swap/paging (Android uses zram, no disk swap) | zram pages can be compressed in memory; minimized resident copies reduce exposure |
+| Clipboard/pasteboard leak | passwords never transit the clipboard (in-app views only) |
+| Screen recording / screenshot during display | `FLAG_SECURE` on vault screens (optional per-tier setting) |
+
+### Key residency
+
+All derived/random keys (TMK, SMK, VaultKey, KEK, DEKs, TS-KEK, TopSecretKEK, MAC Key) are **transient in memory only**, held inside a `ProtectedValue` — never as plain `ByteArray` on the managed heap:
+
+- **Off-heap storage**: the canonical copy lives in an unmanaged direct `ByteBuffer`, so GC compaction never moves or duplicates it; it is scrubbed by writing zeros over the buffer.
+- **Scoped access**: `use {}` copies to a heap byte array for the duration of a JNI/JCA call and zero-fills it in `finally` — the heap copy exists only for the call frame.
+- **Cleaner backstop**: a `java.lang.ref.Cleaner` scrubber zeroes the buffer even if the caller drops the value without `clear()`; explicit `clear()` is preferred for deterministic wiping.
+- **No `String` secrets**: secrets are `ProtectedValue` end-to-end; `String` conversions exist only at the input boundary (password field → `fromString`) and are immediately scrubbed. `getText()` output is cleared on return.
+- **No logs, no persistence**: key material is never logged, included in exception messages, or serialized.
+
+### Lifecycle rules
+
+- **Derive → unwrap → use → wipe**: keys are derived on demand and wiped as soon as the operation completes. Unwrapped intermediates (e.g. SMK after VaultKey unwrap) are cleared immediately; VaultKey persists for the session as the SQLCipher key.
+- **Per-access keys (L2/L3)**: KEK/TS-KEK/DEKs are unwrapped fresh per access and cleared when the view closes — nothing is cached between accesses (see Content Security Levels).
+- **Lock clears everything**: on auto-lock, biometric-lock, or app backgrounding, all in-memory key material is wiped (VaultKey session key zeroized; SQLCipher `PRAGMA key` state dropped by closing the DB), returning the app to the locked state.
+- **Keystore boundary**: BioKey/Device Secret never enter app memory at all — Keystore (TEE/StrongBox) holds and uses them; only their *outputs* (decrypted wrapped keys) touch app memory, and only transiently.
+- **Password buffers**: the password field input is read into a `ProtectedValue` and the input widget's backing buffer is zeroed; IME composition buffer contents are outside app control (device-dependant) — `FLAG_SECURE` mitigates exposure.
+- **Cold start**: after unlock the master password is not retained in memory for later re-locks; each unlock re-derives from fresh user input.
+
+### Boundaries with crypto native code
+
+- `ProtectedValue.use {}` provides the byte array for `Argon2.kt` JNI calls and JCA `SecretKeySpec` construction; the key spec reference is dropped and the array cleared in `finally`.
+- The `secretKeySpec` passed to SQLCipher is a JCA object wrapping the (heap) key bytes — SQLCipher copies it internally at `sqlite3_key`; the app clears its own copy after opening.
+- The vendored Argon2 code internally uses caller-owned buffers only; no additional copies are made at the JNI boundary.
 
 ## Summary Diagram
 

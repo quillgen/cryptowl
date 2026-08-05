@@ -2,7 +2,7 @@
 
 Local-first encrypted vault for Android (notes, passwords, photos/videos) — no plaintext data at rest. Android-native only (minSdk 36), with vendored C/C++ crypto. Working branch: `android-native`.
 
-**Encryption/tiering design lives in [README.md](README.md)** (key hierarchy, C/S/T levels, biometric gating, backup) — consult it before adding crypto features.
+**Encryption/tiering design lives in [docs/design.md](docs/design.md)** (key hierarchy, C/S/T levels, biometric gating, backup, memory protection) — consult it before adding crypto features.
 
 ## Stack (verify against `gradle/libs.versions.toml`)
 
