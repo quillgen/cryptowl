@@ -96,6 +96,53 @@ Global files (outside vaults):
 - `global_prefs.xml`: non-sensitive settings (theme, auto-lock timeout...)
 - `vault_index.json`: list of vault IDs and display names
 
+The vault database schema (encryption core) is defined in [schema.sql](schema.sql); the `vault.meta` format below.
+
+## Vault Meta File (vault.meta)
+
+Plaintext JSON at the vault root carrying the *bootstrap material* — everything the app needs **before the DB can be opened**: per-vault salts, KDF parameters, and the wrapped `VaultKey` copies. Wrapped VaultKey copies live **only** here (never in the DB); all other wrapped keys (`KEK`, `TS-KEK`, `TopSecretKEK`) live in `t_wrapped_key` inside the SQLCipher database.
+
+```json
+{
+  "version": 2,
+  "vault_id": "personal",
+  "created_at": 1780000000000,
+  "updated_at": 1780000000000,
+  "kdf": { "algorithm": "argon2id", "m_kib": 19456, "t": 2, "p": 1 },
+  "salts": {
+    "argon2": "b1zX4m…",        "hkdf": "q7p2Kc…",        "secondary": "9nRw3v…"
+  },
+  "wrapped_keys": [
+    {
+      "id": "vault_key:smk",
+      "role": "vault_key",
+      "wrapper": "smk",
+      "algorithm": "AES-256-GCM",
+      "ciphertext": "F3kS8t…",  "nonce": "cR2w…",  "auth_tag": "mP7d…"
+    },
+    {
+      "id": "vault_key:biokey",
+      "role": "vault_key",
+      "wrapper": "biokey",
+      "algorithm": "AES-256-GCM",
+      "ciphertext": "zA9qLd…",  "nonce": "kH5x…",  "auth_tag": "vT3n…"
+    }
+  ],
+  "mac": { "algorithm": "HMAC-SHA256", "value": "aD6eFg…" }
+}
+```
+
+Rules:
+
+- **Encoding**: all binary fields (salts, ciphertext, nonce, auth tag, mac) are Crockford Base32 without padding — the same encoding used by the cryptowl-ref product.
+- **Salts are public**: stored plaintext, 32 B each. `secondary` salt is only present when the secondary password (Top-Secret tier) has been set up.
+- **KDF params** are recorded here (not hardcoded) so they can be raised in future versions; old vaults keep deriving with their original params. `m_kib` = memory in KiB.
+- **Wrapped keys**: each copy is AES-256-GCM with `AAD = id`. Ids are stable labels `role:wrapper` (`vault_key:smk`, `vault_key:biokey`), so rewraps update in place and the AAD identity never changes. A vault always has `vault_key:smk`; `vault_key:biokey` exists only after fingerprint "remember me" setup.
+- **Integrity**: `mac` = HMAC-SHA256 with the MAC Key (SMK[32:64]) over the canonical JSON (lexicographic key order) excluding the `mac` field itself. Verified on every open before any unwrap; mismatch triggers a tamper warning. Note each wrapped key is independently authenticated by its own auth tag, so the mac is a corruption/downgrade check, not the last line of defense.
+- **Atomic writes**: always write to `vault.meta.tmp` then rename; a crash never leaves a half-written meta file.
+- **Versioning**: `version` = format version; readers refuse `version > 2` (forward-incompatible) and migrate older versions in place. `.vbp` exports bundle `vault.meta` verbatim.
+- **Creation order**: write `vault.meta` (with `vault_key:smk`) *before* creating the DB — the SQLCipher key comes from unwrapping it. DB initialization runs [schema.sql](schema.sql), then the remaining wrapped keys (`kek:biokey`, `ts_kek:biokey`, `top_secret_kek:ts_kek`) are inserted into `t_wrapped_key`.
+
 ## Content Security Levels
 
 | Level | Classification | Examples | Encryption | Unlock condition |
