@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.typedefai.cryptowl.crypto.Argon2
 import com.typedefai.cryptowl.db.Password
 import com.typedefai.cryptowl.db.VaultDatabase
 import kotlinx.coroutines.flow.first

@@ -4,6 +4,10 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 
 **Encryption/tiering design lives in [docs/design.md](docs/design.md)** (key hierarchy, C/S/T levels, biometric gating, backup, memory protection) — consult it before adding crypto features.
 
+**Feature designs are separate docs on top of the core**: [docs/moments.md](docs/moments.md) + [docs/moments.sql](docs/moments.sql) (Moments — Confidential-tier timeline, CWO1 media format, virtual friends). Feature tables never re-implement the core key/wrapped-key tables.
+
+**Cross-verification oracle**: the desktop reference implementation lives in the sibling repo `wechat_sns_export/vaultlib` (Python) — byte-exact primitives and fixed test vectors (`wechat_sns_export/tests/test_vaultlib.py`). Any crypto change here must reproduce its vectors, and vice versa.
+
 ## Stack (verify against `gradle/libs.versions.toml`)
 
 - AGP 9.3.1 + Gradle 9.5 + Java 11; **AGP 9 built-in Kotlin** — do NOT add the `kotlin-android` plugin

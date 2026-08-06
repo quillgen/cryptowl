@@ -18,7 +18,7 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos). This 
 | --- | --- | --- | --- | --- |
 | Master Password | arbitrary | not stored (user's mind) | user input | User-chosen password. Never stored, never transmitted. |
 | Device Secret | 32 B | Android Keystore (non-exportable) | `CSPRNG(32)` | Generated at first launch. Binds a vault to the device. |
-| TMK | 32 B | in memory only (transient) | `Argon2id(P, salt=argon2Salt)`, where `P = HMAC-SHA256(key=DeviceSecret, msg=MasterPassword)` | *Transformed Master Key* — Argon2id output of the master password + Device Secret. |
+| TMK | 32 B | in memory only (transient) | `Argon2id(P, salt=argon2Salt)`, where `P = HMAC-SHA256(key=MasterPassword, msg=DeviceSecret)` | *Transformed Master Key* — Argon2id output of the master password + Device Secret. |
 | SMK | 64 B | in memory only (transient) | `HKDF-SHA256(ikm=TMK, salt=hkdfSalt, info=vaultId, L=64)` | *Stretched Master Key* — HKDF expansion of the TMK. First 32 bytes unwrap VaultKey; last 32 bytes are the config MAC key. |
 | VaultKey | 32 B | wrapped copies only (vault.meta / t_wrapped_key) | `CSPRNG(32)` | Random long-term key; used as the SQLCipher raw key. Never stored in plaintext. |
 | KEK | 32 B | wrapped by BioKey only (vault.meta / t_wrapped_key, role='kek') | `CSPRNG(32)` | *Key Encryption Key* — random long-term key that wraps record DEKs and file DEKs (Secret tier). Unwrapped per access via fingerprint; the password chain never wraps it. Never stored in plaintext. |
@@ -51,7 +51,7 @@ Argon2id parameters: m=19 MiB, t=2, p=1 (see Key Hierarchy). `CSPRNG(n)` = n byt
 ## Key Hierarchy
 
 ```
-Master Password ──HMAC-SHA256(Device Secret)──▶ Argon2id (salt = argon2Salt) ──▶ TMK (32 B)
+Master Password ──HMAC-SHA256(key=MP, msg=Device Secret)──▶ Argon2id (salt = argon2Salt) ──▶ TMK (32 B)
 TMK ──HKDF-SHA256 (salt = hkdfSalt, info = vaultId)──▶ SMK (64 B)
 
 SMK[0:32] ──unwrap──▶ VaultKey (random 32 B) ──▶ SQLCipher raw key
@@ -96,7 +96,7 @@ Global files (outside vaults):
 - `global_prefs.xml`: non-sensitive settings (theme, auto-lock timeout...)
 - `vault_index.json`: list of vault IDs and display names
 
-The vault database schema (encryption core) is defined in [schema.sql](schema.sql); the `vault.meta` format below.
+The vault database schema (encryption core) is defined in [schema.sql](schema.sql); the `vault.meta` format below. Feature tables (e.g. [moments](moments.md) → [moments.sql](moments.sql)) are separate documents layered on top of this core — they never re-implement the key hierarchy.
 
 ## Vault Meta File (vault.meta)
 
@@ -202,6 +202,21 @@ Thanks to the envelope design, the SQLCipher key (VaultKey) never changes:
 - The Recovery Key is *not* used in daily key derivation. It is used to encrypt an offline backup of the vault (`.vbp`).
 - To restore: provide the `.vbp` file + Recovery Key → decrypt → re-bind to the current device's Device Secret.
 
+## Desktop Tooling (offline vault management)
+
+The desktop reference implementation (`wechat_sns_export/vaultlib`) creates,
+opens and migrates vaults on the local computer (e.g. vault copied off the
+device → migrate moments → copy back). It follows this design byte-exact
+(fixed test vectors are the cross-verification contract with the Android
+implementation).
+
+- **Device Secret on desktop**: the Android Keystore analog is a 32-byte
+  `<vault>/device_secret` file (mode 600) created at vault creation.
+- **Android re-bind on import**: when a desktop-created vault is first opened
+  on Android, the app derives the desktop SMK from the file + master
+  password, re-wraps `vault_key:smk` with the Android SMK (Keystore Device
+  Secret), and deletes the file — after that the vault is device-bound again.
+
 ## Backup / Export Format (.vbp)
 
 Each vault can be exported as a single encrypted container:
@@ -277,7 +292,7 @@ All derived/random keys (TMK, SMK, VaultKey, KEK, DEKs, TS-KEK, TopSecretKEK, MA
 ## Summary Diagram
 
 ```
-Master Password ──┬── HMAC(Device Secret) ── Argon2id ── TMK ── HKDF ── SMK ──unwrap──▶ VaultKey ──▶ SQLCipher (L0/L1)
+Master Password ──┬── HMAC-SHA256(key=MP, msg=Device Secret) ── Argon2id ── TMK ── HKDF ── SMK ──unwrap──▶ VaultKey ──▶ SQLCipher (L0/L1)
                   │                                          │                    ├─ SMK[32:64] ──▶ config.sig
                   │                                          │                    └─ VaultKey ──HKDF──▶ FEK ──▶ C-tier files
                   │

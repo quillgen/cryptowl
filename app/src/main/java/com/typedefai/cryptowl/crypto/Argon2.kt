@@ -1,4 +1,4 @@
-package com.typedefai.cryptowl
+package com.typedefai.cryptowl.crypto
 
 /**
  * Argon2 password hashing, backed by the official PHC reference
