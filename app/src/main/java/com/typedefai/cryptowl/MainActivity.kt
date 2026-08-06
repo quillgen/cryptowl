@@ -1,31 +1,38 @@
 package com.typedefai.cryptowl
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
-import java.io.File
+import com.typedefai.cryptowl.onboarding.BiometricSetupScreen
+import com.typedefai.cryptowl.onboarding.IntroScreen
+import com.typedefai.cryptowl.onboarding.MasterPasswordScreen
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val chatViewModel = ViewModelProvider(this)[ChatViewModel::class.java]
-        chatViewModel.initializeModel(File(getExternalFilesDir(null), MODEL_DIR))
-
         setContent {
             MaterialTheme {
-                ChatScreen(viewModel = chatViewModel, agentName = AGENT_NAME)
+                val screen by viewModel.screen.collectAsState()
+                when (screen) {
+                    AppScreen.Loading -> Unit
+                    AppScreen.Intro -> IntroScreen(onStart = viewModel::startOnboarding)
+                    AppScreen.PasswordSetup -> MasterPasswordScreen(viewModel)
+                    AppScreen.BiometricSetup -> BiometricSetupScreen(viewModel)
+                    AppScreen.Home -> VaultHomeScreen()
+                }
             }
         }
-    }
-
-    companion object {
-        private const val MODEL_DIR = "model"
-        private const val AGENT_NAME = "Model"
     }
 }

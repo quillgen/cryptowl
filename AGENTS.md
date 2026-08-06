@@ -34,6 +34,8 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 **SQLCipher + Room**:
 - `sqlcipher-android` is declared `@aar` → no transitive deps → keep `androidx.sqlite:sqlite` explicit in `app/build.gradle.kts`
 - `System.loadLibrary("sqlcipher")` required before any DB use (already in `VaultDatabase.create`)
+- **Vault DB is initialized from raw SQL, not Room entities**: `VaultCreator` creates `vault.db` via `net.zetetic...SQLiteDatabase.openOrCreateDatabase(File, VaultKeyBytes, ...)` and executes `assets/schema.sql` (kept in sync with `docs/schema.sql` — edit both). Room's `VaultDatabase` is a separate layer for record tables
+- Onboarding writes `vault.meta` (canonical sorted-key JSON, MAC'd with SMK[32:64], Crockford Base32 binary fields) before creating the DB — see `vault/VaultMeta.kt`; the `mac` field is excluded from its own MAC computation
 - Room 2.8: `RoomDatabase` implements `AutoCloseable`, **not** `Closeable` — `kotlin.io.use {}` does not compile on it
 - Schema exported to committed `app/schemas/` (`room.schemaLocation` in build.gradle.kts); any entity/column change updates `.../VaultDatabase/1.json`
 - **Migrations: Room `Migration` objects + `MigrationTestHelper`, not Flyway.** Never `fallbackToDestructiveMigration` in release (silent data loss in a vault)
