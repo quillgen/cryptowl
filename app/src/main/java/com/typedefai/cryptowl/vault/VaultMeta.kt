@@ -17,7 +17,7 @@ data class VaultMeta(
     val kdf: Kdf,
     val salts: Salts,
     val wrappedKeys: List<WrappedKeyEntry>,
-    val mac: String? = null,
+    val mac: Mac? = null,
 ) {
     data class Kdf(
         val algorithm: String,
@@ -30,6 +30,11 @@ data class VaultMeta(
         val argon2: ByteArray,
         val hkdf: ByteArray,
         val secondary: ByteArray?,
+    )
+
+    data class Mac(
+        val algorithm: String,
+        val value: String,
     )
 
     data class WrappedKeyEntry(
@@ -45,75 +50,41 @@ data class VaultMeta(
 
         companion object {
             fun fromWrappedKey(id: String, wrapped: WrappedKey): WrappedKeyEntry =
-                WrappedKeyEntry(id, role = id.substringBefore(':'), wrapper = id.substringAfter(':'), algorithm = wrapped.algorithm, cipherText = wrapped.cipherText, nonce = wrapped.nonce, authTag = wrapped.authTag)
+                WrappedKeyEntry(
+                    id = id,
+                    role = id.substringBefore(':'),
+                    wrapper = id.substringAfter(':'),
+                    algorithm = wrapped.algorithm,
+                    cipherText = wrapped.cipherText,
+                    nonce = wrapped.nonce,
+                    authTag = wrapped.authTag,
+                )
         }
     }
 }
 
 /**
- * Canonical JSON encoding of [VaultMeta] (lexicographic key order, no
- * whitespace) plus a minimal recursive-descent parser. Binary fields are
- * Crockford Base32, matching the cryptowl-ref product encoding.
+ * Canonical JSON for `vault.meta`, byte-exact with the desktop reference
+ * implementation (`wechat_sns_export/vaultlib`): `json.dumps(obj,
+ * sort_keys=True, separators=(",", ":"))` — lexicographic key order at every
+ * nesting level, compact separators, non-ASCII escaped as `\uXXXX`, binary
+ * fields as Crockford Base32.
  *
  * The MAC (HMAC-SHA256 with the MAC Key) is computed over the canonical JSON
- * of the document excluding the `mac` field itself.
+ * of the document excluding the `mac` field itself. Two documents encode to
+ * the same canonical bytes iff their key-sorted trees are equal, so the MAC
+ * is stable across writers.
  */
 object VaultMetaJson {
 
-    fun encode(meta: VaultMeta): String {
-        val keys = listOf("version", "vault_id", "created_at", "updated_at", "kdf", "salts", "wrapped_keys", "mac")
-        val sb = StringBuilder()
-        sb.append('{')
-        var first = true
-        for (key in keys) {
-            val value: String? = when (key) {
-                "version" -> meta.version.toString()
-                "vault_id" -> quote(meta.vaultId)
-                "created_at" -> meta.createdAt.toString()
-                "updated_at" -> meta.updatedAt.toString()
-                "kdf" -> encodeObject(listOf("algorithm", "m_kib", "t", "p")) {
-                    listOf(quote(meta.kdf.algorithm), meta.kdf.mKib.toString(), meta.kdf.t.toString(), meta.kdf.p.toString())
-                }
-                "salts" -> {
-                    val saltKeys = mutableListOf("argon2", "hkdf")
-                    if (meta.salts.secondary != null) saltKeys.add("secondary")
-                    encodeObject(saltKeys) {
-                        mutableListOf(quote(CrockfordBase32.encode(meta.salts.argon2)), quote(CrockfordBase32.encode(meta.salts.hkdf))).apply {
-                            if (meta.salts.secondary != null) add(quote(CrockfordBase32.encode(meta.salts.secondary)))
-                        }
-                    }
-                }
-                "wrapped_keys" -> {
-                    val items = meta.wrappedKeys.joinToString(",") { entry ->
-                        encodeObject(listOf("id", "role", "wrapper", "algorithm", "ciphertext", "nonce", "auth_tag")) {
-                            listOf(
-                                quote(entry.id),
-                                quote(entry.role),
-                                quote(entry.wrapper),
-                                quote(entry.algorithm),
-                                quote(CrockfordBase32.encode(entry.cipherText)),
-                                quote(CrockfordBase32.encode(entry.nonce)),
-                                quote(CrockfordBase32.encode(entry.authTag)),
-                            )
-                        }
-                    }
-                    "[$items]"
-                }
-                "mac" -> meta.mac?.let { quote(it) }
-                else -> null
-            }
-            if (value != null) {
-                if (!first) sb.append(',')
-                sb.append(quote(key)).append(':').append(value)
-                first = false
-            }
-        }
-        sb.append('}')
-        return sb.toString()
-    }
+    fun encode(meta: VaultMeta): String = write(metaToJson(meta))
 
     /** Canonical JSON of everything except the `mac` field (for MAC computation). */
-    fun canonicalWithoutMac(meta: VaultMeta): String = encode(meta.copy(mac = null))
+    fun canonicalWithoutMac(meta: VaultMeta): String = write(metaToJson(meta.copy(mac = null)))
+
+    /** Canonical `config.json`: `{"name": "<vaultId>"}` — byte-exact with vaultlib. */
+    fun canonicalConfig(vaultId: String): ByteArray =
+        write(mapOf("name" to vaultId)).toByteArray(Charsets.UTF_8)
 
     /** HMAC-SHA256 over the canonical JSON, Crockford Base32 encoded. */
     fun computeMac(meta: VaultMeta, macKey: ByteArray): String =
@@ -142,6 +113,12 @@ object VaultMetaJson {
                 authTag = CrockfordBase32.decode(entry["auth_tag"] as String),
             )
         } ?: emptyList()
+        val mac = (root["mac"] as? Map<*, *>)?.let { m ->
+            VaultMeta.Mac(
+                algorithm = m["algorithm"] as String,
+                value = m["value"] as String,
+            )
+        }
         return VaultMeta(
             version = num("version").toInt(),
             vaultId = str("vault_id"),
@@ -149,9 +126,9 @@ object VaultMetaJson {
             updatedAt = num("updated_at"),
             kdf = VaultMeta.Kdf(
                 algorithm = kdf["algorithm"] as String,
-                mKib = (kdf["m_kib"] as? String ?: kdf["m_kib"].toString()).toInt(),
-                t = (kdf["t"] as? String ?: kdf["t"].toString()).toInt(),
-                p = (kdf["p"] as? String ?: kdf["p"].toString()).toInt(),
+                mKib = intOf(kdf["m_kib"]),
+                t = intOf(kdf["t"]),
+                p = intOf(kdf["p"]),
             ),
             salts = VaultMeta.Salts(
                 argon2 = CrockfordBase32.decode(salts["argon2"] as String),
@@ -159,24 +136,88 @@ object VaultMetaJson {
                 secondary = (salts["secondary"] as? String)?.let(CrockfordBase32::decode),
             ),
             wrappedKeys = wrappedKeys,
-            mac = root["mac"] as? String,
+            mac = mac,
         )
     }
 
-    private fun encodeObject(keys: List<String>, values: () -> List<String>): String {
-        val list = values()
-        require(keys.size == list.size)
-        val sb = StringBuilder("{")
-        for (i in keys.indices) {
-            if (i > 0) sb.append(',')
-            sb.append(quote(keys[i])).append(':').append(list[i])
+    // ------------------------------------------------------------------
+    // Canonical writer: sorted keys at every level, python-compatible.
+    // ------------------------------------------------------------------
+
+    private fun metaToJson(meta: VaultMeta): Map<String, Any?> {
+        val salts = LinkedHashMap<String, Any?>()
+        salts["argon2"] = CrockfordBase32.encode(meta.salts.argon2)
+        salts["hkdf"] = CrockfordBase32.encode(meta.salts.hkdf)
+        meta.salts.secondary?.let { salts["secondary"] = CrockfordBase32.encode(it) }
+
+        val wrappedKeys = meta.wrappedKeys.map { entry ->
+            mapOf(
+                "id" to entry.id,
+                "role" to entry.role,
+                "wrapper" to entry.wrapper,
+                "algorithm" to entry.algorithm,
+                "ciphertext" to CrockfordBase32.encode(entry.cipherText),
+                "nonce" to CrockfordBase32.encode(entry.nonce),
+                "auth_tag" to CrockfordBase32.encode(entry.authTag),
+            )
         }
-        sb.append('}')
+
+        val result = LinkedHashMap<String, Any?>()
+        result["version"] = meta.version
+        result["vault_id"] = meta.vaultId
+        result["created_at"] = meta.createdAt
+        result["updated_at"] = meta.updatedAt
+        result["kdf"] = mapOf(
+            "algorithm" to meta.kdf.algorithm,
+            "m_kib" to meta.kdf.mKib,
+            "t" to meta.kdf.t,
+            "p" to meta.kdf.p,
+        )
+        result["salts"] = salts
+        result["wrapped_keys"] = wrappedKeys
+        meta.mac?.let { result["mac"] = mapOf("algorithm" to it.algorithm, "value" to it.value) }
+        return result
+    }
+
+    /** Writes [obj] as compact JSON with lexicographically sorted object keys. */
+    private fun write(obj: Any?): String {
+        val sb = StringBuilder()
+        writeValue(sb, obj)
         return sb.toString()
     }
 
-    private fun quote(s: String): String {
-        val sb = StringBuilder("\"")
+    private fun writeValue(sb: StringBuilder, value: Any?) {
+        when (value) {
+            null -> sb.append("null")
+            is Boolean -> sb.append(if (value) "true" else "false")
+            is Int, is Long -> sb.append(value.toString())
+            is String -> writeString(sb, value)
+            is Map<*, *> -> {
+                sb.append('{')
+                var first = true
+                for (key in value.keys.sortedBy { it.toString() }) {
+                    if (!first) sb.append(',')
+                    first = false
+                    writeString(sb, key.toString())
+                    sb.append(':')
+                    writeValue(sb, value[key])
+                }
+                sb.append('}')
+            }
+            is List<*> -> {
+                sb.append('[')
+                for ((i, item) in value.withIndex()) {
+                    if (i > 0) sb.append(',')
+                    writeValue(sb, item)
+                }
+                sb.append(']')
+            }
+            else -> error("unsupported JSON value: $value")
+        }
+    }
+
+    private fun writeString(sb: StringBuilder, s: String) {
+        sb.append('"')
         for (c in s) {
             when (c) {
                 '"' -> sb.append("\\\"")
@@ -184,10 +225,24 @@ object VaultMetaJson {
                 '\n' -> sb.append("\\n")
                 '\r' -> sb.append("\\r")
                 '\t' -> sb.append("\\t")
-                else -> sb.append(c)
+                '\b' -> sb.append("\\b")
+                '\u000C' -> sb.append("\\f")
+                else -> {
+                    if (c.code < 0x20 || c.code > 0x7e) {
+                        sb.append("\\u").append(String.format("%04x", c.code))
+                    } else {
+                        sb.append(c)
+                    }
+                }
             }
         }
-        return sb.append('"').toString()
+        sb.append('"')
+    }
+
+    private fun intOf(value: Any?): Int = when (value) {
+        is String -> value.toInt()
+        is Number -> value.toInt()
+        else -> error("expected number, got $value")
     }
 
     /** Minimal JSON parser: objects, arrays, strings, numbers, booleans, null. */
@@ -217,28 +272,28 @@ object VaultMetaJson {
 
         private fun parseValue(): Any {
             return when (peek()) {
-            '{' -> parseObject()
-            '[' -> {
-                pos++
-                val list = mutableListOf<Any>()
-                skipWs()
-                if (peek() == ']') { pos++; return list }
-                while (true) {
+                '{' -> parseObject()
+                '[' -> {
+                    pos++
+                    val list = mutableListOf<Any>()
                     skipWs()
-                    list.add(parseValue())
-                    skipWs()
-                    when (peek()) {
-                        ',' -> pos++
-                        ']' -> { pos++; return list }
-                        else -> error("unexpected '${peek()}' at $pos")
+                    if (peek() == ']') { pos++; return list }
+                    while (true) {
+                        skipWs()
+                        list.add(parseValue())
+                        skipWs()
+                        when (peek()) {
+                            ',' -> pos++
+                            ']' -> { pos++; return list }
+                            else -> error("unexpected '${peek()}' at $pos")
+                        }
                     }
                 }
-            }
-            '"' -> parseString()
-            't' -> { expectWord("true"); true }
-            'f' -> { expectWord("false"); false }
-            'n' -> { expectWord("null"); "null" }
-            else -> parseNumber()
+                '"' -> parseString()
+                't' -> { expectWord("true"); true }
+                'f' -> { expectWord("false"); false }
+                'n' -> { expectWord("null"); "null" }
+                else -> parseNumber()
             }
         }
 

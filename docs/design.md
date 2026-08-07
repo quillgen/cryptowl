@@ -18,7 +18,7 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos). This 
 | --- | --- | --- | --- | --- |
 | Master Password | arbitrary | not stored (user's mind) | user input | User-chosen password. Never stored, never transmitted. |
 | Device Secret | 32 B | Android Keystore (non-exportable) | `CSPRNG(32)` | Generated at first launch. Binds a vault to the device. |
-| TMK | 32 B | in memory only (transient) | `Argon2id(P, salt=argon2Salt)`, where `P = HMAC-SHA256(key=MasterPassword, msg=DeviceSecret)` | *Transformed Master Key* — Argon2id output of the master password + Device Secret. |
+| TMK | 32 B | in memory only (transient) | `Argon2id(P, salt=argon2Salt)`, where `P = HMAC-SHA256(key=DeviceSecret, msg=MasterPassword)` | *Transformed Master Key* — Argon2id output of the master password + Device Secret. |
 | SMK | 64 B | in memory only (transient) | `HKDF-SHA256(ikm=TMK, salt=hkdfSalt, info=vaultId, L=64)` | *Stretched Master Key* — HKDF expansion of the TMK. First 32 bytes unwrap VaultKey; last 32 bytes are the config MAC key. |
 | VaultKey | 32 B | wrapped copies only (vault.meta / t_wrapped_key) | `CSPRNG(32)` | Random long-term key; used as the SQLCipher raw key. Never stored in plaintext. |
 | KEK | 32 B | wrapped by BioKey only (vault.meta / t_wrapped_key, role='kek') | `CSPRNG(32)` | *Key Encryption Key* — random long-term key that wraps record DEKs and file DEKs (Secret tier). Unwrapped per access via fingerprint; the password chain never wraps it. Never stored in plaintext. |
@@ -51,7 +51,7 @@ Argon2id parameters: m=19 MiB, t=2, p=1 (see Key Hierarchy). `CSPRNG(n)` = n byt
 ## Key Hierarchy
 
 ```
-Master Password ──HMAC-SHA256(key=MP, msg=Device Secret)──▶ Argon2id (salt = argon2Salt) ──▶ TMK (32 B)
+Master Password ──HMAC-SHA256(key=Device Secret, msg=MP)──▶ Argon2id (salt = argon2Salt) ──▶ TMK (32 B)
 TMK ──HKDF-SHA256 (salt = hkdfSalt, info = vaultId)──▶ SMK (64 B)
 
 SMK[0:32] ──unwrap──▶ VaultKey (random 32 B) ──▶ SQLCipher raw key
@@ -292,7 +292,7 @@ All derived/random keys (TMK, SMK, VaultKey, KEK, DEKs, TS-KEK, TopSecretKEK, MA
 ## Summary Diagram
 
 ```
-Master Password ──┬── HMAC-SHA256(key=MP, msg=Device Secret) ── Argon2id ── TMK ── HKDF ── SMK ──unwrap──▶ VaultKey ──▶ SQLCipher (L0/L1)
+Master Password ──┬── HMAC-SHA256(key=Device Secret, msg=MP) ── Argon2id ── TMK ── HKDF ── SMK ──unwrap──▶ VaultKey ──▶ SQLCipher (L0/L1)
                   │                                          │                    ├─ SMK[32:64] ──▶ config.sig
                   │                                          │                    └─ VaultKey ──HKDF──▶ FEK ──▶ C-tier files
                   │

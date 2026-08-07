@@ -48,7 +48,8 @@ class VaultCreatorTest {
         val deviceSecret = DeviceSecretStore.getOrCreate(context)
         val tmk = kdf.createTransformedMasterKey(password, deviceSecret, meta.salts.argon2)
         val smk = kdf.createStretchedMasterKey(tmk, vaultId.toByteArray(), meta.salts.hkdf)
-        assertEquals(meta.mac, VaultMetaJson.computeMac(meta, kdf.macKey(smk).binaryValue()))
+        assertEquals(meta.mac?.value, VaultMetaJson.computeMac(meta, kdf.macKey(smk).binaryValue()))
+        assertEquals("HMAC-SHA256", meta.mac?.algorithm)
 
         // database opens with the unwrapped VaultKey and has the full schema
         val vaultKey = kdf.unwrapKey(

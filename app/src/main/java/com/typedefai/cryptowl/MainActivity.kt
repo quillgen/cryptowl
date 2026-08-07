@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
                     AppScreen.Intro -> IntroScreen(onStart = viewModel::startOnboarding)
                     AppScreen.PasswordSetup -> MasterPasswordScreen(viewModel)
                     AppScreen.BiometricSetup -> BiometricSetupScreen(viewModel)
-                    AppScreen.Home -> VaultHomeScreen()
+                    AppScreen.Home -> VaultHomeScreen(viewModel)
+                    AppScreen.Unlock -> UnlockScreen(viewModel)
+                    AppScreen.Moments -> MomentsScreen(viewModel)
                 }
             }
         }

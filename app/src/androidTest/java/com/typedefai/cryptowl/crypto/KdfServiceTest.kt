@@ -15,81 +15,66 @@ private fun ByteArray.toHex(): String =
 
 /**
  * Key-derivation chain tests against the real Argon2 JNI binding.
- * Vectors cross-verified with cryptowl-ref (Flutter) — both products must
- * derive identical keys from identical inputs (export/backup interop).
+ * Vectors are the cross-verification contract with the desktop reference
+ * (`wechat_sns_export/tests/test_vaultlib.py` — fixed inputs: password
+ * "correct horse battery staple", DeviceSecret 0x11*32, argon2Salt 0x22*32,
+ * hkdfSalt 0x33*32, vaultId "personal").
  */
 @RunWith(AndroidJUnit4::class)
 class KdfServiceTest {
 
     private val service = KdfService()
 
-    // cryptowl-ref vectors:
-    //   TMK  = Argon2id(HMAC-SHA256(key="123456", msg=deviceSecret), argon2Salt)
-    //   SMK  = HKDF-SHA256(TMK, hkdfSalt, "WJB6W", 64)
-    private val deviceSecret =
-        "9a54bef1921ce1c89255dc67229ffffd2dd1efb5ef3cdd3da66ae9ab53fb974f".hexToBytes()
-            .let { ProtectedValue.fromBinary(it) }
-    private val argon2Salt = "b27f6e2bd596308c190c4f1d68660bc3".hexToBytes()
+    private val masterPassword = ProtectedValue.fromString("correct horse battery staple")
+    private val deviceSecret = ByteArray(32) { 0x11 }.let { ProtectedValue.fromBinary(it) }
+    private val argon2Salt = ByteArray(32) { 0x22 }
+    private val hkdfSalt = ByteArray(32) { 0x33 }
+    private val vaultId = "personal".toByteArray()
 
     @Test
-    fun derivesTransformedMasterKeyMatchingCryptowlRefVector() {
-        val tmk = service.createTransformedMasterKey(
-            masterPassword = ProtectedValue.fromString("123456"),
-            deviceSecret = deviceSecret,
-            salt = argon2Salt,
-        )
+    fun derivesTransformedMasterKeyMatchingVaultlibVector() {
+        val tmk = service.createTransformedMasterKey(masterPassword, deviceSecret, argon2Salt)
 
         assertEquals(
-            "509f825b859521f72fe511d2c120f53ed52bf641932d92ba086b89be3d65153a",
+            "9049f8f4d35de3aef703a68d656e7b777f9e1742d89455414a8fd118c3043588",
             tmk.binaryValue().toHex(),
         )
     }
 
     @Test
-    fun derivesStretchedMasterKeyMatchingCryptowlRefVector() {
+    fun derivesStretchedMasterKeyMatchingVaultlibVector() {
         val tmk = ProtectedValue.fromBinary(
-            "509f825b859521f72fe511d2c120f53ed52bf641932d92ba086b89be3d65153a".hexToBytes(),
+            "9049f8f4d35de3aef703a68d656e7b777f9e1742d89455414a8fd118c3043588".hexToBytes(),
         )
-        val hkdfSalt = "8a7c01c0b81c8872e016d779486bc189".hexToBytes()
 
-        val smk = service.createStretchedMasterKey(
-            transformedMasterKey = tmk,
-            vaultId = "WJB6W".toByteArray(),
-            salt = hkdfSalt,
-        )
+        val smk = service.createStretchedMasterKey(tmk, vaultId, hkdfSalt)
 
         assertEquals(
-            "6414d3f58fcaf252675f1544e4e7d5e389fd1dd319c6df9693b88b44e7363340" +
-                "c38a015a41594d78650f501bd7e86fcd88ba7a21d4efb54dc3820056bd9039c9",
+            "551afd2b0857e902118857a01a680b14e43ff2172950a71a5ec8ec147fcbc809" +
+                "0471ff96c2b5486960b6596cfe6cfb7b412b93034a7950badda783f298b2e06f",
             smk.binaryValue().toHex(),
         )
     }
 
     @Test
-    fun derivesSecondaryKeyWithOwaspParams() {
-        val secondarySalt = "3f09ea13ceffb8e867a4af3ab17854f9".hexToBytes()
-
-        val tsKek = service.createSecondaryKey(
-            secondaryPassword = ProtectedValue.fromString("secondary-pass"),
-            salt = secondarySalt,
+    fun fekIsHkdfOfVaultKeyWithFileInfo() {
+        val fek = service.fileKey(ProtectedValue.fromBinary(ByteArray(32) { 0x44 }))
+        val expected = Hkdf.deriveKey(
+            ikm = ByteArray(32) { 0x44 },
+            salt = ByteArray(0),
+            info = "file".toByteArray(),
+            outputLength = 32,
         )
-
-        assertEquals(
-            "487adc4c030ba4a79773ba6a43d1282c075ba0428547d9b00748ec39df9738b2",
-            tsKek.binaryValue().toHex(),
-        )
+        assertArrayEquals(expected, fek.binaryValue())
+        assertEquals(32, fek.binaryValue().size)
     }
 
     @Test
     fun wrapsAndUnwrapsAVaultKeyWithTheDerivedChain() {
         val smk = service.createStretchedMasterKey(
-            transformedMasterKey = service.createTransformedMasterKey(
-                masterPassword = ProtectedValue.fromString("123456"),
-                deviceSecret = deviceSecret,
-                salt = argon2Salt,
-            ),
-            vaultId = "personal".toByteArray(),
-            salt = "8a7c01c0b81c8872e016d779486bc189".hexToBytes(),
+            transformedMasterKey = service.createTransformedMasterKey(masterPassword, deviceSecret, argon2Salt),
+            vaultId = vaultId,
+            salt = hkdfSalt,
         )
         val wrappingKey = service.vaultKey(smk)
         val vaultKey = ProtectedValue.fromBinary(ByteArray(32) { 0x2a })
@@ -107,13 +92,9 @@ class KdfServiceTest {
     @Test
     fun unwrapFailsWithWrongPassword() {
         val smk = service.createStretchedMasterKey(
-            transformedMasterKey = service.createTransformedMasterKey(
-                masterPassword = ProtectedValue.fromString("123456"),
-                deviceSecret = deviceSecret,
-                salt = argon2Salt,
-            ),
-            vaultId = "personal".toByteArray(),
-            salt = "8a7c01c0b81c8872e016d779486bc189".hexToBytes(),
+            transformedMasterKey = service.createTransformedMasterKey(masterPassword, deviceSecret, argon2Salt),
+            vaultId = vaultId,
+            salt = hkdfSalt,
         )
         val wrapped = service.wrapKey(
             key = ProtectedValue.fromBinary(ByteArray(32) { 0x2a }),
@@ -123,12 +104,12 @@ class KdfServiceTest {
 
         val wrongSmk = service.createStretchedMasterKey(
             transformedMasterKey = service.createTransformedMasterKey(
-                masterPassword = ProtectedValue.fromString("654321"),
-                deviceSecret = deviceSecret,
-                salt = argon2Salt,
+                ProtectedValue.fromString("wrong password"),
+                deviceSecret,
+                argon2Salt,
             ),
-            vaultId = "personal".toByteArray(),
-            salt = "8a7c01c0b81c8872e016d779486bc189".hexToBytes(),
+            vaultId = vaultId,
+            salt = hkdfSalt,
         )
 
         try {

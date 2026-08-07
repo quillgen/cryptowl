@@ -9,13 +9,16 @@ fun interface Argon2Hasher {
 }
 
 /**
- * The key-derivation chain from docs/design.md:
+ * The key-derivation chain from docs/design.md (byte-exact with the desktop
+ * reference `wechat_sns_export/vaultlib` — the cross-verification oracle):
  *
- *   TMK  = Argon2id(HMAC-SHA256(key=MasterPassword, msg=DeviceSecret), argon2Salt)
+ *   P    = HMAC-SHA256(key=DeviceSecret, msg=MasterPassword)
+ *   TMK  = Argon2id(P, salt=argon2Salt)
  *   SMK  = HKDF-SHA256(ikm=TMK, salt=hkdfSalt, info=vaultId, L=64)
  *   key  = SMK[0:32]  (unwrap VaultKey / SQLCipher key)
  *   mac  = SMK[32:64] (HMAC key for config integrity)
  *   KEK  = Argon2id(SecondaryPassword, secondarySalt)   (TS-KEK; wraps TopSecretKEK)
+ *   FEK  = HKDF-SHA256(ikm=VaultKey, salt="", info="file", L=32)  (C-tier files)
  *
  * Keys are returned as [ProtectedValue] and never survive as heap byte arrays.
  * Envelope operations ([wrapKey]/[unwrapKey]) bind the wrapped-key id as AAD.
@@ -35,7 +38,7 @@ class KdfService(
 
     /**
      * Derives the 32-byte Transformed Master Key:
-     * Argon2id(HMAC-SHA256(key=MasterPassword, msg=DeviceSecret), salt).
+     * Argon2id(HMAC-SHA256(key=DeviceSecret, msg=MasterPassword), salt).
      */
     fun createTransformedMasterKey(
         masterPassword: ProtectedValue,
@@ -44,7 +47,7 @@ class KdfService(
         params: KdfParams = KdfParams.OWASP,
     ): ProtectedValue = masterPassword.use { password ->
         deviceSecret.use { secret ->
-            val preHashed = HmacSha256.mac(key = password, message = secret)
+            val preHashed = HmacSha256.mac(key = secret, message = password)
             try {
                 ProtectedValue.fromBinary(hasher.hash(preHashed, salt, params, KEY_SIZE))
             } finally {
@@ -117,6 +120,16 @@ class KdfService(
             )
             ProtectedValue.fromBinary(plain)
         }
+
+    /**
+     * FEK — C-tier file encryption key:
+     * HKDF-SHA256(ikm=VaultKey, salt="", info="file", L=32).
+     */
+    fun fileKey(vaultKey: ProtectedValue): ProtectedValue = vaultKey.use { vk ->
+        ProtectedValue.fromBinary(
+            Hkdf.deriveKey(ikm = vk, salt = ByteArray(0), info = "file".toByteArray(), outputLength = KEY_SIZE),
+        )
+    }
 
     private companion object {
         const val KEY_SIZE = 32

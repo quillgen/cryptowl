@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.vault.BioKeySetup
 import com.typedefai.cryptowl.vault.DeviceSecretStore
+import com.typedefai.cryptowl.vault.UnlockService
 import com.typedefai.cryptowl.vault.VaultCreator
 import com.typedefai.cryptowl.vault.VaultMeta
+import com.typedefai.cryptowl.vault.VaultSession
 import com.typedefai.cryptowl.vault.VaultStore
 import java.util.concurrent.atomic.AtomicReference
 import javax.crypto.Cipher
@@ -25,6 +27,8 @@ sealed interface AppScreen {
     data object PasswordSetup : AppScreen
     data object BiometricSetup : AppScreen
     data object Home : AppScreen
+    data object Unlock : AppScreen
+    data object Moments : AppScreen
 }
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
@@ -46,6 +50,15 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _biometricError = MutableStateFlow<String?>(null)
     val biometricError: StateFlow<String?> = _biometricError.asStateFlow()
+
+    private val _session = MutableStateFlow<VaultSession?>(null)
+    val session: StateFlow<VaultSession?> = _session.asStateFlow()
+
+    private val _unlocking = MutableStateFlow(false)
+    val unlocking: StateFlow<Boolean> = _unlocking.asStateFlow()
+
+    private val _unlockError = MutableStateFlow<String?>(null)
+    val unlockError: StateFlow<String?> = _unlockError.asStateFlow()
 
     private val masterPassword = AtomicReference<ProtectedValue?>(null)
     private val preparedBiometric = AtomicReference<BioKeySetup.Prepared?>(null)
@@ -139,6 +152,38 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun finishOnboarding() {
         masterPassword.getAndSet(null)?.clear()
+        _screen.value = AppScreen.Home
+    }
+
+    // ------------------------------------------------------------ vault unlock
+
+    fun openVault() {
+        _unlockError.value = null
+        _screen.value = AppScreen.Unlock
+    }
+
+    fun unlockVault(password: ProtectedValue) {
+        _unlocking.value = true
+        _unlockError.value = null
+        viewModelScope.launch {
+            try {
+                val session = withContext(Dispatchers.IO) {
+                    UnlockService(getApplication()).unlock(password)
+                }
+                _session.value?.close()
+                _session.value = session
+                _screen.value = AppScreen.Moments
+            } catch (e: Exception) {
+                _unlockError.value = e.message ?: "Failed to unlock the vault"
+            } finally {
+                _unlocking.value = false
+            }
+        }
+    }
+
+    fun lockVault() {
+        _session.value?.close()
+        _session.value = null
         _screen.value = AppScreen.Home
     }
 }

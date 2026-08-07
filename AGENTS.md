@@ -6,7 +6,9 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 
 **Feature designs are separate docs on top of the core**: [docs/moments.md](docs/moments.md) + [docs/moments.sql](docs/moments.sql) (Moments — Confidential-tier timeline, CWO1 media format, virtual friends). Feature tables never re-implement the core key/wrapped-key tables.
 
-**Cross-verification oracle**: the desktop reference implementation lives in the sibling repo `wechat_sns_export/vaultlib` (Python) — byte-exact primitives and fixed test vectors (`wechat_sns_export/tests/test_vaultlib.py`). Any crypto change here must reproduce its vectors, and vice versa.
+**Cross-verification oracle**: the desktop reference implementation lives in the sibling repo `wechat_sns_export/vaultlib` (Python) — byte-exact primitives and fixed test vectors (`wechat_sns_export/tests/test_vaultlib.py`). Any crypto change here must reproduce its vectors, and vice versa. Note the HMAC order: `P = HMAC-SHA256(key=DeviceSecret, msg=MasterPassword)` (vaultlib matches the design doc; the older Flutter `cryptowl-ref` used the opposite order and is superseded).
+
+**Moments feature**: tables from `assets/moments.sql` (copy of `docs/moments.sql` — edit both), applied idempotently on vault open by `SchemaApplier`; media uses the CWO1 format (`vault/Cwo1.kt`, byte-exact with `wechat_sns_export/migrate_moments.py`, vectors in `app/src/test/resources/vectors/`). Desktop-created vaults carry a `device_secret` file — `UnlockService` re-binds them to the Android Keystore on first open. The vault DB is NOT Room-managed (Room cannot open externally-created SQLCipher DBs); queries go through raw SQLCipher repositories.
 
 ## Stack (verify against `gradle/libs.versions.toml`)
 

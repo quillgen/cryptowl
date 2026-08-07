@@ -21,7 +21,7 @@ class KdfServiceTest {
             .let { ProtectedValue.fromBinary(it) }
     private val argon2Salt = "b27f6e2bd596308c190c4f1d68660bc3".hexToBytes()
 
-    private val expectedPreHash = "c7c19e640e207c36f95ed465c0a8ccb9c02f851d16a38c29164a6c36bf624052".hexToBytes()
+    private val expectedPreHash = "1ccaa6825f04653406e5ecab673141126a5085ab9a36e21690ed41d4ed1d71b7".hexToBytes()
     private val expectedTmk = "509f825b859521f72fe511d2c120f53ed52bf641932d92ba086b89be3d65153a".hexToBytes()
     private val expectedSmk =
         ("6414d3f58fcaf252675f1544e4e7d5e389fd1dd319c6df9693b88b44e7363340" +

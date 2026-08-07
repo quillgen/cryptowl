@@ -33,13 +33,18 @@ class BioKeySetup(
     fun prepare(
         masterPassword: ProtectedValue,
         vaultId: String = VaultStore.DEFAULT_VAULT_ID,
-        params: KdfParams = KdfParams.OWASP,
     ): Prepared {
         val metaFile = VaultStore.metaFile(context, vaultId)
         require(metaFile.exists()) { "vault.meta missing: $vaultId" }
         val meta = VaultMetaJson.decode(metaFile.readText())
         require(meta.version <= META_VERSION) { "unsupported vault.meta version: ${meta.version}" }
 
+        val params = KdfParams(
+            algorithm = meta.kdf.algorithm,
+            mCostKiB = meta.kdf.mKib,
+            tCost = meta.kdf.t,
+            parallelism = meta.kdf.p,
+        )
         val deviceSecret = DeviceSecretStore.getOrCreate(context)
         val tmk = kdf.createTransformedMasterKey(masterPassword, deviceSecret, meta.salts.argon2, params)
         val smk = kdf.createStretchedMasterKey(tmk, vaultId.toByteArray(Charsets.UTF_8), meta.salts.hkdf)
@@ -76,7 +81,12 @@ class BioKeySetup(
                 wrappedKeys = prepared.meta.wrappedKeys + entry,
             )
             val macKeyBytes = prepared.macKey.binaryValue()
-            val updatedWithMac = updated.copy(mac = VaultMetaJson.computeMac(updated, macKeyBytes))
+            val updatedWithMac = updated.copy(
+                mac = VaultMeta.Mac(
+                    algorithm = "HMAC-SHA256",
+                    value = VaultMetaJson.computeMac(updated, macKeyBytes),
+                ),
+            )
             macKeyBytes.fill(0)
 
             val metaFile = VaultStore.metaFile(context, updated.vaultId)

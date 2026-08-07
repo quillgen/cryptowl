@@ -57,9 +57,11 @@ class VaultCreator(
             wrappedKeys = listOf(VaultMeta.WrappedKeyEntry.fromWrappedKey(WRAPPED_VAULT_KEY_SMK, wrappedVaultKey)),
         )
         val macKey = kdf.macKey(smk)
-        val metaWithMac = meta.copy(mac = VaultMetaJson.computeMac(meta, macKey.binaryValue()))
+        val macValue = VaultMetaJson.computeMac(meta, macKey.binaryValue())
+        val metaWithMac = meta.copy(mac = VaultMeta.Mac(algorithm = "HMAC-SHA256", value = macValue))
 
         try {
+            writeConfig(macKey, vaultId)
             writeMetaAtomically(metaWithMac)
             createDatabase(vaultKey, vaultId)
             VaultStore.writeIndex(context, vaultId)
@@ -74,6 +76,32 @@ class VaultCreator(
             secondarySalt.fill(0)
         }
         return metaWithMac
+    }
+
+    private fun writeConfig(macKey: ProtectedValue, vaultId: String) {
+        val configBytes = VaultMetaJson.canonicalConfig(vaultId)
+        val macKeyBytes = macKey.binaryValue()
+        try {
+            val config = VaultStore.configFile(context, vaultId)
+            val tmpConfig = File(config.parentFile, "config.json.tmp")
+            tmpConfig.writeBytes(configBytes)
+            if (!tmpConfig.renameTo(config)) {
+                tmpConfig.delete()
+                throw IllegalStateException("failed to write config.json atomically")
+            }
+            val sig = com.typedefai.cryptowl.crypto.CrockfordBase32.encode(
+                com.typedefai.cryptowl.crypto.HmacSha256.mac(macKeyBytes, configBytes),
+            )
+            val sigFile = VaultStore.configSigFile(context, vaultId)
+            val tmpSig = File(sigFile.parentFile, "config.sig.tmp")
+            tmpSig.writeText(sig)
+            if (!tmpSig.renameTo(sigFile)) {
+                tmpSig.delete()
+                throw IllegalStateException("failed to write config.sig atomically")
+            }
+        } finally {
+            macKeyBytes.fill(0)
+        }
     }
 
     private fun writeMetaAtomically(meta: VaultMeta) {
@@ -91,12 +119,7 @@ class VaultCreator(
         vaultKey.use { key ->
             val db = SQLiteDatabase.openOrCreateDatabase(VaultStore.dbFile(context, vaultId), key, null, null)
             try {
-                val schema = context.assets.open(SCHEMA_ASSET).bufferedReader().readText()
-                for (statement in schema.split(';')) {
-                    val trimmed = statement.trim()
-                    if (trimmed.isEmpty() || trimmed.startsWith("--")) continue
-                    db.execSQL(trimmed)
-                }
+                SchemaApplier.apply(db, context, CORE_SCHEMA_ASSET)
             } finally {
                 db.close()
             }
@@ -108,6 +131,6 @@ class VaultCreator(
         const val KEY_SIZE = 32
         const val SALT_SIZE = 32
         const val WRAPPED_VAULT_KEY_SMK = "vault_key:smk"
-        const val SCHEMA_ASSET = "schema.sql"
+        const val CORE_SCHEMA_ASSET = "schema.sql"
     }
 }

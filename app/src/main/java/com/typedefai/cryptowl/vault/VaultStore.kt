@@ -21,6 +21,15 @@ object VaultStore {
     fun metaFile(context: Context, vaultId: String = DEFAULT_VAULT_ID): File =
         File(vaultDir(context, vaultId), "vault.meta")
 
+    fun configFile(context: Context, vaultId: String = DEFAULT_VAULT_ID): File =
+        File(vaultDir(context, vaultId), "config.json")
+
+    fun configSigFile(context: Context, vaultId: String = DEFAULT_VAULT_ID): File =
+        File(vaultDir(context, vaultId), "config.sig")
+
+    fun deviceSecretFile(context: Context, vaultId: String = DEFAULT_VAULT_ID): File =
+        File(vaultDir(context, vaultId), "device_secret")
+
     fun dbFile(context: Context, vaultId: String = DEFAULT_VAULT_ID): File =
         File(vaultDir(context, vaultId), "vault.db")
 
