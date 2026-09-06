@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.vault.BioKeySetup
 import com.typedefai.cryptowl.vault.DeviceSecretStore
@@ -85,7 +86,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 masterPassword.set(password)
                 _screen.value = AppScreen.BiometricSetup
             } catch (e: Exception) {
-                _vaultError.value = e.message ?: "Failed to create the vault"
+                _vaultError.value = e.message ?: getApplication<Application>().getString(R.string.error_create_vault_failed)
             } finally {
                 _creatingVault.value = false
             }
@@ -95,13 +96,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     /** Prepares the biometric wrap (derives VaultKey, creates BioKey encrypt cipher). */
     fun prepareBiometric() {
         val password = masterPassword.get() ?: run {
-            _biometricError.value = "Master password no longer available"
+            _biometricError.value = getApplication<Application>().getString(R.string.error_biometric_password_lost)
             return
         }
         if (BiometricManager.from(getApplication()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             != BiometricManager.BIOMETRIC_SUCCESS
         ) {
-            _biometricError.value = "No strong biometrics enrolled on this device"
+            _biometricError.value = getApplication<Application>().getString(R.string.error_biometric_not_enrolled)
             return
         }
         viewModelScope.launch {
@@ -113,7 +114,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _biometricCipher.value = prepared.cipher
                 _biometricReady.value = true
             } catch (e: Exception) {
-                _biometricError.value = e.message ?: "Fingerprint setup failed"
+                _biometricError.value = e.message ?: getApplication<Application>().getString(R.string.error_biometric_setup_failed)
             }
         }
     }
@@ -128,7 +129,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 finishOnboarding()
             } catch (e: Exception) {
-                _biometricError.value = e.message ?: "Fingerprint setup failed"
+                _biometricError.value = e.message ?: getApplication<Application>().getString(R.string.error_biometric_setup_failed)
             } finally {
                 preparedBiometric.set(null)
                 _biometricCipher.value = null
@@ -174,7 +175,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _session.value = session
                 _screen.value = AppScreen.Moments
             } catch (e: Exception) {
-                _unlockError.value = e.message ?: "Failed to unlock the vault"
+                _unlockError.value = e.message ?: getApplication<Application>().getString(R.string.error_unlock_failed)
             } finally {
                 _unlocking.value = false
             }

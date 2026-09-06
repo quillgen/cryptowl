@@ -8,6 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.svg.SvgDecoder
 import com.typedefai.cryptowl.onboarding.BiometricSetupScreen
 import com.typedefai.cryptowl.onboarding.IntroScreen
 import com.typedefai.cryptowl.onboarding.MasterPasswordScreen
@@ -23,6 +26,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         setContent {
+            setSingletonImageLoaderFactory { context ->
+                ImageLoader.Builder(context)
+                    .components { add(SvgDecoder.Factory()) }
+                    .build()
+            }
             MaterialTheme {
                 val screen by viewModel.screen.collectAsState()
                 when (screen) {

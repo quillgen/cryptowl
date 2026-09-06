@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -24,9 +25,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.crypto.ProtectedValue
 
 /** Unlock the vault with the master password (cold start / re-lock). */
@@ -39,6 +42,7 @@ fun UnlockScreen(viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,12 +54,12 @@ fun UnlockScreen(viewModel: MainViewModel) {
             tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Unlock your vault", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.unlock_title), style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(32.dp))
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Master password") },
+            label = { Text(stringResource(R.string.password_label)) },
             singleLine = true,
             enabled = !unlocking,
             visualTransformation = PasswordVisualTransformation(),
@@ -83,7 +87,7 @@ fun UnlockScreen(viewModel: MainViewModel) {
             if (unlocking) {
                 CircularProgressIndicator(modifier = Modifier.height(20.dp), strokeWidth = 2.dp)
             } else {
-                Text("Unlock")
+                Text(stringResource(R.string.unlock_action))
             }
         }
     }

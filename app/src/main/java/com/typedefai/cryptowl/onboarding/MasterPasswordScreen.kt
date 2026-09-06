@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -27,10 +28,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.MainViewModel
 
@@ -56,6 +59,7 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,12 +72,12 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Create your master password",
+            text = stringResource(R.string.password_title),
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "This password encrypts your vault on this device. It cannot be recovered — never forget it.",
+            text = stringResource(R.string.password_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -82,11 +86,11 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Master password") },
+            label = { Text(stringResource(R.string.password_label)) },
             singleLine = true,
             isError = attempted && passwordError,
             supportingText = if (attempted && passwordError) {
-                { Text("At least $MIN_PASSWORD_LENGTH characters") }
+                { Text(stringResource(R.string.password_min_length, MIN_PASSWORD_LENGTH)) }
             } else {
                 null
             },
@@ -95,7 +99,9 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                        contentDescription = stringResource(
+                            if (passwordVisible) R.string.password_hide else R.string.password_show,
+                        ),
                     )
                 }
             },
@@ -106,11 +112,11 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
         OutlinedTextField(
             value = confirm,
             onValueChange = { confirm = it },
-            label = { Text("Confirm password") },
+            label = { Text(stringResource(R.string.password_confirm_label)) },
             singleLine = true,
             isError = attempted && confirmError,
             supportingText = if (attempted && confirmError) {
-                { Text("Passwords do not match") }
+                { Text(stringResource(R.string.password_mismatch)) }
             } else {
                 null
             },
@@ -147,7 +153,7 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
-                Text("Create vault")
+                Text(stringResource(R.string.password_create))
             }
         }
     }

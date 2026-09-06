@@ -25,9 +25,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.MainViewModel
 
 /**
@@ -42,10 +44,19 @@ fun BiometricSetupScreen(viewModel: MainViewModel) {
     val ready by viewModel.biometricReady.collectAsState()
     val cipher by viewModel.biometricCipher.collectAsState()
     val error by viewModel.biometricError.collectAsState()
+    val promptTitle = stringResource(R.string.biometric_prompt_title)
+    val promptSubtitle = stringResource(R.string.biometric_prompt_subtitle)
 
     LaunchedEffect(ready, cipher) {
         if (ready && cipher != null && activity != null) {
-            runBiometricPrompt(context, activity, cipher!!, viewModel)
+            runBiometricPrompt(
+                context,
+                activity,
+                cipher!!,
+                viewModel,
+                promptTitle,
+                promptSubtitle,
+            )
         }
     }
 
@@ -63,10 +74,10 @@ fun BiometricSetupScreen(viewModel: MainViewModel) {
             tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Text("Unlock with fingerprint?", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.biometric_title), style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "You can open your vault with your fingerprint and keep your master password for cold starts. This can be changed later.",
+            text = stringResource(R.string.biometric_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -86,14 +97,14 @@ fun BiometricSetupScreen(viewModel: MainViewModel) {
             onClick = { viewModel.prepareBiometric() },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Enable fingerprint unlock")
+            Text(stringResource(R.string.biometric_enable))
         }
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedButton(
             onClick = { viewModel.skipBiometric() },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Skip for now")
+            Text(stringResource(R.string.biometric_skip))
         }
     }
 }
@@ -103,6 +114,8 @@ private fun runBiometricPrompt(
     activity: FragmentActivity,
     cipher: javax.crypto.Cipher,
     viewModel: MainViewModel,
+    title: String,
+    subtitle: String,
 ) {
     if (BiometricManager.from(context).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
         != BiometricManager.BIOMETRIC_SUCCESS
@@ -111,8 +124,8 @@ private fun runBiometricPrompt(
         return
     }
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Unlock with fingerprint")
-        .setSubtitle("Enable fingerprint unlock for this vault")
+        .setTitle(title)
+        .setSubtitle(subtitle)
         .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
         .build()
     val prompt = BiometricPrompt(

@@ -1,3 +1,85 @@
 <resources>
     <string name="app_name">密鸮</string>
+
+    <!-- Intro / onboarding pager -->
+    <string name="intro_skip">Skip</string>
+    <string name="intro_next">Next</string>
+    <string name="intro_get_started">Get started</string>
+    <string name="intro_slide_encryption_desc">Your vault lives only on this device. Everything is encrypted at rest with Argon2id and AES-256-GCM — no plaintext ever touches the disk.</string>
+    <string name="intro_slide_tiers_desc">Notes are readable after unlock; passwords and top-secret items need an extra fingerprint (and a second password) per access.</string>
+    <string name="intro_slide_biometric_desc">Optional fingerprint unlock to open the vault fast — your master password still protects everything underneath.</string>
+    <string name="intro_slide_media_desc">Photos, videos and attachments are encrypted with the same keys as their records — captured in-app, never stored in the clear.</string>
+
+    <!-- Master password setup -->
+    <string name="password_title">Create your master password</string>
+    <string name="password_subtitle">This password encrypts your vault on this device. It cannot be recovered — never forget it.</string>
+    <string name="password_label">Master password</string>
+    <string name="password_min_length">At least %1$d characters</string>
+    <string name="password_confirm_label">Confirm password</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    <string name="password_show">Show password</string>
+    <string name="password_hide">Hide password</string>
+    <string name="password_create">Create vault</string>
+
+    <!-- Biometric setup -->
+    <string name="biometric_title">Unlock with fingerprint?</string>
+    <string name="biometric_description">You can open your vault with your fingerprint and keep your master password for cold starts. This can be changed later.</string>
+    <string name="biometric_enable">Enable fingerprint unlock</string>
+    <string name="biometric_skip">Skip for now</string>
+    <string name="biometric_prompt_title">Unlock with fingerprint</string>
+    <string name="biometric_prompt_subtitle">Enable fingerprint unlock for this vault</string>
+
+    <!-- Unlock -->
+    <string name="unlock_title">Unlock your vault</string>
+    <string name="unlock_action">Unlock</string>
+
+    <!-- Home / locked vault -->
+    <string name="home_vault_locked">Vault locked</string>
+    <string name="home_locked_desc">Everything is encrypted on this device. Unlock to browse your moments.</string>
+    <string name="home_unlock">Unlock vault</string>
+
+    <!-- Moments timeline -->
+    <string name="moments_title">Moments</string>
+    <string name="moments_lock">Lock vault</string>
+    <string name="moments_empty">No moments yet</string>
+    <string name="moments_empty_hint">Import your WeChat Moments archive on the desktop (wechat_sns_export/migrate_moments.py), then copy the vault back to this device.</string>
+    <string name="moments_unknown_author">Unknown</string>
+
+    <!-- Chat -->
+    <string name="chat_show_thinking">Show thinking</string>
+    <string name="chat_hide_thinking">Hide thinking</string>
+    <string name="chat_copy">Copy</string>
+    <string name="chat_scroll_to_bottom">Scroll to bottom</string>
+    <string name="chat_new_conversation">New conversation</string>
+    <string name="chat_parameters">Parameters</string>
+    <string name="chat_copied">Copied</string>
+    <string name="chat_max_tokens">Max tokens (2000-32000)</string>
+    <string name="chat_top_k">Top-K (1-100)</string>
+    <string name="chat_top_p">Top-P (0-1)</string>
+    <string name="chat_temperature">Temperature (0-2)</string>
+    <string name="chat_accelerator">Accelerator</string>
+    <string name="chat_enable_thinking">Enable thinking</string>
+    <string name="chat_enable_speculative">Enable speculative decoding</string>
+    <string name="chat_apply">Apply</string>
+    <string name="chat_cancel">Cancel</string>
+    <string name="chat_you">You</string>
+    <string name="chat_run_again">Run again</string>
+    <string name="chat_type_prompt">Type prompt…</string>
+    <string name="chat_add_content">Add content</string>
+    <string name="chat_stop">Stop</string>
+    <string name="chat_send">Send</string>
+
+    <!-- Errors -->
+    <string name="error_create_vault_failed">Failed to create the vault</string>
+    <string name="error_biometric_password_lost">Master password no longer available</string>
+    <string name="error_biometric_not_enrolled">No strong biometrics enrolled on this device</string>
+    <string name="error_biometric_setup_failed">Fingerprint setup failed</string>
+    <string name="error_unlock_failed">Failed to unlock the vault</string>
+
+    <!-- Language -->
+    <string name="language_option">Language</string>
+    <string name="language_system">Follow system</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_zh_cn" translatable="false">简体中文</string>
+    <string name="language_zh_tw" translatable="false">繁體中文</string>
 </resources>

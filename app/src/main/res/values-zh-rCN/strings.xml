@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">密鸮</string>
+
+    <!-- Intro / onboarding pager -->
+    <string name="intro_skip">跳过</string>
+    <string name="intro_next">下一步</string>
+    <string name="intro_get_started">开始使用</string>
+    <string name="intro_slide_encryption_desc">你的保险库只保存在这台设备上。所有数据在静态存储时都通过 Argon2id 和 AES-256-GCM 加密——明文永远不会写入磁盘。</string>
+    <string name="intro_slide_tiers_desc">解锁后即可阅读笔记；密码和绝密条目每次访问都需要额外的指纹（以及第二重密码）验证。</string>
+    <string name="intro_slide_biometric_desc">可选指纹解锁，快速打开保险库——你的主密码仍然保护着下面的一切。</string>
+    <string name="intro_slide_media_desc">照片、视频和附件与它们的记录使用相同的密钥加密——在应用内拍摄，绝不明文存储。</string>
+
+    <!-- Master password setup -->
+    <string name="password_title">创建主密码</string>
+    <string name="password_subtitle">此密码用于加密本设备上的保险库。它无法找回——请务必牢记。</string>
+    <string name="password_label">主密码</string>
+    <string name="password_min_length">至少 %1$d 个字符</string>
+    <string name="password_confirm_label">确认密码</string>
+    <string name="password_mismatch">两次输入的密码不一致</string>
+    <string name="password_show">显示密码</string>
+    <string name="password_hide">隐藏密码</string>
+    <string name="password_create">创建保险库</string>
+
+    <!-- Biometric setup -->
+    <string name="biometric_title">使用指纹解锁？</string>
+    <string name="biometric_description">你可以用指纹打开保险库，主密码仍用于冷启动解锁。此设置之后可以更改。</string>
+    <string name="biometric_enable">启用指纹解锁</string>
+    <string name="biometric_skip">暂时跳过</string>
+    <string name="biometric_prompt_title">使用指纹解锁</string>
+    <string name="biometric_prompt_subtitle">为此保险库启用指纹解锁</string>
+
+    <!-- Unlock -->
+    <string name="unlock_title">解锁你的保险库</string>
+    <string name="unlock_action">解锁</string>
+
+    <!-- Home / locked vault -->
+    <string name="home_vault_locked">保险库已锁定</string>
+    <string name="home_locked_desc">本设备上的所有数据均已加密。解锁以浏览你的朋友圈。</string>
+    <string name="home_unlock">解锁保险库</string>
+
+    <!-- Moments timeline -->
+    <string name="moments_title">朋友圈</string>
+    <string name="moments_lock">锁定保险库</string>
+    <string name="moments_empty">还没有朋友圈内容</string>
+    <string name="moments_empty_hint">在桌面端导入你的微信朋友圈存档（wechat_sns_export/migrate_moments.py），然后将保险库复制回此设备。</string>
+    <string name="moments_unknown_author">未知用户</string>
+
+    <!-- Chat -->
+    <string name="chat_show_thinking">显示思考过程</string>
+    <string name="chat_hide_thinking">隐藏思考过程</string>
+    <string name="chat_copy">复制</string>
+    <string name="chat_scroll_to_bottom">滚动到底部</string>
+    <string name="chat_new_conversation">新建对话</string>
+    <string name="chat_parameters">参数</string>
+    <string name="chat_copied">已复制</string>
+    <string name="chat_max_tokens">最大令牌数（2000-32000）</string>
+    <string name="chat_top_k">Top-K（1-100）</string>
+    <string name="chat_top_p">Top-P（0-1）</string>
+    <string name="chat_temperature">温度（0-2）</string>
+    <string name="chat_accelerator">加速器</string>
+    <string name="chat_enable_thinking">启用思考</string>
+    <string name="chat_enable_speculative">启用推测解码</string>
+    <string name="chat_apply">应用</string>
+    <string name="chat_cancel">取消</string>
+    <string name="chat_you">你</string>
+    <string name="chat_run_again">重新生成</string>
+    <string name="chat_type_prompt">输入提示词…</string>
+    <string name="chat_add_content">添加内容</string>
+    <string name="chat_stop">停止</string>
+    <string name="chat_send">发送</string>
+
+    <!-- Errors -->
+    <string name="error_create_vault_failed">创建保险库失败</string>
+    <string name="error_biometric_password_lost">主密码已不可用</string>
+    <string name="error_biometric_not_enrolled">此设备未注册强生物识别</string>
+    <string name="error_biometric_setup_failed">指纹设置失败</string>
+    <string name="error_unlock_failed">解锁保险库失败</string>
+
+    <!-- Language -->
+    <string name="language_option">语言</string>
+    <string name="language_system">跟随系统</string>
+</resources>

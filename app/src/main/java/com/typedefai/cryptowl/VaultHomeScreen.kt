@@ -16,7 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.typedefai.cryptowl.R
 
 /**
  * Post-onboarding home: the vault exists but is locked. Unlock with the
@@ -38,10 +40,10 @@ fun VaultHomeScreen(viewModel: MainViewModel) {
             tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Vault locked", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.home_vault_locked), style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Everything is encrypted on this device. Unlock to browse your moments.",
+            text = stringResource(R.string.home_locked_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -50,7 +52,7 @@ fun VaultHomeScreen(viewModel: MainViewModel) {
             onClick = viewModel::openVault,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Unlock vault")
+            Text(stringResource(R.string.home_unlock))
         }
     }
 }

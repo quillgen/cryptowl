@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.richtext.commonmark)
     implementation(libs.richtext.ui.material3)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

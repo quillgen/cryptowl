@@ -1,6 +1,6 @@
 package com.typedefai.cryptowl.onboarding
 
-import androidx.compose.foundation.background
+import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,18 +9,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Shield
+import androidx.compose.foundation.background
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,37 +25,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.typedefai.cryptowl.LanguageButton
+import com.typedefai.cryptowl.R
 import kotlinx.coroutines.launch
 
 private data class FeatureSlide(
-    val icon: ImageVector,
-    val title: String,
+    @RawRes val illustration: Int,
     val description: String,
 )
 
-private val slides = listOf(
+@Composable
+private fun featureSlides(): List<FeatureSlide> = listOf(
     FeatureSlide(
-        icon = Icons.Filled.Lock,
-        title = "Local-first encryption",
-        description = "Your vault lives only on this device. Everything is encrypted at rest with Argon2id and AES-256-GCM — no plaintext ever touches the disk.",
+        illustration = R.raw.undraw_vault,
+        description = stringResource(R.string.intro_slide_encryption_desc),
     ),
     FeatureSlide(
-        icon = Icons.Filled.Shield,
-        title = "Tiered protection",
-        description = "Notes are readable after unlock; passwords and top-secret items need an extra fingerprint (and a second password) per access.",
+        illustration = R.raw.undraw_security,
+        description = stringResource(R.string.intro_slide_tiers_desc),
     ),
     FeatureSlide(
-        icon = Icons.Filled.Fingerprint,
-        title = "Biometric unlock",
-        description = "Optional fingerprint unlock to open the vault fast — your master password still protects everything underneath.",
+        illustration = R.raw.undraw_fingerprint,
+        description = stringResource(R.string.intro_slide_biometric_desc),
     ),
     FeatureSlide(
-        icon = Icons.Filled.PhotoLibrary,
-        title = "Photos & files included",
-        description = "Photos, videos and attachments are encrypted with the same keys as their records — captured in-app, never stored in the clear.",
+        illustration = R.raw.undraw_photo_album,
+        description = stringResource(R.string.intro_slide_media_desc),
     ),
 )
 
@@ -68,6 +65,7 @@ private val slides = listOf(
  */
 @Composable
 fun IntroScreen(onStart: () -> Unit) {
+    val slides = featureSlides()
     val pagerState = rememberPagerState(pageCount = { slides.size })
     val scope = rememberCoroutineScope()
 
@@ -78,30 +76,19 @@ fun IntroScreen(onStart: () -> Unit) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 40.dp),
+                        .padding(horizontal = 32.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Box(
+                    AsyncImage(
+                        model = slide.illustration,
+                        contentDescription = null,
                         modifier = Modifier
-                            .size(140.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = slide.icon,
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(40.dp))
-                    Text(
-                        text = slide.title,
-                        style = MaterialTheme.typography.headlineSmall,
-                        textAlign = TextAlign.Center,
+                            .fillMaxWidth()
+                            .height(240.dp),
+                        contentScale = ContentScale.Fit,
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
                     Text(
                         text = slide.description,
                         style = MaterialTheme.typography.bodyLarge,
@@ -110,6 +97,12 @@ fun IntroScreen(onStart: () -> Unit) {
                     )
                 }
             }
+            LanguageButton(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .statusBarsPadding()
+                    .padding(top = 4.dp, end = 4.dp),
+            )
         }
 
         Row(
@@ -140,11 +133,13 @@ fun IntroScreen(onStart: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 24.dp, bottom = 48.dp),
+                .padding(top = 24.dp)
+                .navigationBarsPadding()
+                .padding(bottom = 32.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = onStart) { Text("Skip") }
+            TextButton(onClick = onStart) { Text(stringResource(R.string.intro_skip)) }
             Button(onClick = {
                 if (pagerState.currentPage < slides.lastIndex) {
                     scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
@@ -152,7 +147,13 @@ fun IntroScreen(onStart: () -> Unit) {
                     onStart()
                 }
             }) {
-                Text(if (pagerState.currentPage == slides.lastIndex) "Get started" else "Next")
+                Text(
+                    if (pagerState.currentPage == slides.lastIndex) {
+                        stringResource(R.string.intro_get_started)
+                    } else {
+                        stringResource(R.string.intro_next)
+                    },
+                )
             }
         }
     }

@@ -98,6 +98,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -105,6 +106,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.typedefai.cryptowl.R
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -173,13 +175,15 @@ private fun MessageBodyThinking(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                text = "Show thinking",
+                text = stringResource(R.string.chat_show_thinking),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
             )
             Icon(
                 imageVector = if (isExpanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                contentDescription = if (isExpanded) "Hide thinking" else "Show thinking",
+                contentDescription = stringResource(
+                    if (isExpanded) R.string.chat_hide_thinking else R.string.chat_show_thinking,
+                ),
             )
         }
 
@@ -245,7 +249,7 @@ private fun LongPressCopyContainer(
             DropdownMenuItem(
                 text = {
                     Text(
-                        "Copy",
+                        stringResource(R.string.chat_copy),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurface,
                         ),
@@ -254,7 +258,7 @@ private fun LongPressCopyContainer(
                 leadingIcon = {
                     Icon(
                         Icons.Rounded.ContentCopy,
-                        contentDescription = "Copy",
+                        contentDescription = stringResource(R.string.chat_copy),
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -310,7 +314,7 @@ private fun ScrollToBottomButton(isAtBottom: Boolean, onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Outlined.ArrowDownward,
-                contentDescription = "Scroll to bottom",
+                contentDescription = stringResource(R.string.chat_scroll_to_bottom),
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         }
@@ -441,13 +445,13 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
                 onClick = { viewModel.resetConversation() },
                 enabled = viewModel.ready && !viewModel.generating,
             ) {
-                Icon(Icons.Rounded.RestartAlt, contentDescription = "New conversation")
+                Icon(Icons.Rounded.RestartAlt, contentDescription = stringResource(R.string.chat_new_conversation))
             }
             IconButton(
                 onClick = { showParamsDialog = true },
                 enabled = viewModel.ready && !viewModel.generating,
             ) {
-                Icon(Icons.Rounded.Tune, contentDescription = "Parameters")
+                Icon(Icons.Rounded.Tune, contentDescription = stringResource(R.string.chat_parameters))
             }
         }
 
@@ -533,10 +537,11 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
 @Composable
 private fun rememberCopyHandler(): (String) -> Unit {
     val clipboard = LocalClipboardManager.current
+    val copied = stringResource(R.string.chat_copied)
     val context = LocalContext.current
     return { text ->
         clipboard.setText(AnnotatedString(text))
-        Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -562,39 +567,39 @@ private fun ParametersDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Parameters") },
+        title = { Text(stringResource(R.string.chat_parameters)) },
         text = {
             Column {
                 // Max tokens: gallery NumberSliderConfig(2000..maxContextLength=32000, default 4000).
-                Text("Max tokens (2000-32000)", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chat_max_tokens), style = MaterialTheme.typography.titleSmall)
                 Slider(
                     value = curMaxTokens.toFloat(),
                     onValueChange = { curMaxTokens = it.toInt() },
                     valueRange = 2000f..32000f,
                 )
                 // Top-K: gallery NumberSliderConfig(1..100, default 64).
-                Text("Top-K (1-100)", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chat_top_k), style = MaterialTheme.typography.titleSmall)
                 Slider(
                     value = curTopK.toFloat(),
                     onValueChange = { curTopK = it.toInt() },
                     valueRange = 1f..100f,
                 )
                 // Top-P: gallery NumberSliderConfig(0..1, default 0.95).
-                Text("Top-P (0-1)", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chat_top_p), style = MaterialTheme.typography.titleSmall)
                 Slider(
                     value = curTopP,
                     onValueChange = { curTopP = it },
                     valueRange = 0f..1f,
                 )
                 // Temperature: gallery NumberSliderConfig(0..2, default 1.0).
-                Text("Temperature (0-2)", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chat_temperature), style = MaterialTheme.typography.titleSmall)
                 Slider(
                     value = curTemperature,
                     onValueChange = { curTemperature = it },
                     valueRange = 0f..2f,
                 )
                 // Accelerator: gallery SegmentedButtonConfig (gpu/cpu).
-                Text("Accelerator", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chat_accelerator), style = MaterialTheme.typography.titleSmall)
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -614,7 +619,7 @@ private fun ParametersDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Enable thinking", style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.chat_enable_thinking), style = MaterialTheme.typography.titleSmall)
                     Switch(checked = curThinking, onCheckedChange = { curThinking = it })
                 }
                 // Speculative decoding / MTP: gallery BooleanSwitchConfig.
@@ -623,7 +628,7 @@ private fun ParametersDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Enable speculative decoding", style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.chat_enable_speculative), style = MaterialTheme.typography.titleSmall)
                     Switch(checked = curSpeculativeDecoding, onCheckedChange = { curSpeculativeDecoding = it })
                 }
             }
@@ -632,11 +637,11 @@ private fun ParametersDialog(
             TextButton(onClick = {
                 onApply(curTopK, curTopP, curTemperature, curMaxTokens, curAccelerator, curThinking, curSpeculativeDecoding)
             }) {
-                Text("Apply")
+                Text(stringResource(R.string.chat_apply))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.chat_cancel)) }
         },
     )
 }
@@ -661,7 +666,7 @@ private fun ChatMessageItem(
         horizontalAlignment = if (isUser) Alignment.End else Alignment.Start,
     ) {
         Text(
-            text = if (isUser) "You" else agentName,
+            text = if (isUser) stringResource(R.string.chat_you) else agentName,
             style = MaterialTheme.typography.titleSmall,
         )
 
@@ -682,7 +687,7 @@ private fun ChatMessageItem(
             }
             // Run again button (gallery MessageActionButton on user messages).
             MessageActionButton(
-                label = "Run again",
+                label = stringResource(R.string.chat_run_again),
                 icon = Icons.Rounded.Refresh,
                 enabled = !generating,
                 onClick = { onRunAgain(message.text) },
@@ -718,7 +723,7 @@ private fun ChatMessageItem(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ContentCopy,
-                            contentDescription = "Copy",
+                            contentDescription = stringResource(R.string.chat_copy),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                             modifier = Modifier.size(18.dp),
                         )
@@ -802,7 +807,7 @@ private fun MessageInputBar(
                     disabledContainerColor = Color.Transparent,
                 ),
                 textStyle = MaterialTheme.typography.bodyLarge.copy(letterSpacing = 0.2.sp),
-                placeholder = { Text("Type prompt…") },
+                placeholder = { Text(stringResource(R.string.chat_type_prompt)) },
             )
         }
 
@@ -818,7 +823,7 @@ private fun MessageInputBar(
                 onClick = {},
                 border = IconButtonDefaults.outlinedIconButtonBorder(true),
             ) {
-                Icon(Icons.Outlined.Add, contentDescription = "Add content")
+                Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.chat_add_content))
             }
 
             if (generating) {
@@ -830,7 +835,7 @@ private fun MessageInputBar(
                 ) {
                     Icon(
                         Icons.Rounded.Stop,
-                        contentDescription = "Stop",
+                        contentDescription = stringResource(R.string.chat_stop),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
@@ -848,7 +853,7 @@ private fun MessageInputBar(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Rounded.Send,
-                        contentDescription = "Send",
+                        contentDescription = stringResource(R.string.chat_send),
                         modifier = Modifier.offset(x = 2.dp),
                         tint = Color.White,
                     )

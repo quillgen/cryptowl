@@ -43,9 +43,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.typedefai.cryptowl.LanguageButton
+import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.vault.Cwo1
 import com.typedefai.cryptowl.vault.MomentCard
 import com.typedefai.cryptowl.vault.MomentComment
@@ -89,18 +92,19 @@ fun MomentsScreen(viewModel: MainViewModel) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Moments",
+                text = stringResource(R.string.moments_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f),
             )
             IconButton(onClick = viewModel::lockVault) {
-                Icon(Icons.Filled.Lock, contentDescription = "Lock vault")
+                Icon(Icons.Filled.Lock, contentDescription = stringResource(R.string.moments_lock))
             }
+            LanguageButton()
         }
         if (session == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Vault locked", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.home_vault_locked), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else if (loaded && posts.isEmpty()) {
             EmptyMoments()
@@ -128,12 +132,12 @@ private fun EmptyMoments() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "No moments yet",
+                text = stringResource(R.string.moments_empty),
                 style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Import your WeChat Moments archive on the desktop (wechat_sns_export/migrate_moments.py), then copy the vault back to this device.",
+                text = stringResource(R.string.moments_empty_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -163,7 +167,7 @@ private fun MomentPostView(post: MomentPost, session: VaultSession, context: Con
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Text(
-                    text = post.authorName ?: post.authorUsername ?: "Unknown",
+                    text = post.authorName ?: post.authorUsername ?: stringResource(R.string.moments_unknown_author),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
