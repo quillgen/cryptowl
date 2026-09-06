@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 /**
  * End-to-end vault creation: key derivation chain (real Argon2 JNI) →
  * vault.meta with verifiable MAC → SQLCipher database initialized from
- * assets/schema.sql. Mirrors the onboarding flow.
+ * assets/migrations (v1 core + v2 moments). Mirrors the onboarding flow.
  */
 @RunWith(AndroidJUnit4::class)
 class VaultCreatorTest {
@@ -68,7 +68,7 @@ class VaultCreatorTest {
                 for (expected in listOf("t_wrapped_key", "t_data_encrypt_key", "t_encrypted_data", "t_file")) {
                     assertTrue("missing table $expected", tables.contains(expected))
                 }
-                assertEquals(1, db.version)
+                assertEquals(2, db.version) // v1 core + v2 moments applied
             } finally {
                 db.close()
             }

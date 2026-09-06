@@ -35,8 +35,14 @@ object VaultStore {
 
     fun indexFile(context: Context): File = File(context.filesDir, "vault_index.json")
 
-    /** True once at least one vault has been created (onboarding completed). */
-    fun isOnboarded(context: Context): Boolean = indexFile(context).exists()
+    /**
+     * True once the vault's meta and database files exist — the artifacts are
+     * the ground truth for onboarding. The index is written *last* during
+     * creation, so a crashed attempt leaves the artifacts but not the index;
+     * keying off the index would wrongly show onboarding again.
+     */
+    fun isOnboarded(context: Context, vaultId: String = DEFAULT_VAULT_ID): Boolean =
+        metaFile(context, vaultId).exists() && dbFile(context, vaultId).exists()
 
     /** The vault the app opens on start (first in the index), or null. */
     fun primaryVaultId(context: Context): String? {

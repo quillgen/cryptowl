@@ -96,7 +96,7 @@ Global files (outside vaults):
 - `global_prefs.xml`: non-sensitive settings (theme, auto-lock timeout...)
 - `vault_index.json`: list of vault IDs and display names
 
-The vault database schema (encryption core) is defined in [schema.sql](schema.sql); the `vault.meta` format below. Feature tables (e.g. [moments](moments.md) → [moments.sql](moments.sql)) are separate documents layered on top of this core — they never re-implement the key hierarchy.
+The vault database schema (encryption core) is defined in [migrations/v1__init.sql](migrations/v1__init.sql); the `vault.meta` format below. Feature tables (e.g. [moments](moments.md) → [migrations/v2__moments.sql](migrations/v2__moments.sql)) are separate documents layered on top of this core — they never re-implement the key hierarchy.
 
 ## Vault Meta File (vault.meta)
 
@@ -141,7 +141,7 @@ Rules:
 - **Integrity**: `mac` = HMAC-SHA256 with the MAC Key (SMK[32:64]) over the canonical JSON (lexicographic key order) excluding the `mac` field itself. Verified on every open before any unwrap; mismatch triggers a tamper warning. Note each wrapped key is independently authenticated by its own auth tag, so the mac is a corruption/downgrade check, not the last line of defense.
 - **Atomic writes**: always write to `vault.meta.tmp` then rename; a crash never leaves a half-written meta file.
 - **Versioning**: `version` = format version; readers refuse `version > 2` (forward-incompatible) and migrate older versions in place. `.vbp` exports bundle `vault.meta` verbatim.
-- **Creation order**: write `vault.meta` (with `vault_key:smk`) *before* creating the DB — the SQLCipher key comes from unwrapping it. DB initialization runs [schema.sql](schema.sql), then the remaining wrapped keys (`kek:biokey`, `ts_kek:biokey`, `top_secret_kek:ts_kek`) are inserted into `t_wrapped_key`.
+- **Creation order**: write `vault.meta` (with `vault_key:smk`) *before* creating the DB — the SQLCipher key comes from unwrapping it. DB initialization replays the migration chain ([migrations/v1__init.sql](migrations/v1__init.sql)), then the remaining wrapped keys (`kek:biokey`, `ts_kek:biokey`, `top_secret_kek:ts_kek`) are inserted into `t_wrapped_key`.
 
 ## Content Security Levels
 

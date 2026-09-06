@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.typedefai.cryptowl.BuildConfig
 import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.MainViewModel
@@ -53,7 +54,7 @@ fun MasterPasswordScreen(viewModel: MainViewModel) {
     val creating by viewModel.creatingVault.collectAsState()
     val error by viewModel.vaultError.collectAsState()
 
-    val passwordError = password.length < MIN_PASSWORD_LENGTH
+    val passwordError = !BuildConfig.DEBUG && password.length < MIN_PASSWORD_LENGTH
     val confirmError = password != confirm
 
     Column(

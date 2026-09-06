@@ -1,6 +1,7 @@
 package com.typedefai.cryptowl.vault
 
 import android.content.Context
+import android.util.Log
 import com.typedefai.cryptowl.crypto.KdfParams
 import com.typedefai.cryptowl.crypto.KdfService
 import com.typedefai.cryptowl.crypto.ProtectedValue
@@ -24,22 +25,35 @@ class VaultCreator(
 
     fun create(masterPassword: ProtectedValue, vaultId: String = VaultStore.DEFAULT_VAULT_ID): VaultMeta {
         val vaultDir = VaultStore.vaultDir(context, vaultId)
-        require(!VaultStore.metaFile(context, vaultId).exists()) { "vault already exists: $vaultId" }
+        if (VaultStore.metaFile(context, vaultId).exists()) {
+            if (VaultStore.isOnboarded(context, vaultId)) {
+                error("vault already exists: $vaultId")
+            }
+            // Partial vault from a crashed previous attempt (meta written but
+            // db incomplete): wipe and start over.
+            Log.w(TAG, "create: removing partial vault dir from a failed attempt")
+            vaultDir.deleteRecursively()
+        }
         vaultDir.mkdirs()
 
+        Log.d(TAG, "create: dir=$vaultDir")
         val deviceSecret = DeviceSecretStore.getOrCreate(context)
+        Log.d(TAG, "create: device secret ready (${deviceSecret.binaryValue().size} bytes)")
         val argon2Salt = RandomUtil.generateSecureBytes(SALT_SIZE)
         val hkdfSalt = RandomUtil.generateSecureBytes(SALT_SIZE)
         val secondarySalt = RandomUtil.generateSecureBytes(SALT_SIZE)
 
         val tmk = kdf.createTransformedMasterKey(masterPassword, deviceSecret, argon2Salt)
+        Log.d(TAG, "create: TMK derived")
         val smk = kdf.createStretchedMasterKey(tmk, vaultId.toByteArray(Charsets.UTF_8), hkdfSalt)
+        Log.d(TAG, "create: SMK derived")
         val vaultKey = ProtectedValue.fromBinary(RandomUtil.generateSecureBytes(KEY_SIZE))
         val wrappedVaultKey = kdf.wrapKey(
             key = vaultKey,
             wrappingKey = kdf.vaultKey(smk),
             aad = WRAPPED_VAULT_KEY_SMK.toByteArray(Charsets.UTF_8),
         )
+        Log.d(TAG, "create: vault key wrapped")
 
         val now = System.currentTimeMillis()
         val meta = VaultMeta(
@@ -62,9 +76,13 @@ class VaultCreator(
 
         try {
             writeConfig(macKey, vaultId)
+            Log.d(TAG, "create: config written")
             writeMetaAtomically(metaWithMac)
+            Log.d(TAG, "create: vault.meta written")
             createDatabase(vaultKey, vaultId)
+            Log.d(TAG, "create: database created")
             VaultStore.writeIndex(context, vaultId)
+            Log.d(TAG, "create: index written")
         } finally {
             tmk.clear()
             smk.clear()
@@ -119,7 +137,7 @@ class VaultCreator(
         vaultKey.use { key ->
             val db = SQLiteDatabase.openOrCreateDatabase(VaultStore.dbFile(context, vaultId), key, null, null)
             try {
-                SchemaApplier.apply(db, context, CORE_SCHEMA_ASSET)
+                SchemaApplier.migrate(db, context)
             } finally {
                 db.close()
             }
@@ -127,10 +145,10 @@ class VaultCreator(
     }
 
     private companion object {
+        const val TAG = "VaultCreator"
         const val META_VERSION = 2
         const val KEY_SIZE = 32
         const val SALT_SIZE = 32
         const val WRAPPED_VAULT_KEY_SMK = "vault_key:smk"
-        const val CORE_SCHEMA_ASSET = "schema.sql"
     }
 }

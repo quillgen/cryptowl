@@ -3,13 +3,13 @@
 Personal moments timeline (朋友圈-style) inside the encrypted vault. This document
 specifies the feature's data model, media encryption, visibility model, and the
 import path from WeChat SNS exports. It builds **on top of** the encryption core
-in [design.md](design.md) / [schema.sql](schema.sql) — it does not re-implement
+in [design.md](design.md) / [migrations/v1__init.sql](migrations/v1__init.sql) — it does not re-implement
 the key hierarchy.
 
 > **Supersedes the earlier self-contained `moments.sql` draft** ("moments
 > edition", re-implementing the vault plumbing). The feature now uses the
 > canonical core: one SQLCipher database per vault, wrapped keys per
-> `schema.sql`, C-tier files encrypted with FEK.
+> `v1__init.sql`, C-tier files encrypted with FEK.
 
 ## 1. Overview & Goals
 
@@ -63,10 +63,10 @@ Consequences:
 
 ## 3. Data Model
 
-All tables follow the canonical conventions (see `schema.sql`): `CHAR(36)`
+All tables follow the canonical conventions (see `v1__init.sql`): `CHAR(36)`
 UUID primary keys, `INTEGER` epoch-millisecond timestamps (UTC), soft delete
 via `deleted_at`, `PRAGMA foreign_keys = ON`. The full DDL is
-[moments.sql](moments.sql); the summary here documents intent.
+[migrations/v2__moments.sql](migrations/v2__moments.sql); the summary here documents intent.
 
 ```
 t_moment (post)
@@ -130,7 +130,7 @@ comments are imported as `deleted_at` rows (soft-delete, keeping threading).
 
 PK `(moment_id, author_username)` — one like per user per moment, matching
 WeChat semantics. Denormalized counters live on `t_moment` and are maintained
-by triggers (in `moments.sql`).
+by triggers (in `v2__moments.sql`).
 
 ### `t_friend` + `t_moment_share` (virtual friends, future)
 
@@ -234,7 +234,7 @@ the fixed test vectors):
 
 1. Open the vault with the master password (meta mac, config.sig, wrapped
    `vault_key:smk` unwrap, SQLCipher raw-key verify) → derive FEK.
-2. Create the moments schema (`moments.sql`, idempotent `IF NOT EXISTS`).
+2. Create the moments schema (`v2__moments.sql`, idempotent `IF NOT EXISTS`).
 3. Per post: deterministic IDs `uuid5(N, "cryptowl:<scope>:<key>")`,
    `source_id` = WeChat feed id (dedup key; re-import is a no-op),
    `source_created_at` converted seconds → ms, `is_private` →
@@ -264,8 +264,8 @@ Result on this machine: 2418 moments, 1040 cards, 2780 media, 7497 comments,
 
 ## 7. Schema & Change Log
 
-- Schema: [moments.sql](moments.sql) — feature tables only, built against
-  `schema.sql` conventions.
+- Schema: [migrations/v2__moments.sql](migrations/v2__moments.sql) — feature tables only, built against
+  `v1__init.sql` conventions.
 - **vs. the old moments draft** (superseded): dropped the self-contained
   vault plumbing (`t_vault`, re-implemented `t_wrapped_key`/`t_data_encrypt_key`
   shapes, `DATETIME DEFAULT CURRENT_TIMESTAMP`), removed per-media C-tier

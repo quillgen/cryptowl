@@ -146,7 +146,7 @@ class UnlockService(
                 // Probe: a wrong key makes every statement fail with
                 // "file is not a database" (mirrors vaultlib verify_key).
                 db.rawQuery("SELECT count(*) FROM sqlite_master", null).use { it.moveToFirst() }
-                SchemaApplier.apply(db, context, "moments.sql")
+                SchemaApplier.migrate(db, context)
                 db
             } catch (e: Exception) {
                 db.close()

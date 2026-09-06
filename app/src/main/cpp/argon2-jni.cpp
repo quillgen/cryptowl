@@ -30,7 +30,7 @@ std::vector<uint8_t> toBytes(JNIEnv* env, jbyteArray array) {
 }  // namespace
 
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_typedefai_cryptowl_Argon2_nativeHash(JNIEnv* env, jobject /* thiz */, jbyteArray password,
+Java_com_typedefai_cryptowl_crypto_Argon2_nativeHash(JNIEnv* env, jobject /* thiz */, jbyteArray password,
                                     jbyteArray salt, jint mCost, jint tCost, jint parallelism,
                                     jint hashLen, jint type) {
     std::vector<uint8_t> pwd = toBytes(env, password);
@@ -53,7 +53,7 @@ Java_com_typedefai_cryptowl_Argon2_nativeHash(JNIEnv* env, jobject /* thiz */, j
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_typedefai_cryptowl_Argon2_nativeHashEncoded(JNIEnv* env, jobject /* thiz */,
+Java_com_typedefai_cryptowl_crypto_Argon2_nativeHashEncoded(JNIEnv* env, jobject /* thiz */,
                                                  jbyteArray password, jbyteArray salt, jint mCost,
                                                  jint tCost, jint parallelism, jint hashLen,
                                                  jint type) {
@@ -75,7 +75,7 @@ Java_com_typedefai_cryptowl_Argon2_nativeHashEncoded(JNIEnv* env, jobject /* thi
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_com_typedefai_cryptowl_Argon2_nativeVerify(JNIEnv* env, jobject /* thiz */, jstring encoded,
+Java_com_typedefai_cryptowl_crypto_Argon2_nativeVerify(JNIEnv* env, jobject /* thiz */, jstring encoded,
                                       jbyteArray password, jint type) {
     const char* enc = env->GetStringUTFChars(encoded, nullptr);
     if (enc == nullptr) {

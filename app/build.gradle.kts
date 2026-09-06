@@ -46,6 +46,7 @@ android {
     ndkVersion = "29.0.14206865"
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
@@ -75,6 +76,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
     testImplementation(libs.junit)
+    testImplementation(libs.sqlite.jdbc)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }

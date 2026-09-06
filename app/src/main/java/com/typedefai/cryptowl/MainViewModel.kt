@@ -1,13 +1,13 @@
 package com.typedefai.cryptowl
 
 import android.app.Application
+import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.typedefai.cryptowl.R
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.vault.BioKeySetup
-import com.typedefai.cryptowl.vault.DeviceSecretStore
 import com.typedefai.cryptowl.vault.UnlockService
 import com.typedefai.cryptowl.vault.VaultCreator
 import com.typedefai.cryptowl.vault.VaultMeta
@@ -33,6 +33,10 @@ sealed interface AppScreen {
 }
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
+
+    private companion object {
+        const val TAG = "MainViewModel"
+    }
 
     private val _screen = MutableStateFlow<AppScreen>(AppScreen.Loading)
     val screen: StateFlow<AppScreen> = _screen.asStateFlow()
@@ -67,7 +71,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val vaultId = VaultStore.DEFAULT_VAULT_ID
 
     init {
-        val onboarded = DeviceSecretStore.exists(getApplication()) && VaultStore.isOnboarded(getApplication())
+        val onboarded = VaultStore.isOnboarded(getApplication())
         _screen.value = if (onboarded) AppScreen.Home else AppScreen.Intro
     }
 
@@ -76,6 +80,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun createVault(password: ProtectedValue) {
+        Log.d(TAG, "createVault: start")
         _creatingVault.value = true
         _vaultError.value = null
         viewModelScope.launch {
@@ -83,9 +88,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 withContext(Dispatchers.IO) {
                     VaultCreator(getApplication()).create(password)
                 }
+                Log.d(TAG, "createVault: success")
                 masterPassword.set(password)
                 _screen.value = AppScreen.BiometricSetup
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                Log.e(TAG, "createVault failed", e)
                 _vaultError.value = e.message ?: getApplication<Application>().getString(R.string.error_create_vault_failed)
             } finally {
                 _creatingVault.value = false
@@ -114,6 +121,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _biometricCipher.value = prepared.cipher
                 _biometricReady.value = true
             } catch (e: Exception) {
+                Log.e(TAG, "prepareBiometric failed", e)
                 _biometricError.value = e.message ?: getApplication<Application>().getString(R.string.error_biometric_setup_failed)
             }
         }
@@ -129,6 +137,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 finishOnboarding()
             } catch (e: Exception) {
+                Log.e(TAG, "completeBiometric failed", e)
                 _biometricError.value = e.message ?: getApplication<Application>().getString(R.string.error_biometric_setup_failed)
             } finally {
                 preparedBiometric.set(null)
@@ -175,6 +184,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 _session.value = session
                 _screen.value = AppScreen.Moments
             } catch (e: Exception) {
+                Log.e(TAG, "unlockVault failed", e)
                 _unlockError.value = e.message ?: getApplication<Application>().getString(R.string.error_unlock_failed)
             } finally {
                 _unlocking.value = false

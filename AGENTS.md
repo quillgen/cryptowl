@@ -4,11 +4,11 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 
 **Encryption/tiering design lives in [docs/design.md](docs/design.md)** (key hierarchy, C/S/T levels, biometric gating, backup, memory protection) — consult it before adding crypto features.
 
-**Feature designs are separate docs on top of the core**: [docs/moments.md](docs/moments.md) + [docs/moments.sql](docs/moments.sql) (Moments — Confidential-tier timeline, CWO1 media format, virtual friends). Feature tables never re-implement the core key/wrapped-key tables.
+**Feature designs are separate docs on top of the core**: [docs/moments.md](docs/moments.md) + [docs/migrations/v2__moments.sql](docs/migrations/v2__moments.sql) (Moments — Confidential-tier timeline, CWO1 media format, virtual friends). Feature tables never re-implement the core key/wrapped-key tables.
 
 **Cross-verification oracle**: the desktop reference implementation lives in the sibling repo `wechat_sns_export/vaultlib` (Python) — byte-exact primitives and fixed test vectors (`wechat_sns_export/tests/test_vaultlib.py`). Any crypto change here must reproduce its vectors, and vice versa. Note the HMAC order: `P = HMAC-SHA256(key=DeviceSecret, msg=MasterPassword)` (vaultlib matches the design doc; the older Flutter `cryptowl-ref` used the opposite order and is superseded).
 
-**Moments feature**: tables from `assets/moments.sql` (copy of `docs/moments.sql` — edit both), applied idempotently on vault open by `SchemaApplier`; media uses the CWO1 format (`vault/Cwo1.kt`, byte-exact with `wechat_sns_export/migrate_moments.py`, vectors in `app/src/test/resources/vectors/`). Desktop-created vaults carry a `device_secret` file — `UnlockService` re-binds them to the Android Keystore on first open. The vault DB is NOT Room-managed (Room cannot open externally-created SQLCipher DBs); queries go through raw SQLCipher repositories.
+**Moments feature**: tables from `assets/migrations/v2__moments.sql` (mirror of `docs/migrations/v2__moments.sql` — edit both), applied on vault open by `SchemaApplier.migrate` (versioned migration chain, see below); media uses the CWO1 format (`vault/Cwo1.kt`, byte-exact with `wechat_sns_export/migrate_moments.py`, vectors in `app/src/test/resources/vectors/`). Desktop-created vaults carry a `device_secret` file — `UnlockService` re-binds them to the Android Keystore on first open. The vault DB is NOT Room-managed (Room cannot open externally-created SQLCipher DBs); queries go through raw SQLCipher repositories.
 
 ## Stack (verify against `gradle/libs.versions.toml`)
 
@@ -36,12 +36,17 @@ Local-first encrypted vault for Android (notes, passwords, photos/videos) — no
 **SQLCipher + Room**:
 - `sqlcipher-android` is declared `@aar` → no transitive deps → keep `androidx.sqlite:sqlite` explicit in `app/build.gradle.kts`
 - `System.loadLibrary("sqlcipher")` required before any DB use (already in `VaultDatabase.create`)
-- **Vault DB is initialized from raw SQL, not Room entities**: `VaultCreator` creates `vault.db` via `net.zetetic...SQLiteDatabase.openOrCreateDatabase(File, VaultKeyBytes, ...)` and executes `assets/schema.sql` (kept in sync with `docs/schema.sql` — edit both). Room's `VaultDatabase` is a separate layer for record tables
+- **Vault DB is initialized from raw SQL, not Room entities**: `VaultCreator` creates `vault.db` via `net.zetetic...SQLiteDatabase.openOrCreateDatabase(File, VaultKeyBytes, ...)` and `SchemaApplier.migrate` applies the versioned chain in `assets/migrations/` (`v1__init.sql`, `v2__moments.sql`, ... — mirrors of `docs/migrations/`, edit both). Room's `VaultDatabase` is a separate layer for record tables
 - Onboarding writes `vault.meta` (canonical sorted-key JSON, MAC'd with SMK[32:64], Crockford Base32 binary fields) before creating the DB — see `vault/VaultMeta.kt`; the `mac` field is excluded from its own MAC computation
 - Room 2.8: `RoomDatabase` implements `AutoCloseable`, **not** `Closeable` — `kotlin.io.use {}` does not compile on it
 - Schema exported to committed `app/schemas/` (`room.schemaLocation` in build.gradle.kts); any entity/column change updates `.../VaultDatabase/1.json`
 - **Migrations: Room `Migration` objects + `MigrationTestHelper`, not Flyway.** Never `fallbackToDestructiveMigration` in release (silent data loss in a vault)
 - Passphrase is passed into `VaultDatabase.create()`; the intended flow (see `passphraseCanBeDerivedFromArgon2` test) is Argon2 KDF → SQLCipher passphrase. Key rotation (master password change) is `PRAGMA rekey` at unlock time, orthogonal to schema migrations
+
+**Error handling**:
+- **Always log the raw exception before mapping it to a user-facing message** (`Log.e(TAG, "<what> failed", e)`) — `e.message` alone (e.g. SQLite's `unknown error (code 0)`) is useless for diagnosis and must never be the only trace of a failure. Catch `Throwable` in coroutine catch sites that guard JNI/DB calls: `UnsatisfiedLinkError`/`OutOfMemoryError` are `Error`s, not `Exception`s, and slip through `catch (e: Exception)`
+- **Vault DB migrations are a versioned chain, not a rolling schema**: scripts in `assets/migrations/` are immutable once applied — add new ones (`v3__<desc>.sql`), never edit old ones. Progress is `PRAGMA user_version`; forward-only, a newer-version vault fails loudly on an older app. `SchemaApplier` forces `IF NOT EXISTS` on CREATEs (desktop-created vaults may have later-version tables while reporting an older version) and routes `PRAGMA` statements through `rawQuery` (some return rows; `execSQL` rejects that). Schema changes must also be replayed by the desktop tool (`wechat_sns_export`) — plain SQL, no tool-specific history table
+- Migration scripts (`v*.sql`) must stay comment-free: `SchemaApplier` splits on `;` before executing, so a `;` inside a `--` comment produces bogus "statements" (SQL syntax errors on vault open). Keep docs in the git history / design docs instead
 
 **Device/CI**:
 - Physical device installs can fail with `INSTALL_FAILED_USER_RESTRICTED` → user must enable "Install via USB" in Developer options
