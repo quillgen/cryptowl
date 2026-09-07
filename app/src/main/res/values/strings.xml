@@ -49,6 +49,13 @@
     <!-- Chat -->
     <string name="chat_agent_name">AI</string>
     <string name="chat_back">Back</string>
+    <string name="chat_initializing_title">Initializing model</string>
+    <string name="chat_initializing_content">This may take a while on first launch. Please keep the app open.</string>
+    <string name="chat_error_title">Model error</string>
+    <string name="chat_system_prompt">System prompt</string>
+    <string name="chat_system_prompt_placeholder">Enter system prompt…</string>
+    <string name="chat_system_prompt_updated">System prompt updated</string>
+    <string name="chat_restore_default">Restore default</string>
     <string name="chat_show_thinking">Show thinking</string>
     <string name="chat_hide_thinking">Hide thinking</string>
     <string name="chat_copy">Copy</string>

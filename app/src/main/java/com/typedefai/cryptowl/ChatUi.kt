@@ -1,6 +1,7 @@
 package com.typedefai.cryptowl
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -50,18 +51,23 @@ import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -102,6 +108,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -421,6 +428,7 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
     }
 
     var showParamsDialog by remember { mutableStateOf(false) }
+    val systemPromptUpdatedMessage = stringResource(R.string.chat_system_prompt_updated)
     val copyHandler = rememberCopyHandler()
 
     Column(
@@ -524,6 +532,61 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
         )
     }
 
+    // Model init on screen open (gallery ChatView LaunchedEffect).
+    LaunchedEffect(Unit) {
+        viewModel.loadSystemPrompt()
+        viewModel.initializeIfNeeded()
+    }
+
+    // Full-screen initializing overlay (gallery ChatPanel loading screen).
+    if (viewModel.initStatus == ChatViewModel.InitStatus.INITIALIZING) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CircularProgressIndicator()
+                Text(
+                    stringResource(R.string.chat_initializing_title),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Text(
+                    stringResource(R.string.chat_initializing_content),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+
+    // Error dialog when initialization failed (gallery ChatPanel ErrorDialog).
+    if (viewModel.initStatus == ChatViewModel.InitStatus.ERROR) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(stringResource(R.string.chat_error_title)) },
+            text = { Text(viewModel.initError) },
+            confirmButton = {
+                TextButton(onClick = viewModel::cleanup) {
+                    Text(stringResource(R.string.chat_back))
+                }
+            },
+        )
+    }
+
+    // Block system back while initializing or generating (gallery BackHandler).
+    BackHandler {
+        if (viewModel.initStatus != ChatViewModel.InitStatus.INITIALIZING && !viewModel.generating) {
+            viewModel.cleanup()
+            onBack?.invoke()
+        }
+    }
+
     if (showParamsDialog) {
         ParametersDialog(
             topK = viewModel.topK,
@@ -533,10 +596,17 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
             thinking = viewModel.thinking,
             speculativeDecoding = viewModel.speculativeDecoding,
             accelerator = viewModel.accelerator,
+            systemPrompt = viewModel.systemPrompt,
             onDismiss = { showParamsDialog = false },
-            onApply = { newTopK, newTopP, newTemperature, newMaxTokens, newAccelerator, newThinking, newSpecDec ->
+            onApply = { newTopK, newTopP, newTemperature, newMaxTokens, newAccelerator, newThinking, newSpecDec, newSystemPrompt ->
                 showParamsDialog = false
                 viewModel.updateSettings(newTopK, newTopP, newTemperature, newMaxTokens, newAccelerator, newThinking, newSpecDec)
+                if (newSystemPrompt != viewModel.systemPrompt) {
+                    viewModel.applySystemPromptChange(
+                        newSystemPrompt,
+                        systemPromptUpdatedMessage,
+                    )
+                }
             },
         )
     }
@@ -563,8 +633,9 @@ private fun ParametersDialog(
     thinking: Boolean,
     speculativeDecoding: Boolean,
     accelerator: String,
+    systemPrompt: String,
     onDismiss: () -> Unit,
-    onApply: (Int, Float, Float, Int, String, Boolean, Boolean) -> Unit,
+    onApply: (Int, Float, Float, Int, String, Boolean, Boolean, String) -> Unit,
 ) {
     var curTopK by remember { mutableStateOf(topK) }
     var curTopP by remember { mutableStateOf(topP) }
@@ -573,78 +644,117 @@ private fun ParametersDialog(
     var curThinking by remember { mutableStateOf(thinking) }
     var curSpeculativeDecoding by remember { mutableStateOf(speculativeDecoding) }
     var curAccelerator by remember { mutableStateOf(accelerator) }
+    var curSystemPrompt by remember { mutableStateOf(systemPrompt) }
+    var selectedTab by remember { mutableIntStateOf(0) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.chat_parameters)) },
         text = {
             Column {
-                // Max tokens: gallery NumberSliderConfig(2000..maxContextLength=32000, default 4000).
-                Text(stringResource(R.string.chat_max_tokens), style = MaterialTheme.typography.titleSmall)
-                Slider(
-                    value = curMaxTokens.toFloat(),
-                    onValueChange = { curMaxTokens = it.toInt() },
-                    valueRange = 2000f..32000f,
-                )
-                // Top-K: gallery NumberSliderConfig(1..100, default 64).
-                Text(stringResource(R.string.chat_top_k), style = MaterialTheme.typography.titleSmall)
-                Slider(
-                    value = curTopK.toFloat(),
-                    onValueChange = { curTopK = it.toInt() },
-                    valueRange = 1f..100f,
-                )
-                // Top-P: gallery NumberSliderConfig(0..1, default 0.95).
-                Text(stringResource(R.string.chat_top_p), style = MaterialTheme.typography.titleSmall)
-                Slider(
-                    value = curTopP,
-                    onValueChange = { curTopP = it },
-                    valueRange = 0f..1f,
-                )
-                // Temperature: gallery NumberSliderConfig(0..2, default 1.0).
-                Text(stringResource(R.string.chat_temperature), style = MaterialTheme.typography.titleSmall)
-                Slider(
-                    value = curTemperature,
-                    onValueChange = { curTemperature = it },
-                    valueRange = 0f..2f,
-                )
-                // Accelerator: gallery SegmentedButtonConfig (gpu/cpu).
-                Text(stringResource(R.string.chat_accelerator), style = MaterialTheme.typography.titleSmall)
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    listOf("gpu", "cpu").forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = 2),
-                            selected = curAccelerator == label,
-                            onClick = { curAccelerator = label },
+                // Tabs: model config / system prompt (gallery ConfigDialog).
+                TabRow(selectedTabIndex = selectedTab) {
+                    Tab(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        text = { Text(stringResource(R.string.chat_parameters)) },
+                    )
+                    Tab(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        text = { Text(stringResource(R.string.chat_system_prompt)) },
+                    )
+                }
+                if (selectedTab == 0) {
+                    Column {
+                        // Max tokens: gallery NumberSliderConfig(2000..maxContextLength=4096, default 4096).
+                        Text(stringResource(R.string.chat_max_tokens), style = MaterialTheme.typography.titleSmall)
+                        Slider(
+                            value = curMaxTokens.toFloat(),
+                            onValueChange = { curMaxTokens = it.toInt() },
+                            valueRange = 2000f..ChatViewModel.DEFAULT_MAX_TOKENS.toFloat(),
+                        )
+                        // Top-K: gallery NumberSliderConfig(1..100, default 64).
+                        Text(stringResource(R.string.chat_top_k), style = MaterialTheme.typography.titleSmall)
+                        Slider(
+                            value = curTopK.toFloat(),
+                            onValueChange = { curTopK = it.toInt() },
+                            valueRange = 1f..100f,
+                        )
+                        // Top-P: gallery NumberSliderConfig(0..1, default 0.95).
+                        Text(stringResource(R.string.chat_top_p), style = MaterialTheme.typography.titleSmall)
+                        Slider(
+                            value = curTopP,
+                            onValueChange = { curTopP = it },
+                            valueRange = 0f..1f,
+                        )
+                        // Temperature: gallery NumberSliderConfig(0..2, default 1.0).
+                        Text(stringResource(R.string.chat_temperature), style = MaterialTheme.typography.titleSmall)
+                        Slider(
+                            value = curTemperature,
+                            onValueChange = { curTemperature = it },
+                            valueRange = 0f..2f,
+                        )
+                        // Accelerator: gallery SegmentedButtonConfig (gpu/cpu).
+                        Text(stringResource(R.string.chat_accelerator), style = MaterialTheme.typography.titleSmall)
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text(label.uppercase())
+                            listOf("gpu", "cpu").forEachIndexed { index, label ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(index = index, count = 2),
+                                    selected = curAccelerator == label,
+                                    onClick = { curAccelerator = label },
+                                ) {
+                                    Text(label.uppercase())
+                                }
+                            }
+                        }
+                        // Thinking: gallery BooleanSwitchConfig (Gemma 4 supports it).
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(stringResource(R.string.chat_enable_thinking), style = MaterialTheme.typography.titleSmall)
+                            Switch(checked = curThinking, onCheckedChange = { curThinking = it })
+                        }
+                        // Speculative decoding / MTP: gallery BooleanSwitchConfig.
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(stringResource(R.string.chat_enable_speculative), style = MaterialTheme.typography.titleSmall)
+                            Switch(checked = curSpeculativeDecoding, onCheckedChange = { curSpeculativeDecoding = it })
                         }
                     }
-                }
-                // Thinking: gallery BooleanSwitchConfig (Gemma 4 supports it).
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(stringResource(R.string.chat_enable_thinking), style = MaterialTheme.typography.titleSmall)
-                    Switch(checked = curThinking, onCheckedChange = { curThinking = it })
-                }
-                // Speculative decoding / MTP: gallery BooleanSwitchConfig.
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(stringResource(R.string.chat_enable_speculative), style = MaterialTheme.typography.titleSmall)
-                    Switch(checked = curSpeculativeDecoding, onCheckedChange = { curSpeculativeDecoding = it })
+                } else {
+                    // System prompt editor (gallery ConfigDialog system prompt tab).
+                    OutlinedTextField(
+                        value = curSystemPrompt,
+                        onValueChange = { curSystemPrompt = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 160.dp, max = 280.dp),
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        placeholder = { Text(stringResource(R.string.chat_system_prompt_placeholder)) },
+                    )
+                    OutlinedButton(
+                        onClick = { curSystemPrompt = "" },
+                        modifier = Modifier.padding(top = 8.dp),
+                    ) {
+                        Text(stringResource(R.string.chat_restore_default))
+                    }
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                onApply(curTopK, curTopP, curTemperature, curMaxTokens, curAccelerator, curThinking, curSpeculativeDecoding)
+                onApply(
+                    curTopK, curTopP, curTemperature, curMaxTokens,
+                    curAccelerator, curThinking, curSpeculativeDecoding, curSystemPrompt,
+                )
             }) {
                 Text(stringResource(R.string.chat_apply))
             }

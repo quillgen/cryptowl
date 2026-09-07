@@ -49,6 +49,13 @@
     <!-- Chat -->
     <string name="chat_agent_name">AI</string>
     <string name="chat_back">返回</string>
+    <string name="chat_initializing_title">正在初始化模型</string>
+    <string name="chat_initializing_content">首次啟動可能需要一些時間，請稍候。</string>
+    <string name="chat_error_title">模型錯誤</string>
+    <string name="chat_system_prompt">系統提示詞</string>
+    <string name="chat_system_prompt_placeholder">輸入系統提示詞…</string>
+    <string name="chat_system_prompt_updated">系統提示詞已更新</string>
+    <string name="chat_restore_default">恢復預設</string>
     <string name="chat_show_thinking">顯示思考過程</string>
     <string name="chat_hide_thinking">隱藏思考過程</string>
     <string name="chat_copy">複製</string>

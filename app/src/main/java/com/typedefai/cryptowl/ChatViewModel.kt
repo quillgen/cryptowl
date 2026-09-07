@@ -23,9 +23,7 @@ import com.google.ai.edge.litertlm.MessageCallback
 import com.google.ai.edge.litertlm.SamplerConfig
 import java.io.File
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class ChatMessage(val isUser: Boolean) {
     var text by mutableStateOf("")
@@ -34,12 +32,30 @@ data class ChatMessage(val isUser: Boolean) {
     var latencyMs by mutableStateOf(-1f)
 }
 
-class ChatViewModel : ViewModel() {
+/**
+ * Mirrors the AI Edge Gallery's LLM chat model management:
+ * - config values are in-memory per session, seeded from the model's defaults
+ *   (topK=64, topP=0.95, temperature=1.0, maxTokens=4096 — the E2B allowlist
+ *   entry's defaultConfig, slider capped at its 4096 context length)
+ * - only the system prompt persists (gallery: DataStore; here: SharedPreferences)
+ * - the model initializes when the chat screen opens (INITIALIZING overlay +
+ *   error dialog), and cleans up when leaving the screen
+ */
+class ChatViewModel(private val appContext: Context) : ViewModel() {
+
+    enum class InitStatus { NOT_INITIALIZED, INITIALIZING, INITIALIZED, ERROR }
 
     private val _messages = mutableStateListOf<ChatMessage>()
     val messages: List<ChatMessage> get() = _messages
 
-    var status by mutableStateOf("Loading model...")
+    /** Header status line ("Model ready: ..."). */
+    var status by mutableStateOf("")
+        private set
+
+    var initStatus by mutableStateOf(InitStatus.NOT_INITIALIZED)
+        private set
+
+    var initError by mutableStateOf("")
         private set
 
     var ready by mutableStateOf(false)
@@ -51,67 +67,76 @@ class ChatViewModel : ViewModel() {
     var backendName by mutableStateOf(BACKEND_GPU_LABEL)
         private set
 
-    // Sampler parameters (gallery defaults: topK=64, topP=0.95, temperature=1.0, maxTokens=4000).
-    var topK by mutableStateOf(64)
+    // Sampler parameters (gallery defaults for Gemma 3n/4 E2B: topK=64,
+    // topP=0.95, temperature=1.0, maxTokens=4096 = context length).
+    var topK by mutableStateOf(DEFAULT_TOPK)
         private set
-    var topP by mutableStateOf(0.95f)
+    var topP by mutableStateOf(DEFAULT_TOPP)
         private set
-    var temperature by mutableStateOf(1.0f)
+    var temperature by mutableStateOf(DEFAULT_TEMPERATURE)
         private set
-    var maxTokens by mutableStateOf(4000)
+    var maxTokens by mutableStateOf(DEFAULT_MAX_TOKENS)
         private set
 
     /** Accelerator ("gpu"/"cpu"), gallery ACCELERATOR segmented config. */
     var accelerator by mutableStateOf(ACCELERATOR_GPU)
         private set
 
-    /** Thinking mode (gallery ENABLE_THINKING toggle; Gemma 4 supports it). */
+    /** Thinking mode (gallery ENABLE_THINKING toggle; Gemma supports it). */
     var thinking by mutableStateOf(false)
 
-    /** Speculative decoding / MTP (gallery ENABLE_SPECULATIVE_DECODING toggle).
-     *  Disabled by default: loadModel still probes the model and enables it
-     *  only when both the model supports it and this toggle is on. */
+    /** Speculative decoding / MTP (gallery ENABLE_SPECULATIVE_DECODING toggle,
+     *  default false like gallery). */
     var speculativeDecoding by mutableStateOf(false)
+
+    // System prompt (gallery SystemPromptRepository: persisted custom prompt,
+    // empty default for the plain chat task).
+    var systemPrompt by mutableStateOf("")
+        private set
 
     private var backend: Backend = Backend.GPU()
     private var modelDirectory: File? = null
     private var engine: Engine? = null
     private var conversation: Conversation? = null
-    private var loadJob: Job? = null
 
-    fun initializeModel(modelDirectory: File) {
-        this.modelDirectory = modelDirectory
-        loadJob = viewModelScope.launch(Dispatchers.Default) {
-            status = loadModel(modelDirectory)
-            ready = conversation != null
+    // ---------------------------------------------------------------- prompt
+
+    fun loadSystemPrompt() {
+        systemPrompt = appContext
+            .getSharedPreferences(SYSTEM_PROMPT_PREFS, Context.MODE_PRIVATE)
+            .getString("system_prompt", "") ?: ""
+    }
+
+    /** Persists and applies immediately (gallery applySystemPromptChange). */
+    fun applySystemPromptChange(newPrompt: String, updatedMessage: String) {
+        systemPrompt = newPrompt
+        appContext.getSharedPreferences(SYSTEM_PROMPT_PREFS, Context.MODE_PRIVATE)
+            .edit().putString("system_prompt", newPrompt).apply()
+        if (initStatus != InitStatus.INITIALIZED) return
+        _messages.add(ChatMessage(isUser = false).also { it.text = updatedMessage })
+        viewModelScope.launch(Dispatchers.Default) {
+            resetConversationLocked(systemInstruction = Contents.of(newPrompt))
         }
     }
 
-    /**
-     * Loads the first `.litertlm` model found in the app's model folder
-     * (`<getExternalFilesDir>/model/`, mirroring the AI Edge Gallery layout,
-     * with `<filesDir>/model/` as fallback). Safe to call repeatedly: skips
-     * when already loaded or a load is in progress.
-     */
-    fun loadFromAppData(context: Context) {
-        if (ready || loadJob?.isActive == true) return
-        val dir = findModelDirectory(context) ?: run {
-            status = "No model found. Copy a .litertlm model to:\n" +
-                File(context.getExternalFilesDir(null), MODEL_DIR).absolutePath
+    // ------------------------------------------------------- initialization
+
+    /** Chat screen entry point (gallery ChatView LaunchedEffect). */
+    fun initializeIfNeeded() {
+        if (initStatus == InitStatus.INITIALIZING) return
+        if (initStatus == InitStatus.INITIALIZED && conversation != null) return
+        val dir = findModelDirectory(appContext) ?: run {
+            initStatus = InitStatus.ERROR
+            initError = "No model found. Copy a .litertlm model to:\n" +
+                File(appContext.getExternalFilesDir(null), MODEL_DIR).absolutePath
+            status = initError
             return
         }
-        initializeModel(dir)
+        initializeModel(dir, force = false)
     }
 
-    private fun findModelDirectory(context: Context): File? {
-        val external = File(context.getExternalFilesDir(null), MODEL_DIR)
-        if (external.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return external
-        val internal = File(context.filesDir, MODEL_DIR)
-        if (internal.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return internal
-        return null
-    }
-
-    /** Applies all settings from the config dialog; reloads the engine when the backend changed. */
+    /** Applies all settings from the config dialog; always re-initializes the
+     *  engine (gallery: every config has needReinitialization = true). */
     fun updateSettings(
         newTopK: Int,
         newTopP: Float,
@@ -128,45 +153,71 @@ class ChatViewModel : ViewModel() {
         maxTokens = newMaxTokens
         thinking = newThinking
         speculativeDecoding = newSpeculativeDecoding
+        accelerator = newAccelerator
+        backend = acceleratorToBackend(newAccelerator)
+        backendName = newAccelerator.uppercase()
+        // Gallery re-initializes the whole engine on any config change.
+        modelDirectory?.let { initializeModel(it, force = true) }
+    }
 
-        if (newAccelerator != accelerator) {
-            accelerator = newAccelerator
-            backend = acceleratorToBackend(newAccelerator)
-            backendName = newAccelerator.uppercase()
-            val directory = modelDirectory ?: return
-            _messages.clear()
-            viewModelScope.launch(Dispatchers.Default) {
-                closeEngine()
-                status = loadModel(directory)
-                ready = conversation != null
+    fun initializeModel(modelDirectory: File, force: Boolean) {
+        if (generating) return
+        // Skip if initialized already (gallery ModelManagerViewModel).
+        if (!force && initStatus == InitStatus.INITIALIZED && conversation != null) return
+        if (initStatus == InitStatus.INITIALIZING) return
+        this.modelDirectory = modelDirectory
+        initStatus = InitStatus.INITIALIZING
+        viewModelScope.launch(Dispatchers.Default) {
+            val error = loadModel(modelDirectory)
+            if (error == null && conversation != null) {
+                initStatus = InitStatus.INITIALIZED
+                ready = true
+            } else {
+                initStatus = InitStatus.ERROR
+                initError = error ?: "Unknown error"
+                status = initError
+                ready = false
             }
-        } else {
-            resetConversation()
         }
     }
 
     private fun acceleratorToBackend(label: String): Backend =
         if (label == ACCELERATOR_GPU) Backend.GPU() else Backend.CPU()
 
+    private fun findModelDirectory(context: Context): File? {
+        val external = File(context.getExternalFilesDir(null), MODEL_DIR)
+        if (external.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return external
+        val internal = File(context.filesDir, MODEL_DIR)
+        if (internal.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return internal
+        return null
+    }
+
     /** Clears the chat and creates a fresh conversation with the current parameters. */
     fun resetConversation() {
         if (generating) return
+        if (initStatus != InitStatus.INITIALIZED) return
         _messages.clear()
-        val engine = engine ?: return
         viewModelScope.launch(Dispatchers.Default) {
-            try {
-                conversation?.close()
-            } catch (e: Exception) {
-                Log.w(TAG, "Conversation close failed", e)
-            }
-            conversation = engine.createConversation(createConversationConfig())
+            resetConversationLocked(systemInstruction = Contents.of(systemPrompt))
             status = "New conversation ($backendName)"
         }
     }
 
     @OptIn(ExperimentalApi::class)
-    private fun createConversationConfig() = ConversationConfig(
+    private suspend fun resetConversationLocked(systemInstruction: Contents?) {
+        val engine = engine ?: return
+        try {
+            conversation?.close()
+        } catch (e: Exception) {
+            Log.w(TAG, "Conversation close failed", e)
+        }
+        conversation = engine.createConversation(createConversationConfig(systemInstruction))
+    }
+
+    @OptIn(ExperimentalApi::class)
+    private fun createConversationConfig(systemInstruction: Contents?) = ConversationConfig(
         samplerConfig = SamplerConfig(topK = topK, topP = topP.toDouble(), temperature = temperature.toDouble()),
+        systemInstruction = systemInstruction,
     )
 
     private fun closeEngine() {
@@ -184,8 +235,16 @@ class ChatViewModel : ViewModel() {
         conversation = null
     }
 
+    /** Leaving the chat screen (gallery cleans up all task models on back nav). */
+    fun cleanup() {
+        closeEngine()
+        initStatus = InitStatus.NOT_INITIALIZED
+        ready = false
+        status = ""
+    }
+
     @OptIn(ExperimentalApi::class)
-    private fun loadModel(modelDirectory: File): String {
+    private fun loadModel(modelDirectory: File): String? {
         val modelFile = modelDirectory.listFiles { file -> file.extension == MODEL_EXT }?.firstOrNull()
             ?: return "No model found in:\n${modelDirectory.absolutePath}"
         return try {
@@ -204,9 +263,9 @@ class ChatViewModel : ViewModel() {
             } catch (e: Exception) {
                 // Ignore exceptions and assume not supported.
             }
-            Log.d(TAG, "loadModel: speculativeDecoding supported=$supportsSpeculativeDecoding")
             val speculativeDecodingEnabled = supportsSpeculativeDecoding && speculativeDecoding
             ExperimentalFlags.enableSpeculativeDecoding = speculativeDecodingEnabled
+            Log.d(TAG, "loadModel: speculativeDecoding enabled=$speculativeDecodingEnabled")
 
             var loaded: Engine? = null
             try {
@@ -229,9 +288,10 @@ class ChatViewModel : ViewModel() {
 
             engine = loaded
             Log.d(TAG, "loadModel: creating conversation")
-            conversation = loaded.createConversation(createConversationConfig())
+            conversation = loaded.createConversation(createConversationConfig(Contents.of(systemPrompt)))
             Log.d(TAG, "loadModel: success")
-            "Model ready: ${modelFile.name} ($backendName)"
+            status = "Model ready: ${modelFile.name} ($backendName)"
+            null
         } catch (e: Exception) {
             Log.e(TAG, "Model load failed", e)
             "Model load failed: ${e.message}"
@@ -241,12 +301,14 @@ class ChatViewModel : ViewModel() {
     private fun engineConfig(modelFile: File, backend: Backend) = EngineConfig(
         modelPath = modelFile.absolutePath,
         backend = backend,
-        // Gemma 4 E2B is multimodal; the gallery enables vision+audio backends
+        // Gemma E2B is multimodal; the gallery enables vision+audio backends
         // for it even in chat (llmSupportImage/llmSupportAudio).
         visionBackend = Backend.GPU(),
         audioBackend = Backend.CPU(),
         maxNumTokens = maxTokens,
     )
+
+    // ------------------------------------------------------------ inference
 
     fun sendMessage(text: String) {
         val conversation = conversation ?: return
@@ -328,6 +390,7 @@ class ChatViewModel : ViewModel() {
     /** Public close for non-ViewModelProvider owners (MainViewModel holds this instance). */
     fun close() {
         closeEngine()
+        initStatus = InitStatus.NOT_INITIALIZED
         ready = false
     }
 
@@ -335,9 +398,16 @@ class ChatViewModel : ViewModel() {
         private const val TAG = "ChatViewModel"
         private const val MODEL_EXT = "litertlm"
         private const val MODEL_DIR = "model"
+        private const val SYSTEM_PROMPT_PREFS = "cryptowl.chat.settings"
         private const val BACKEND_GPU_LABEL = "GPU"
         private const val BACKEND_CPU_LABEL = "CPU"
         private const val ACCELERATOR_GPU = "gpu"
+
+        // Gallery Consts.kt + Gemma E2B model defaults (model_allowlist.json).
+        const val DEFAULT_MAX_TOKENS = 4096
+        const val DEFAULT_TOPK = 64
+        const val DEFAULT_TOPP = 0.95f
+        const val DEFAULT_TEMPERATURE = 1.0f
 
         // Gallery Consts.kt + LlmChatViewModel.
         private const val THOUGHT_CHANNEL = "thought"

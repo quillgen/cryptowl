@@ -71,16 +71,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val vaultId = VaultStore.DEFAULT_VAULT_ID
 
-    /** On-device LLM chat (LiteRT-LM). Owned here so the engine survives screen changes. */
-    val chat = ChatViewModel()
+    /** On-device LLM chat (LiteRT-LM). Owned here so the engine survives screen changes.
+     *  Gallery behavior: the model initializes when the chat screen opens and
+     *  is cleaned up when leaving it — not loaded at app start. */
+    val chat = ChatViewModel(getApplication<Application>().applicationContext)
 
     init {
         val onboarded = VaultStore.isOnboarded(getApplication())
         _screen.value = if (onboarded) AppScreen.Home else AppScreen.Intro
-        // Load the model at start and keep it in memory (spec: eager load).
-        if (onboarded) {
-            chat.loadFromAppData(getApplication())
-        }
     }
 
     fun startOnboarding() {
