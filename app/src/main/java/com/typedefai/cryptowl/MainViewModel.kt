@@ -30,6 +30,7 @@ sealed interface AppScreen {
     data object Home : AppScreen
     data object Unlock : AppScreen
     data object Moments : AppScreen
+    data object Chat : AppScreen
 }
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
@@ -70,9 +71,16 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val vaultId = VaultStore.DEFAULT_VAULT_ID
 
+    /** On-device LLM chat (LiteRT-LM). Owned here so the engine survives screen changes. */
+    val chat = ChatViewModel()
+
     init {
         val onboarded = VaultStore.isOnboarded(getApplication())
         _screen.value = if (onboarded) AppScreen.Home else AppScreen.Intro
+        // Load the model at start and keep it in memory (spec: eager load).
+        if (onboarded) {
+            chat.loadFromAppData(getApplication())
+        }
     }
 
     fun startOnboarding() {
@@ -196,5 +204,20 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         _session.value?.close()
         _session.value = null
         _screen.value = AppScreen.Home
+    }
+
+    // ------------------------------------------------------------ ai chat
+
+    /** Chat is only reachable from an unlocked vault (Moments). */
+    fun openChat() {
+        _screen.value = AppScreen.Chat
+    }
+
+    fun closeChat() {
+        _screen.value = AppScreen.Moments
+    }
+
+    override fun onCleared() {
+        chat.close()
     }
 }

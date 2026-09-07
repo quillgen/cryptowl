@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -41,6 +42,12 @@ class MainActivity : AppCompatActivity() {
                     AppScreen.Home -> VaultHomeScreen(viewModel)
                     AppScreen.Unlock -> UnlockScreen(viewModel)
                     AppScreen.Moments -> MomentsScreen(viewModel)
+                    AppScreen.Chat ->
+                        ChatScreen(
+                            viewModel = viewModel.chat,
+                            agentName = stringResource(R.string.chat_agent_name),
+                            onBack = viewModel::closeChat,
+                        )
                 }
             }
         }

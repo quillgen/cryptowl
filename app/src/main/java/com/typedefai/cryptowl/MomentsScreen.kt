@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
@@ -87,6 +89,7 @@ fun MomentsScreen(viewModel: MainViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
+                .statusBarsPadding()
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -97,6 +100,9 @@ fun MomentsScreen(viewModel: MainViewModel) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f),
             )
+            IconButton(onClick = viewModel::openChat) {
+                Icon(Icons.AutoMirrored.Outlined.Chat, contentDescription = stringResource(R.string.moments_chat))
+            }
             IconButton(onClick = viewModel::lockVault) {
                 Icon(Icons.Filled.Lock, contentDescription = stringResource(R.string.moments_lock))
             }

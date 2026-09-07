@@ -1,5 +1,6 @@
 package com.typedefai.cryptowl
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -22,6 +23,7 @@ import com.google.ai.edge.litertlm.MessageCallback
 import com.google.ai.edge.litertlm.SamplerConfig
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -66,20 +68,47 @@ class ChatViewModel : ViewModel() {
     /** Thinking mode (gallery ENABLE_THINKING toggle; Gemma 4 supports it). */
     var thinking by mutableStateOf(false)
 
-    /** Speculative decoding / MTP (gallery ENABLE_SPECULATIVE_DECODING toggle). */
+    /** Speculative decoding / MTP (gallery ENABLE_SPECULATIVE_DECODING toggle).
+     *  Disabled by default: loadModel still probes the model and enables it
+     *  only when both the model supports it and this toggle is on. */
     var speculativeDecoding by mutableStateOf(false)
 
     private var backend: Backend = Backend.GPU()
     private var modelDirectory: File? = null
     private var engine: Engine? = null
     private var conversation: Conversation? = null
+    private var loadJob: Job? = null
 
     fun initializeModel(modelDirectory: File) {
         this.modelDirectory = modelDirectory
-        viewModelScope.launch(Dispatchers.Default) {
+        loadJob = viewModelScope.launch(Dispatchers.Default) {
             status = loadModel(modelDirectory)
             ready = conversation != null
         }
+    }
+
+    /**
+     * Loads the first `.litertlm` model found in the app's model folder
+     * (`<getExternalFilesDir>/model/`, mirroring the AI Edge Gallery layout,
+     * with `<filesDir>/model/` as fallback). Safe to call repeatedly: skips
+     * when already loaded or a load is in progress.
+     */
+    fun loadFromAppData(context: Context) {
+        if (ready || loadJob?.isActive == true) return
+        val dir = findModelDirectory(context) ?: run {
+            status = "No model found. Copy a .litertlm model to:\n" +
+                File(context.getExternalFilesDir(null), MODEL_DIR).absolutePath
+            return
+        }
+        initializeModel(dir)
+    }
+
+    private fun findModelDirectory(context: Context): File? {
+        val external = File(context.getExternalFilesDir(null), MODEL_DIR)
+        if (external.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return external
+        val internal = File(context.filesDir, MODEL_DIR)
+        if (internal.listFiles { f -> f.extension == MODEL_EXT }?.any() == true) return internal
+        return null
     }
 
     /** Applies all settings from the config dialog; reloads the engine when the backend changed. */
@@ -160,6 +189,7 @@ class ChatViewModel : ViewModel() {
         val modelFile = modelDirectory.listFiles { file -> file.extension == MODEL_EXT }?.firstOrNull()
             ?: return "No model found in:\n${modelDirectory.absolutePath}"
         return try {
+            Log.d(TAG, "loadModel: model=${modelFile.name}, backend=${backendName}")
             // Mirror gallery: disable experimental flags explicitly around engine
             // and conversation creation.
             ExperimentalFlags.enableSpeculativeDecoding = false
@@ -174,25 +204,33 @@ class ChatViewModel : ViewModel() {
             } catch (e: Exception) {
                 // Ignore exceptions and assume not supported.
             }
+            Log.d(TAG, "loadModel: speculativeDecoding supported=$supportsSpeculativeDecoding")
             val speculativeDecodingEnabled = supportsSpeculativeDecoding && speculativeDecoding
             ExperimentalFlags.enableSpeculativeDecoding = speculativeDecodingEnabled
 
             var loaded: Engine? = null
             try {
+                Log.d(TAG, "loadModel: creating engine with $backendName backend")
                 loaded = Engine(engineConfig(modelFile, backend))
+                Log.d(TAG, "loadModel: engine initialize ($backendName)")
                 loaded.initialize()
+                Log.d(TAG, "loadModel: initialize done ($backendName)")
             } catch (e: Exception) {
                 Log.w(TAG, "${backendName} backend failed, falling back to CPU", e)
                 runCatching { loaded?.close() }
                 backend = Backend.CPU()
                 backendName = BACKEND_CPU_LABEL
+                Log.d(TAG, "loadModel: creating engine with $backendName backend (fallback)")
                 loaded = Engine(engineConfig(modelFile, backend))
                 loaded.initialize()
+                Log.d(TAG, "loadModel: initialize done (CPU fallback)")
             }
             ExperimentalFlags.enableSpeculativeDecoding = false
 
             engine = loaded
+            Log.d(TAG, "loadModel: creating conversation")
             conversation = loaded.createConversation(createConversationConfig())
+            Log.d(TAG, "loadModel: success")
             "Model ready: ${modelFile.name} ($backendName)"
         } catch (e: Exception) {
             Log.e(TAG, "Model load failed", e)
@@ -220,6 +258,7 @@ class ChatViewModel : ViewModel() {
         // Token speed + latency, like the gallery's latencyMs bookkeeping.
         val start = System.currentTimeMillis()
         var tokenCount = 0
+        var firstTokenAt = 0L
 
         viewModelScope.launch(Dispatchers.Default) {
             val extraContext =
@@ -240,10 +279,16 @@ class ChatViewModel : ViewModel() {
                         if (delta.startsWith("<ctrl")) {
                             return
                         }
+                        if (firstTokenAt == 0L) {
+                            firstTokenAt = System.currentTimeMillis()
+                        }
                         reply.text += delta
-                        tokenCount++
-                        val elapsedMs = (System.currentTimeMillis() - start).coerceAtLeast(1)
-                        reply.tokenSpeed = tokenCount / (elapsedMs / 1000f)
+                        // Estimate tokens from characters: with speculative
+                        // decoding (MTP) one callback can carry several tokens,
+                        // so counting callbacks would under-report the speed.
+                        tokenCount += (delta.length / AVG_CHARS_PER_TOKEN).coerceAtLeast(1)
+                        val decodeMs = (System.currentTimeMillis() - firstTokenAt).coerceAtLeast(1)
+                        reply.tokenSpeed = tokenCount / (decodeMs / 1000f)
                     }
 
                     override fun onDone() {
@@ -280,9 +325,16 @@ class ChatViewModel : ViewModel() {
         closeEngine()
     }
 
+    /** Public close for non-ViewModelProvider owners (MainViewModel holds this instance). */
+    fun close() {
+        closeEngine()
+        ready = false
+    }
+
     companion object {
         private const val TAG = "ChatViewModel"
         private const val MODEL_EXT = "litertlm"
+        private const val MODEL_DIR = "model"
         private const val BACKEND_GPU_LABEL = "GPU"
         private const val BACKEND_CPU_LABEL = "CPU"
         private const val ACCELERATOR_GPU = "gpu"
@@ -290,5 +342,6 @@ class ChatViewModel : ViewModel() {
         // Gallery Consts.kt + LlmChatViewModel.
         private const val THOUGHT_CHANNEL = "thought"
         private const val THINKING_CONTEXT_KEY = "enable_thinking"
+        private const val AVG_CHARS_PER_TOKEN = 4
     }
 }

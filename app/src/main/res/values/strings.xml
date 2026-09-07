@@ -41,11 +41,14 @@
     <!-- Moments timeline -->
     <string name="moments_title">Moments</string>
     <string name="moments_lock">Lock vault</string>
+    <string name="moments_chat">AI chat</string>
     <string name="moments_empty">No moments yet</string>
     <string name="moments_empty_hint">Import your WeChat Moments archive on the desktop (wechat_sns_export/migrate_moments.py), then copy the vault back to this device.</string>
     <string name="moments_unknown_author">Unknown</string>
 
     <!-- Chat -->
+    <string name="chat_agent_name">AI</string>
+    <string name="chat_back">Back</string>
     <string name="chat_show_thinking">Show thinking</string>
     <string name="chat_hide_thinking">Hide thinking</string>
     <string name="chat_copy">Copy</string>

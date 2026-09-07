@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -355,7 +356,7 @@ class MessageBubbleShape(
 }
 
 @Composable
-fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
+fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)? = null) {
     val listState = rememberScrollState()
     val scope = rememberCoroutineScope()
     val messages = viewModel.messages
@@ -434,6 +435,14 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String) {
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (onBack != null) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.chat_back),
+                    )
+                }
+            }
             Text(
                 text = viewModel.status,
                 style = MaterialTheme.typography.labelMedium,

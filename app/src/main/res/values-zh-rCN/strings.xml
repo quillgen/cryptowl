@@ -41,11 +41,14 @@
     <!-- Moments timeline -->
     <string name="moments_title">朋友圈</string>
     <string name="moments_lock">锁定保险库</string>
+    <string name="moments_chat">AI 聊天</string>
     <string name="moments_empty">还没有朋友圈内容</string>
     <string name="moments_empty_hint">在桌面端导入你的微信朋友圈存档（wechat_sns_export/migrate_moments.py），然后将保险库复制回此设备。</string>
     <string name="moments_unknown_author">未知用户</string>
 
     <!-- Chat -->
+    <string name="chat_agent_name">AI</string>
+    <string name="chat_back">返回</string>
     <string name="chat_show_thinking">显示思考过程</string>
     <string name="chat_hide_thinking">隐藏思考过程</string>
     <string name="chat_copy">复制</string>
