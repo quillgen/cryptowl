@@ -40,6 +40,7 @@
             android:name=".MainActivity"
             android:configChanges="locale|layoutDirection"
             android:exported="true"
+            android:theme="@style/Theme.Cryptowl.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

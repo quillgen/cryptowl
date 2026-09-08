@@ -1,5 +1,8 @@
 package com.typedefai.cryptowl.crypto
 
+import android.os.SystemClock
+import android.util.Log
+
 /**
  * Argon2 password hashing, injectable so JVM unit tests can stub it
  * (the JNI binding cannot run outside a device/emulator).
@@ -49,7 +52,14 @@ class KdfService(
         deviceSecret.use { secret ->
             val preHashed = HmacSha256.mac(key = secret, message = password)
             try {
-                ProtectedValue.fromBinary(hasher.hash(preHashed, salt, params, KEY_SIZE))
+                val t0 = SystemClock.elapsedRealtime()
+                val tmk = hasher.hash(preHashed, salt, params, KEY_SIZE)
+                Log.d(
+                    TAG,
+                    "TMK: argon2 m=${params.mCostKiB}KiB t=${params.tCost} p=${params.parallelism} " +
+                        "hashLen=$KEY_SIZE salt=${salt.toHexString(8)} took=${SystemClock.elapsedRealtime() - t0}ms",
+                )
+                ProtectedValue.fromBinary(tmk)
             } finally {
                 preHashed.fill(0)
             }
@@ -67,7 +77,12 @@ class KdfService(
     ): ProtectedValue = transformedMasterKey.use { tmk ->
         ProtectedValue.fromBinary(
             Hkdf.deriveKey(ikm = tmk, salt = salt, info = vaultId, outputLength = SMK_SIZE),
-        )
+        ).also {
+            Log.d(
+                TAG,
+                "SMK: hkdf salt=${salt.toHexString(8)} info=${vaultId.decodeToString()} L=$SMK_SIZE",
+            )
+        }
     }
 
     /** SMK[0:32] — unwraps the VaultKey (SQLCipher key). */
@@ -102,6 +117,11 @@ class KdfService(
     ): WrappedKey = wrappingKey.use { wk ->
         key.use { k ->
             val encrypted = AesGcm.encrypt(wk, nonce, aad, k)
+            Log.d(
+                TAG,
+                "wrap: aad=${aad.decodeToString()} nonce=${nonce.toHexString()} " +
+                    "cipher=${encrypted.cipherText.size}B tag=${encrypted.authTag.size}B",
+            )
             WrappedKey(cipherText = encrypted.cipherText, nonce = nonce, authTag = encrypted.authTag)
         }
     }
@@ -118,6 +138,11 @@ class KdfService(
                 aad = aad,
                 encrypted = AuthEncryptedData(wrapped.cipherText, wrapped.authTag),
             )
+            Log.d(
+                TAG,
+                "unwrap: aad=${aad.decodeToString()} nonce=${wrapped.nonce.toHexString()} " +
+                    "cipher=${wrapped.cipherText.size}B tag=${wrapped.authTag.size}B",
+            )
             ProtectedValue.fromBinary(plain)
         }
 
@@ -132,6 +157,7 @@ class KdfService(
     }
 
     private companion object {
+        const val TAG = "cwl:KdfService"
         const val KEY_SIZE = 32
         const val SMK_SIZE = 64
     }

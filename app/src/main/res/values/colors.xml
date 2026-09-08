@@ -8,6 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Splash screen (white to match the owl logo's background) -->
+    <color name="splash_background">#FFFFFFFF</color>
+
     <!-- Gallery chat colors (light theme) -->
     <color name="user_bubble">#32628D</color>
     <color name="agent_bubble">#E9EEF6</color>

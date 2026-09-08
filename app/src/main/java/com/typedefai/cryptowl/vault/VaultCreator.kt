@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.typedefai.cryptowl.crypto.KdfParams
 import com.typedefai.cryptowl.crypto.KdfService
+import com.typedefai.cryptowl.crypto.toHexString
 import com.typedefai.cryptowl.crypto.ProtectedValue
 import com.typedefai.cryptowl.crypto.RandomUtil
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -36,12 +37,26 @@ class VaultCreator(
         }
         vaultDir.mkdirs()
 
-        Log.d(TAG, "create: dir=$vaultDir")
+        Log.d(
+            TAG,
+            "create: vault layout — dir=$vaultDir\n" +
+                "  meta=${VaultStore.metaFile(context, vaultId)}\n" +
+                "  config=${VaultStore.configFile(context, vaultId)}\n" +
+                "  configSig=${VaultStore.configSigFile(context, vaultId)}\n" +
+                "  db=${VaultStore.dbFile(context, vaultId)}\n" +
+                "  index=${VaultStore.indexFile(context)}\n" +
+                "  deviceSecret=${VaultStore.deviceSecretFile(context, vaultId)}",
+        )
         val deviceSecret = DeviceSecretStore.getOrCreate(context)
         Log.d(TAG, "create: device secret ready (${deviceSecret.binaryValue().size} bytes)")
         val argon2Salt = RandomUtil.generateSecureBytes(SALT_SIZE)
         val hkdfSalt = RandomUtil.generateSecureBytes(SALT_SIZE)
         val secondarySalt = RandomUtil.generateSecureBytes(SALT_SIZE)
+        Log.d(
+            TAG,
+            "create: salts argon2=${argon2Salt.toHexString(8)} hkdf=${hkdfSalt.toHexString(8)} " +
+                "secondary=${secondarySalt.toHexString(8)}",
+        )
 
         val tmk = kdf.createTransformedMasterKey(masterPassword, deviceSecret, argon2Salt)
         Log.d(TAG, "create: TMK derived")
@@ -76,13 +91,21 @@ class VaultCreator(
 
         try {
             writeConfig(macKey, vaultId)
-            Log.d(TAG, "create: config written")
+            Log.d(
+                TAG,
+                "create: config written (${VaultStore.configFile(context, vaultId).length()}B), " +
+                    "content=${VaultMetaJson.canonicalConfig(vaultId).decodeToString()}",
+            )
             writeMetaAtomically(metaWithMac)
-            Log.d(TAG, "create: vault.meta written")
+            Log.d(
+                TAG,
+                "create: vault.meta written (${VaultStore.metaFile(context, vaultId).length()}B)\n" +
+                    VaultMetaJson.encode(metaWithMac),
+            )
             createDatabase(vaultKey, vaultId)
-            Log.d(TAG, "create: database created")
+            Log.d(TAG, "create: database created (${VaultStore.dbFile(context, vaultId).length()}B)")
             VaultStore.writeIndex(context, vaultId)
-            Log.d(TAG, "create: index written")
+            Log.d(TAG, "create: index written (${VaultStore.indexFile(context).readText()})")
         } finally {
             tmk.clear()
             smk.clear()
@@ -145,7 +168,7 @@ class VaultCreator(
     }
 
     private companion object {
-        const val TAG = "VaultCreator"
+        const val TAG = "cwl:VaultCreator"
         const val META_VERSION = 2
         const val KEY_SIZE = 32
         const val SALT_SIZE = 32

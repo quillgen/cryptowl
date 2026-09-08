@@ -13,4 +13,14 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!-- Splash (Android 12+ system splash via core-splashscreen): plain white
+         screen — the logo + wordmark are drawn by the Compose splash so the
+         icon isn't re-masked/resized by the system (which caused a visible
+         jump between the two stages). -->
+    <style name="Theme.Cryptowl.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
+        <item name="postSplashScreenTheme">@style/Theme.Cryptowl</item>
+    </style>
 </resources>
