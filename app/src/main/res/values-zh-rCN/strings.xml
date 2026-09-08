@@ -76,6 +76,8 @@
     <string name="chat_run_again">重新生成</string>
     <string name="chat_type_prompt">输入提示词…</string>
     <string name="chat_add_content">添加内容</string>
+    <string name="chat_take_picture">拍照</string>
+    <string name="chat_pick_image">从相册选择图片</string>
     <string name="chat_stop">停止</string>
     <string name="chat_send">发送</string>
 

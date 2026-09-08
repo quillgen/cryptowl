@@ -76,6 +76,8 @@
     <string name="chat_run_again">Run again</string>
     <string name="chat_type_prompt">Type prompt…</string>
     <string name="chat_add_content">Add content</string>
+    <string name="chat_take_picture">Take a picture</string>
+    <string name="chat_pick_image">Pick an image from album</string>
     <string name="chat_stop">Stop</string>
     <string name="chat_send">Send</string>
 

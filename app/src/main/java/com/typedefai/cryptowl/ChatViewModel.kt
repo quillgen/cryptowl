@@ -1,6 +1,7 @@
 package com.typedefai.cryptowl
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -21,6 +22,7 @@ import com.google.ai.edge.litertlm.ExperimentalFlags
 import com.google.ai.edge.litertlm.Message
 import com.google.ai.edge.litertlm.MessageCallback
 import com.google.ai.edge.litertlm.SamplerConfig
+import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ data class ChatMessage(val isUser: Boolean) {
     var thinkingText by mutableStateOf("")
     var tokenSpeed by mutableStateOf(0f)
     var latencyMs by mutableStateOf(-1f)
+    var images: List<Bitmap> by mutableStateOf(emptyList())
 }
 
 /**
@@ -310,9 +313,12 @@ class ChatViewModel(private val appContext: Context) : ViewModel() {
 
     // ------------------------------------------------------------ inference
 
-    fun sendMessage(text: String) {
+    fun sendMessage(text: String, images: List<Bitmap> = emptyList()) {
         val conversation = conversation ?: return
-        _messages.add(ChatMessage(isUser = true).also { it.text = text })
+        _messages.add(ChatMessage(isUser = true).also {
+            it.text = text
+            it.images = images
+        })
         val reply = ChatMessage(isUser = false)
         _messages.add(reply)
         generating = true
@@ -325,8 +331,19 @@ class ChatViewModel(private val appContext: Context) : ViewModel() {
         viewModelScope.launch(Dispatchers.Default) {
             val extraContext =
                 if (thinking) mapOf(THINKING_CONTEXT_KEY to "true") else emptyMap()
+
+            // Gallery LlmChatModelHelper.sendToModel: image contents first
+            // (PNG bytes), then the text "for the accurate last token".
+            val contents = mutableListOf<Content>()
+            for (image in images) {
+                contents.add(Content.ImageBytes(image.toPngByteArray()))
+            }
+            if (text.trim().isNotEmpty()) {
+                contents.add(Content.Text(text))
+            }
+
             conversation.sendMessageAsync(
-                Contents.of(listOf(Content.Text(text))),
+                Contents.of(contents),
                 object : MessageCallback {
                     override fun onMessage(message: Message) {
                         // Thinking channel is captured regardless of the text token
@@ -385,6 +402,13 @@ class ChatViewModel(private val appContext: Context) : ViewModel() {
 
     override fun onCleared() {
         closeEngine()
+    }
+
+    /** Bitmap → PNG bytes (gallery LlmChatModelHelper.toPngByteArray). */
+    private fun Bitmap.toPngByteArray(): ByteArray {
+        val stream = ByteArrayOutputStream()
+        this.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
     }
 
     /** Public close for non-ViewModelProvider owners (MainViewModel holds this instance). */

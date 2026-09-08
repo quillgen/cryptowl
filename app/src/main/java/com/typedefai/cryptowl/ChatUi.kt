@@ -1,6 +1,36 @@
 package com.typedefai.cryptowl
 
 import android.widget.Toast
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.AddAPhoto
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
+import java.io.File
+import java.io.FileInputStream
+import kotlin.math.max
+import kotlin.math.roundToInt
+import androidx.compose.runtime.mutableStateListOf
+import kotlinx.coroutines.Dispatchers
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -283,6 +313,10 @@ private fun LongPressCopyContainer(
 /** Port of the gallery's scrollToBottom: scroll to the absolute end (ScrollState.maxValue). */
 private const val SCROLL_ANIMATION_DURATION_MS = 300
 
+/** Gallery LlmChatTaskModule passes showImagePicker=true for the LLM chat task
+ *  (Gemma E2B is multimodal); the audio recorder panel is not ported. */
+private const val SHOW_IMAGE_PICKER = true
+
 private suspend fun scrollToBottom(
     listState: androidx.compose.foundation.ScrollState,
     animate: Boolean = false,
@@ -431,6 +465,32 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
     val systemPromptUpdatedMessage = stringResource(R.string.chat_system_prompt_updated)
     val copyHandler = rememberCopyHandler()
 
+    // Picked images for the next message (gallery MessageInputText pickedImages).
+    val context = LocalContext.current
+    val pickedImages = remember { mutableStateListOf<Bitmap>() }
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            scope.launch(Dispatchers.IO) {
+                handleImagesSelected(context = context, uris = listOf(uri)) { bitmaps ->
+                    pickedImages.addAll(bitmaps)
+                }
+            }
+        }
+    }
+
+    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        val uri = cameraImageUri
+        if (success && uri != null) {
+            scope.launch(Dispatchers.IO) {
+                handleImagesSelected(context = context, uris = listOf(uri)) { bitmaps ->
+                    pickedImages.addAll(bitmaps)
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -525,8 +585,23 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
         MessageInputBar(
             ready = viewModel.ready,
             generating = viewModel.generating,
+            pickedImages = pickedImages,
+            onRemoveImage = { pickedImages.removeAt(it) },
+            showImagePicker = SHOW_IMAGE_PICKER,
+            onPickImageFromAlbum = {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            },
+            onTakePicture = {
+                val photoFile = File(context.cacheDir, "images/${System.currentTimeMillis()}.jpg").apply {
+                    parentFile?.mkdirs()
+                }
+                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile)
+                cameraImageUri = uri
+                takePicture.launch(uri)
+            },
             onSend = { text ->
-                viewModel.sendMessage(text)
+                viewModel.sendMessage(text, images = pickedImages.toList())
+                pickedImages.clear()
             },
             onStop = { viewModel.stopResponse() },
         )
@@ -612,6 +687,110 @@ fun ChatScreen(viewModel: ChatViewModel, agentName: String, onBack: (() -> Unit)
     }
 }
 
+private enum class ValueType { INT, FLOAT }
+
+/** Gallery ConfigDialog.getTextFieldDisplayValue. */
+private fun getTextFieldDisplayValue(valueType: ValueType, value: Float): String {
+    return try {
+        when (valueType) {
+            ValueType.FLOAT -> "%.2f".format(value)
+            ValueType.INT -> "${value.toInt()}"
+        }
+    } catch (e: Exception) {
+        ""
+    }
+}
+
+/**
+ * Gallery ConfigDialog.NumberSliderRow: a slider with an associated editable
+ * numeric text field displaying the current value.
+ */
+@Composable
+private fun NumberSliderRow(
+    label: String,
+    sliderMin: Float,
+    sliderMax: Float,
+    value: Float,
+    valueType: ValueType,
+    onValueChange: (Float) -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // Field label with range, like gallery: "label (min-max)".
+        val minStr = getTextFieldDisplayValue(valueType, sliderMin)
+        val maxStr = getTextFieldDisplayValue(valueType, sliderMax)
+        Text("$label ($minStr-$maxStr)", style = MaterialTheme.typography.titleSmall)
+
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            var isFocused by remember { mutableStateOf(false) }
+
+            // The displaying value for the Text field. It allows holding invalid
+            // values temporarily while the user is still editing the text.
+            var textFieldDisplayValue by remember(value) {
+                mutableStateOf(getTextFieldDisplayValue(valueType, value))
+            }
+
+            // Number slider.
+            Slider(
+                modifier = Modifier
+                    .height(24.dp)
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                value = value,
+                valueRange = sliderMin..sliderMax,
+                onValueChange = { newValue ->
+                    onValueChange(newValue)
+                    textFieldDisplayValue = getTextFieldDisplayValue(valueType, newValue)
+                },
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // A smaller text field.
+            BasicTextField(
+                value = textFieldDisplayValue,
+                modifier = Modifier
+                    .width(80.dp)
+                    .onFocusChanged {
+                        isFocused = it.isFocused
+                        // When leaving focus, display the internal value so that
+                        // any invalid value is cleared.
+                        if (!isFocused) {
+                            textFieldDisplayValue = getTextFieldDisplayValue(valueType, value)
+                        }
+                    },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                singleLine = true,
+                onValueChange = {
+                    // Always update the display value to reflect the update on the UI.
+                    textFieldDisplayValue = it
+
+                    // Only if the new value could be converted to a float, then
+                    // update the internal value, bounded by the slider range.
+                    it.toFloatOrNull()?.let { floatValue ->
+                        onValueChange(minOf(maxOf(floatValue, sliderMin), sliderMax))
+                    }
+                },
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+            ) { innerTextField ->
+                Box(
+                    modifier = Modifier.border(
+                        width = if (isFocused) 2.dp else 1.dp,
+                        color =
+                            if (isFocused) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(4.dp),
+                    )
+                ) {
+                    Box(modifier = Modifier.padding(8.dp)) { innerTextField() }
+                }
+            }
+        }
+    }
+}
+
 /** Copies text to the clipboard with a toast (gallery copyToClipboard). */
 @Composable
 private fun rememberCopyHandler(): (String) -> Unit {
@@ -621,6 +800,118 @@ private fun rememberCopyHandler(): (String) -> Unit {
     return { text ->
         clipboard.setText(AnnotatedString(text))
         Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Image picking helpers — verbatim ports from the gallery
+// (common/Utils.kt + MessageInputText.kt).
+// ---------------------------------------------------------------------------
+
+private fun decodeSampledBitmapFromUri(context: Context, uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
+    // First, decode with inJustDecodeBounds=true to check dimensions
+    val options =
+        BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+            (if (uri.scheme == null || uri.scheme == "file") {
+                FileInputStream(uri.path ?: "")
+            } else {
+                context.contentResolver.openInputStream(uri)
+            })
+                ?.use { BitmapFactory.decodeStream(it, null, this) }
+
+            // Calculate inSampleSize
+            inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+
+            // Decode bitmap with inSampleSize set
+            inJustDecodeBounds = false
+        }
+
+    return (if (uri.scheme == null || uri.scheme == "file") {
+        FileInputStream(uri.path ?: "")
+    } else {
+        context.contentResolver.openInputStream(uri)
+    })
+        ?.use { BitmapFactory.decodeStream(it, null, options) }
+}
+
+private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    // Raw height and width of image
+    val height: Int = options.outHeight
+    val width: Int = options.outWidth
+    var inSampleSize = 1
+
+    if (height > reqHeight || width > reqWidth) {
+        // Calculate the ratio of height and width to the requested height and width
+        val heightRatio = (height.toFloat() / reqHeight.toFloat()).roundToInt()
+        val widthRatio = (width.toFloat() / reqWidth.toFloat()).roundToInt()
+
+        // Choose the largest ratio as inSampleSize value to ensure
+        // that both dimensions are smaller than or equal to the requested dimensions.
+        inSampleSize = max(heightRatio, widthRatio)
+    }
+
+    return inSampleSize
+}
+
+private fun rotateBitmap(bitmap: Bitmap, orientation: Int): Bitmap {
+    val matrix = Matrix()
+    when (orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+        ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+        ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+        ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.preScale(-1.0f, 1.0f)
+        ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.preScale(1.0f, -1.0f)
+        ExifInterface.ORIENTATION_TRANSPOSE -> {
+            matrix.postRotate(90f)
+            matrix.preScale(-1.0f, 1.0f)
+        }
+        ExifInterface.ORIENTATION_TRANSVERSE -> {
+            matrix.postRotate(270f)
+            matrix.preScale(-1.0f, 1.0f)
+        }
+        ExifInterface.ORIENTATION_NORMAL -> return bitmap
+        else -> return bitmap
+    }
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
+
+/** Gallery MessageInputText.handleImagesSelected: EXIF-aware decode at ≤1024×1024. */
+private fun handleImagesSelected(context: Context, uris: List<Uri>, onImagesSelected: (List<Bitmap>) -> Unit) {
+    val images: MutableList<Bitmap> = mutableListOf()
+    for (uri in uris) {
+        val bitmap: Bitmap? =
+            try {
+                val inputStream =
+                    if (uri.scheme == null || uri.scheme == "file") {
+                        FileInputStream(uri.path ?: "")
+                    } else {
+                        context.contentResolver.openInputStream(uri)
+                    }
+                if (inputStream != null) {
+                    // Read the EXIF metadata from the picture and rotate it correctly.
+                    val exif = ExifInterface(inputStream)
+                    val orientation =
+                        exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+                    // You MUST close the first input stream before opening another one on the same URI.
+                    inputStream.close()
+
+                    decodeSampledBitmapFromUri(context, uri, 1024, 1024)?.let { originalBitmap ->
+                        rotateBitmap(bitmap = originalBitmap, orientation = orientation)
+                    }
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        if (bitmap != null) {
+            images.add(bitmap)
+        }
+    }
+    if (images.isNotEmpty()) {
+        onImagesSelected(images)
     }
 }
 
@@ -667,33 +958,39 @@ private fun ParametersDialog(
                 }
                 if (selectedTab == 0) {
                     Column {
-                        // Max tokens: gallery NumberSliderConfig(2000..maxContextLength=4096, default 4096).
-                        Text(stringResource(R.string.chat_max_tokens), style = MaterialTheme.typography.titleSmall)
-                        Slider(
+                        // Gallery NumberSliderRow: label with range, slider plus
+                        // an editable numeric text field showing the value.
+                        NumberSliderRow(
+                            label = stringResource(R.string.chat_max_tokens),
+                            sliderMin = 2000f,
+                            sliderMax = ChatViewModel.DEFAULT_MAX_TOKENS.toFloat(),
                             value = curMaxTokens.toFloat(),
+                            valueType = ValueType.INT,
                             onValueChange = { curMaxTokens = it.toInt() },
-                            valueRange = 2000f..ChatViewModel.DEFAULT_MAX_TOKENS.toFloat(),
                         )
-                        // Top-K: gallery NumberSliderConfig(1..100, default 64).
-                        Text(stringResource(R.string.chat_top_k), style = MaterialTheme.typography.titleSmall)
-                        Slider(
+                        NumberSliderRow(
+                            label = stringResource(R.string.chat_top_k),
+                            sliderMin = 1f,
+                            sliderMax = 100f,
                             value = curTopK.toFloat(),
+                            valueType = ValueType.INT,
                             onValueChange = { curTopK = it.toInt() },
-                            valueRange = 1f..100f,
                         )
-                        // Top-P: gallery NumberSliderConfig(0..1, default 0.95).
-                        Text(stringResource(R.string.chat_top_p), style = MaterialTheme.typography.titleSmall)
-                        Slider(
+                        NumberSliderRow(
+                            label = stringResource(R.string.chat_top_p),
+                            sliderMin = 0f,
+                            sliderMax = 1f,
                             value = curTopP,
+                            valueType = ValueType.FLOAT,
                             onValueChange = { curTopP = it },
-                            valueRange = 0f..1f,
                         )
-                        // Temperature: gallery NumberSliderConfig(0..2, default 1.0).
-                        Text(stringResource(R.string.chat_temperature), style = MaterialTheme.typography.titleSmall)
-                        Slider(
+                        NumberSliderRow(
+                            label = stringResource(R.string.chat_temperature),
+                            sliderMin = 0f,
+                            sliderMax = 2f,
                             value = curTemperature,
+                            valueType = ValueType.FLOAT,
                             onValueChange = { curTemperature = it },
-                            valueRange = 0f..2f,
                         )
                         // Accelerator: gallery SegmentedButtonConfig (gpu/cpu).
                         Text(stringResource(R.string.chat_accelerator), style = MaterialTheme.typography.titleSmall)
@@ -796,12 +1093,27 @@ private fun ChatMessageItem(
                         .clip(MessageBubbleShape(radius = 24.dp, hardCornerAtLeftOrRight = false))
                         .background(ChatColors.userBubbleBg),
                 ) {
-                    MarkdownText(
-                        text = message.text,
-                        textColor = Color.White,
-                        linkColor = Color.White,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                    )
+                    Column {
+                        // Attached images (gallery MessageBodyImage).
+                        for (image in message.images) {
+                            Image(
+                                bitmap = image.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(top = 12.dp, start = 12.dp, end = 12.dp)
+                                    .fillMaxWidth()
+                                    .height(240.dp)
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                        MarkdownText(
+                            text = message.text,
+                            textColor = Color.White,
+                            linkColor = Color.White,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+                        )
+                    }
                 }
             }
             // Run again button (gallery MessageActionButton on user messages).
@@ -889,10 +1201,16 @@ private fun Float.humanReadableDuration(): String {
 private fun MessageInputBar(
     ready: Boolean,
     generating: Boolean,
+    pickedImages: List<Bitmap>,
+    onRemoveImage: (Int) -> Unit,
+    showImagePicker: Boolean,
+    onPickImageFromAlbum: () -> Unit,
+    onTakePicture: () -> Unit,
     onSend: (String) -> Unit,
     onStop: () -> Unit,
 ) {
     var input by remember { mutableStateOf("") }
+    var showAddContentMenu by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -907,6 +1225,44 @@ private fun MessageInputBar(
                 shape = RoundedCornerShape(16.dp),
             ),
     ) {
+        // Picked images preview (gallery MessageInputText pickedImages row).
+        if (pickedImages.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                pickedImages.forEachIndexed { index, bitmap ->
+                    Box {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                                .clickable { onRemoveImage(index) },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -938,11 +1294,45 @@ private fun MessageInputBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            OutlinedIconButton(
-                onClick = {},
-                border = IconButtonDefaults.outlinedIconButtonBorder(true),
-            ) {
-                Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.chat_add_content))
+            // A plus button to show a popup menu to add stuff to the chat
+            // (gallery MessageInputText add-content button).
+            Box {
+                val enableAddButton = !generating
+                OutlinedIconButton(
+                    enabled = enableAddButton,
+                    onClick = { showAddContentMenu = true },
+                    border = IconButtonDefaults.outlinedIconButtonBorder(true),
+                ) {
+                    Icon(
+                        Icons.Outlined.Add,
+                        contentDescription = stringResource(R.string.chat_add_content),
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showAddContentMenu,
+                    onDismissRequest = { showAddContentMenu = false },
+                ) {
+                    if (showImagePicker) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.chat_take_picture)) },
+                            leadingIcon = { Icon(Icons.Outlined.PhotoCamera, null) },
+                            onClick = {
+                                showAddContentMenu = false
+                                onTakePicture()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.chat_pick_image)) },
+                            leadingIcon = { Icon(Icons.Outlined.AddAPhoto, null) },
+                            onClick = {
+                                showAddContentMenu = false
+                                onPickImageFromAlbum()
+                            },
+                        )
+                    }
+                }
             }
 
             if (generating) {
@@ -964,7 +1354,7 @@ private fun MessageInputBar(
                         onSend(input.trim())
                         input = ""
                     },
-                    enabled = ready && input.isNotBlank(),
+                    enabled = ready && (input.isNotBlank() || pickedImages.isNotEmpty()),
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = ChatColors.taskIcon,
                         disabledContainerColor = ChatColors.taskIcon.copy(alpha = 0.3f),
